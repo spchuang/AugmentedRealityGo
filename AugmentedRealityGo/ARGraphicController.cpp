@@ -20,10 +20,10 @@ int currentTime = 0, previousTime = 0;
 	*/
 	//hard code it for now
 //for ar projection
-GLfloat light_ambient[4] = {0.3, 0.3, 0.3, 1.0};  
-GLfloat light_diffuse[4] = {1,1,1,1}; 
-GLfloat light_specular[4] = {1,1,1,1}; 
-GLfloat light_position[4]= {1,1,1,0};  /* Infinite light location. */
+GLfloat light_ambient[4] = {0.3f, 0.3f, 0.3f, 1.0f};  
+GLfloat light_diffuse[4] = {1.0f,1.0f,1.0f,1.0f}; 
+GLfloat light_specular[4] = {1.0f,1.0f,1.0f,1.0f}; 
+GLfloat light_position[4]= {1.0f,1.0f,1.0f,0.0f};  /* Infinite light location. */
 
 float intrinsic_array[3][3]=
 	{{836.4486992622585, 0, 323.0858931708451},
@@ -57,6 +57,7 @@ ARGraphicController::ARGraphicController(int sw, int sh, GoBoard* b, FuegoAssist
 	textureID = -1;
 	detectedBoard = false;
 	cap = cvCaptureFromCAM(0);
+	 cvSetCaptureProperty(capture,CV_CAP_PROP_FPS,15)
 	
 	screen_width = sw;
 	screen_height = sh;
@@ -88,12 +89,12 @@ void ARGraphicController::start(int argc, char *argv[])
     glutIdleFunc(&ARGraphicController::gl_idle_func);
 	
 	glutKeyboardFunc(&ARGraphicController::keyFunc);
-	
+	/*
 	glewInit();
     if (!GLEW_VERSION_2_0) {
         std::cout<<"OpenGL 2.0 not available"<<std::endl;
 		exit(1);
-    }
+    }*/
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	init();
 
@@ -140,18 +141,14 @@ void ARGraphicController::drawBackGround()
 		glBindTexture(GL_TEXTURE_2D,textureID);
 		// Draw a textured quad
 		//glScaled(1.0/640.0, 1.0/480.0, 1.0);
-		glPushMatrix();
-			glBegin(GL_QUADS);
+	
+		glBegin(GL_QUADS);
 			glTexCoord2f(0, 0); glVertex2f(-1, 1);
 			glTexCoord2f(1, 0); glVertex2f(1, 1);
 			glTexCoord2f(1, 1); glVertex2f(1, -1);
 			glTexCoord2f(0, 1); glVertex2f(-1, -1);
 			
-			
-			
-			glEnd();
-		glPopMatrix();
-
+		glEnd();
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix(); // Pops our orthographic projection matrix, which restores the old one
 	glMatrixMode(GL_MODELVIEW); 
@@ -162,12 +159,14 @@ void ARGraphicController::drawBackGround()
 
 void ARGraphicController::drawBoard()
 {
+	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
-		glMatrixMode(GL_PROJECTION);
+		
+		glLoadIdentity();
 		glLoadMatrixf(camera_matrix);
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-
+		
 		cv::Mat_<float> Tvec;
 		cv::Mat_<float> rotMat;
 		d.GoBoardRaux.convertTo(rotMat,CV_32F);
@@ -179,7 +178,6 @@ void ARGraphicController::drawBoard()
 		glLoadMatrixd(post_m);
 		float p[]={0,0,0};
 		drawGoStone(0.01,0.01,0.01,2,2,p,0);
-		//	std::cout<<d.boardHeight<<std::endl;
 		for(size_t i=4; i<d.Board3DPoint.size();i++)
 		{
 			
@@ -187,9 +185,9 @@ void ARGraphicController::drawBoard()
 
 			
 			if(board->virtualStones[i-4] == 0)
-				drawGoStone(0.055,0.045,0.026,14,14,p,0);
+				drawGoStone(0.055f,0.045f,0.026f,14,14,p,0);
 			else if(board->virtualStones[i-4] == 1)
-				drawGoStone(0.055,0.045,0.026,14,14,p,1);
+				drawGoStone(0.055f,0.045f,0.026f,14,14,p,1);
 			
 			/*
 			if(board->wrongRealStones[i-4]!=0)
@@ -207,7 +205,10 @@ void ARGraphicController::drawBoard()
 				{
 					int index = fuego->bookMoves[i];
 					float p[]={-d.Board3DPoint[index+4].x ,-d.Board3DPoint[index+4].y,-d.Board3DPoint[index+4].z};
-					DrawPoint(p,6);
+					if(i==0)
+						DrawPoint(p,7, HALF_TRAN_BLUE_COLOR);
+					else
+						DrawPoint(p,7, HALF_TRAN_GREEN_COLOR);
 				}
 				break;
 
@@ -218,27 +219,63 @@ void ARGraphicController::drawBoard()
 	
 		//drawGoStone(0.06,0.11,0.023,50,50,p,1);
 		//draw cooridnate
+
+
 		drawCoordinateAxis();
+
+	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW); 
 }
+
 void ARGraphicController::RenderSceneCB()
 {
-	//calculateFPS();
-	//  Print the FPS to the window
-	//std::cout<<"fps: " <<fps<<std::endl;;
+	calculateFPS();
+	
+	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_TEXTURE_2D);
 	glDisable(GL_LIGHTING);
 	drawBackGround();
+	glDisable(GL_TEXTURE_2D);
+	glClear(GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_LIGHT0);
+	glEnable(GL_LIGHTING);
+
+
+	
 
 	if(detectedBoard)
 	{
-		glDisable(GL_TEXTURE_2D);
-		glClear(GL_DEPTH_BUFFER_BIT);
-		glEnable(GL_LIGHT0);
-		glEnable(GL_LIGHTING);
+		
 		drawBoard();
+		draw_circle(-0.2f,-0.2f,0.05f,GREEN_COLOR );
+	}else{
+		draw_circle(-0.2f,-0.2f,0.05f, RED_COLOR );
 	}
+
+
+	glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+		glLoadIdentity();
+		glMatrixMode(GL_MODELVIEW);
+
+		glLoadIdentity();
+			//  Print the FPS to the window in bottom right corner
+			std::string msg = "FPS: " + floatToString(fps);
+			draw_text(0.70f,-0.96f, SOLID_RED_COLOR, msg);
+
+	
+			//std::string msg2 = "test";
+			//draw_text(0.5,0, GREEN_COLOR, msg2);
+		
+
+
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix(); // Pops our orthographic projection matrix, which restores the old one
+	glMatrixMode(GL_MODELVIEW); 
+	
+
 
 	glFlush();
 	glutSwapBuffers();
@@ -246,11 +283,8 @@ void ARGraphicController::RenderSceneCB()
 
 void ARGraphicController::changeGen(int c)
 {
-	//std::cout<<"it is true.."<<std::endl;
 	genMove = true;
 	newMoveColor = c;
-	//if(genMove){}
-	//	std::cout<<"it is really true.."<<std::endl;
 	
 }
 
@@ -273,9 +307,10 @@ void ARGraphicController::gl_idle_func()
 		cv::Mat undistortImage;
 		undistortImage = d.getUndistortImage(frameImg);
 		
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, frameImg.cols, frameImg.rows, 0, GL_BGR, GL_UNSIGNED_BYTE, undistortImage.data);
+		//GL_BGR
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, frameImg.cols, frameImg.rows, 0, GL_BGR_EXT, GL_UNSIGNED_BYTE, undistortImage.data);
 		
-		detectedBoard = d.detectMove();
+		detectedBoard = false;//d.detectMove();
 		
 		//release frame data
 		frameImg = cv::Mat();
@@ -292,6 +327,8 @@ void ARGraphicController::init()
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	/* Enable a single OpenGL light. */
 	//glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
@@ -343,6 +380,7 @@ void ARGraphicController::keyFunc(unsigned char key, int x, int y)
 			d.readStone(newRealBoardStones);
 
 			if(board->checkNewBoardState(newRealBoardStones, newMoveColor)){
+
 				board->addRealStone(board->newMoveIndex, newMoveColor);
 				genMove = false;
 			}

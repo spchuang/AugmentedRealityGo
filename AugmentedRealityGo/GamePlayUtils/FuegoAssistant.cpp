@@ -44,7 +44,19 @@ FuegoAssistant::~FuegoAssistant()
 
 
 }
+void FuegoAssistant::clear_board()
+{
+	string command = "clear_board";
 
+	writeToFuego << command<<endl;
+	writeToFuego.flush();
+
+	string readLine;
+	do{
+		getline(readFromFuego, readLine);
+	}while(readLine[0]!='=');
+
+}
 void FuegoAssistant::addMove(std::string move, int color){
 	//realStones[stone_index] = color;
 	string command;
@@ -55,8 +67,11 @@ void FuegoAssistant::addMove(std::string move, int color){
 	writeToFuego << command<<endl;
 	writeToFuego.flush();
 
-	string emptyRead;
-	getline(readFromFuego, emptyRead);
+	string readLine;
+	do{
+		getline(readFromFuego, readLine);
+	}while(readLine[0]!='=');
+	
 }
 
 bool FuegoAssistant::getBookPositions()
@@ -69,9 +84,13 @@ bool FuegoAssistant::getBookPositions()
 
 	string first_line;
 	string second_line;
-	getline(readFromFuego, first_line);
-	getline(readFromFuego, second_line);
+	//make sure the first line starts with =
+	do{
+		getline(readFromFuego, first_line);
+	}while(first_line[0]!='=');
 	
+	getline(readFromFuego, second_line);
+
 	bookMoves.clear();
 	
 	vector<string> l;
@@ -79,20 +98,17 @@ bool FuegoAssistant::getBookPositions()
 	transform(first_line.begin(), first_line.end(), first_line.begin(), ::tolower);
 	if(split(first_line, l, ' ') <4)
 		return false;
+	
 	bookMoves.push_back(convert_string_move(l[3]));
 
 	//parse second line
 	transform(second_line.begin(), second_line.end(), second_line.begin(), ::tolower);
 	if(split(second_line, l, ' ') >=3){
 		for(size_t i=2; i<l.size(); i++){
-			//cout<<l[i] <<" : "<<parse_string_move(l[i])<<endl;
+			//cout<<l[i] <<" : "<<convert_string_move(l[i])<<endl;
 			bookMoves.push_back(convert_string_move(l[i]));
 		}
 	}
-
-	
-	//cout<<"return"<<endl<<first_line<<endl<<second_line<<endl;
-    
 
 
 	
@@ -117,16 +133,20 @@ void FuegoAssistant::genMove(string color)
 void FuegoAssistant::showBoard()
 {
 	string command = "showboard";
-
 	writeToFuego << command<<endl;
 	writeToFuego.flush();
 
 	string response;
-	for(int i=0; i<22;i++){
+	//make sure first line starts with =
+	do{
+		getline(readFromFuego, response);
+	}while(response[0]!='=');
+
+	for(int i=0; i<21;i++){
 		getline(readFromFuego, response);
 		cout <<response<<endl;
 	}
 
-	cout <<"end of board"<<endl;
+
 
 }

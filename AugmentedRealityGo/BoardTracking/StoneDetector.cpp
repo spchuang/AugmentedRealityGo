@@ -188,7 +188,7 @@ void StoneDetector::findCandidateStones(bool findBlack,std::vector<cv::Point2f> 
 	else{
 		cv::threshold( greyBoardImage, thre_output, white_thresh, 255, cv::THRESH_BINARY );	
 		// cv::imshow( "white ther", thre_output );
-		// cv:: waitKey(1);
+	 //cv:: waitKey(1);
 	}
 	 
 	/// Find contours

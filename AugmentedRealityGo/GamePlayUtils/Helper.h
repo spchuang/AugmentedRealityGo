@@ -27,7 +27,10 @@ static int convert_string_color(std::string color)
 
 static std::string convert_index_move(int move)
 {
+	
 	char x = move%19 + 'A';
+	if(move%19 > 8)
+		x++;
 	int y = (int)(move/19)+1;
 	//create a stringstream
 	std::stringstream ss;

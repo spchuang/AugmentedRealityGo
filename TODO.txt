@@ -1,6 +1,6 @@
 
 7/4/13
-- add freeglut to display text
+- add freeglut (instead of original glut) to display text
 - fix fuego interaction
 - add territory counting
 

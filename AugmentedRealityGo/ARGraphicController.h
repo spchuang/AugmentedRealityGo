@@ -14,12 +14,17 @@
 #include <opencv2/calib3d/calib3d.hpp>
 
 //opengl
+/*
 #include <GL/glew.h>
 #ifdef __APPLE__
 #  include <GLUT/glut.h>
 #else
 #  include <GL/glut.h>
 #endif
+*/
+#include <GL/freeglut.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
 
 //self library
 #include "BoardTracking/GoBoardDetector.h"
@@ -37,7 +42,7 @@ public:
 	ARGraphicController(int sw, int sh, GoBoard* b, FuegoAssistant* f);
 	~ARGraphicController();
 	
-	void calculateFPS();
+	static void calculateFPS();
 	void start(int argc, char *argv[]);
 	static void drawBackGround();
 	static void drawBoard();

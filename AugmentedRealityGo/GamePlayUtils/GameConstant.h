@@ -23,4 +23,6 @@ const int A_MODE_FUEGO_BOOK	=1;
 #define A_MODE_TERRITORY	2;
 #define NUMBER_OF_A_MODE 2;
 
+#define M_PI 3.1415926
+
 #endif

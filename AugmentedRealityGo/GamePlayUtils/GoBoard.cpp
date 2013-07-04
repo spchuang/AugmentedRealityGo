@@ -3,16 +3,27 @@
 FuegoAssistant* GoBoard::fuego;
 GoBoard::GoBoard(FuegoAssistant* f)
 {
-	a=0;
+	fuego = f;
 	for(int i=0; i<19*19; i++){
 		virtualStones[i] = 2;
 		realStones[i] = 2;
 		wrongRealStones[i] = 2;
 	}
-	fuego = f;
+	
 }
 
-
+void GoBoard::clear_board()
+{
+	
+	for(int i=0; i<19*19; i++){
+		virtualStones[i] = 2;
+		realStones[i] = 2;
+		wrongRealStones[i] = 2;
+	}
+	//clear fuego state too
+	fuego->clear_board();
+	
+}
 
 
 void GoBoard::addVirtualStone(std::string move, std::string color)
@@ -27,8 +38,11 @@ void GoBoard::addVirtualStone(std::string move, std::string color)
 }
 
 void GoBoard::addRealStone(int stone_index, int color){
+
 	realStones[stone_index] = color;
+
 	fuego->addMove(convert_index_move(stone_index), color);
+
 }
 
 
@@ -95,7 +109,7 @@ bool GoBoard::checkNewBoardState(char newRealBoardStones[361], char newMoveColor
 			if(newRealBoardStones[allNewMoveIndex[0]]==newMoveColor){
 
 				newMoveIndex = allNewMoveIndex[0];
-				addRealStone(allNewMoveIndex[0], newMoveColor);
+				//addRealStone(allNewMoveIndex[0], newMoveColor);
 				return true;
 			}
 			std::cout<<"#the new stone is the wrong color!#"<<std::endl;

@@ -98,19 +98,21 @@ void ARGoController::startAR()
 		}else if(command == "boardsize"){
 
 		}else if(command == "clear_board"){
-
+			board.clear_board();
 		}else if(command == "komi"){
 
 		}else if(command == "play"){
-			
-			board.addVirtualStone(arguments[2], arguments[1]);
+			if(arguments.size() == 3)
+				board.addVirtualStone(arguments[2], arguments[1]);
+			else
+				response = "? invalid play move";
 
 		}else if(command == "genmove"){
 			char color;
 			if(arguments[1] == "b" || arguments[1] == "black"){
-				color = 0;
+				color = COLOR_BLACK;
 			}else if(arguments[1] == "w" || arguments[1] == "white"){
-				color = 1;
+				color = COLOR_WHITE;
 			}
 			//wait for moves 
 			graphic_controller.changeGen(color);

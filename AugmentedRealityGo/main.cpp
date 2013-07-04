@@ -15,7 +15,6 @@ using namespace std;
 //using namespace PatternLibrary;
 
 
-
 int main(int argc, char *argv[])
 {
 	/*

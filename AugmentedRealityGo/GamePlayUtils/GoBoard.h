@@ -22,8 +22,7 @@ public:
     void addVirtualStone(std::string move, std::string color);
 	void addRealStone(int stone_index, int color);
 	std::string getNewMove();
-
-	volatile int a;
+	void clear_board();
 	volatile char realStones[361];
 	volatile char virtualStones[361];
 	volatile char wrongRealStones[361];

@@ -23,6 +23,7 @@ public:
 	FuegoAssistant();
 	~FuegoAssistant();
 	bool getBookPositions();
+	void clear_board();
 	void genMove(std::string color);
 	static std::vector<int> bookMoves;
 	void addMove(std::string move, int color);

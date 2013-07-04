@@ -151,8 +151,8 @@ bool GoBoardDetector::findBoard(cv::Mat &srcImage)
 	if(!calculateCameraIntrinsix())
 		returnVal= false;
 
-	cv::imshow("result", undistortImage);
-	cv::waitKey(1);
+	//cv::imshow("result", undistortImage);
+	//cv::waitKey(1);
 	
 	return returnVal;
 }
@@ -363,8 +363,8 @@ void GoBoardDetector::detectOcclusionObject()
 
 	
 	cv::threshold( result, result, 40, 255, cv::THRESH_BINARY );
-	cv::imshow("diff",result);
-	cv::waitKey(1);
+	//cv::imshow("diff",result);
+	//cv::waitKey(1);
 }
 
 void GoBoardDetector::saveBackGroundBoard()

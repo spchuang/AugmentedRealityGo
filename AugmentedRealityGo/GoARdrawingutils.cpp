@@ -32,11 +32,12 @@ void drawGoStone(GLfloat a, GLfloat b, GLfloat c, GLint nSlice, GLint nStack, fl
  
         glBegin(GL_TRIANGLE_STRIP);
 		
-		if(color == BLACK)
+		if(color == COLOR_BLACK)
 			glColor3f(0.00f,0.00f, 0.00f);
-		else if(color == WHITE)
+		else if(color == COLOR_WHITE)
 			glColor3f(1.0f,1.0f, 1.0f);
          //bottom
+		/*
         for (j=0; j<nSlice1; j++)
          {
              GLfloat r = fStep1 * j;
@@ -51,7 +52,7 @@ void drawGoStone(GLfloat a, GLfloat b, GLfloat c, GLint nSlice, GLint nStack, fl
  
              rs += dr;
          }
- 
+		 */
          //side
          for (j=0; j<nSlice2; j++)
          {
@@ -70,7 +71,7 @@ void drawGoStone(GLfloat a, GLfloat b, GLfloat c, GLint nSlice, GLint nStack, fl
              rs += dr;
          }
  
-		 
+	 /*	 
        //top
 		
 		 for (j=0; j<=nSlice3; j++)
@@ -92,21 +93,23 @@ void drawGoStone(GLfloat a, GLfloat b, GLfloat c, GLint nSlice, GLint nStack, fl
  
              rs += dr;
          }
-
+*/
          glEnd();
      }
  }
 
-void DrawPoint(float* origin,int size)
+void DrawPoint(float* origin,int size, const float* color)
 {
+	glEnable(GL_BLEND);
 	glPointSize(size);
 	glBegin(GL_POINTS);
 	//std::cout<<d.Board3DPoint.size()<<std::endl;
-		glColor3f(1.0f, 0.0f, 0.0f);
+		glColor4f(color[0], color[1], color[2], color[3]);
 
 		glVertex3f(origin[0],origin[1],origin[2]);
 
 	glEnd();
+	glColor4f(1.f, 1.f, 1.f, 1.f);
 }
 
 void drawCoordinateAxis()
@@ -166,3 +169,47 @@ void buildProjectionMatrix(float* m, float intrinsic_array[][3], int screen_widt
 	m[15] = 0.0f;
 }
 
+
+void draw_circle(float x, float y, float radius, const float* color) { 
+	
+	glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+		glLoadIdentity();
+		glMatrixMode(GL_MODELVIEW);
+
+		glLoadIdentity();
+			
+		int i;
+		int triangleAmount = 14; //# of triangles used to draw circle
+		//GLfloat radius = 0.8f; //radius
+		GLfloat twicePi = 2.0f * M_PI;
+		
+
+		glBegin(GL_TRIANGLE_FAN);
+			glColor3f(0,0, 1.0f);
+			//glColor4f(color[0], color[1], color[2], color[3]);
+			glVertex2f(x, y); // center of circle
+			for(i = 0; i <= triangleAmount;i++) {
+				glVertex2f(
+				x + (radius * cos(i * twicePi / triangleAmount)) *480/640,
+				y + (radius * sin(i * twicePi / triangleAmount))
+				);
+			}
+		glEnd();
+
+
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix(); // Pops our orthographic projection matrix, which restores the old one
+	glMatrixMode(GL_MODELVIEW); 
+
+}
+
+void draw_text(float x, float y, const float* color, std::string msg)
+{
+	glColor4f(color[0], color[1], color[2], color[3]);
+	glRasterPos2f(x, y);
+	//
+	
+	glutBitmapString(GLUT_BITMAP_HELVETICA_18, (const unsigned char*)msg.c_str());
+
+}
