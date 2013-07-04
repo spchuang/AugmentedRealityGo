@@ -37,7 +37,7 @@ void drawGoStone(GLfloat a, GLfloat b, GLfloat c, GLint nSlice, GLint nStack, fl
 		else if(color == COLOR_WHITE)
 			glColor3f(1.0f,1.0f, 1.0f);
          //bottom
-		/*
+		
         for (j=0; j<nSlice1; j++)
          {
              GLfloat r = fStep1 * j;
@@ -52,7 +52,7 @@ void drawGoStone(GLfloat a, GLfloat b, GLfloat c, GLint nSlice, GLint nStack, fl
  
              rs += dr;
          }
-		 */
+		 
          //side
 
          for (j=0; j<nSlice2; j++)
@@ -63,17 +63,17 @@ void drawGoStone(GLfloat a, GLfloat b, GLfloat c, GLint nSlice, GLint nStack, fl
              GLfloat nr = sin(fStep2 * j);
              GLfloat nZ = cos(fStep2 * j);
 			nZ+=b;
-			 /*
+			 
 			 glNormal3f(nr * fX, nr * fY,nZ );
              glVertex3f(r * fX+origin[0],r * fY+origin[1], z+origin[2] );
 			
-			*/
+			
 			 glNormal3f(nr * fX1,  nr * fY1,nZ);
              glVertex3f(r * fX1+origin[0], r * fY1+origin[1], z+origin[2]);
              rs += dr;
          }
  
-	 /*	 
+	 
        //top
 		
 		 for (j=0; j<=nSlice3; j++)
@@ -95,7 +95,7 @@ void drawGoStone(GLfloat a, GLfloat b, GLfloat c, GLint nSlice, GLint nStack, fl
  
              rs += dr;
          }
-*/
+
          glEnd();
      }
  }
