@@ -57,7 +57,7 @@ ARGraphicController::ARGraphicController(int sw, int sh, GoBoard* b, FuegoAssist
 	textureID = -1;
 	detectedBoard = false;
 	cap = cvCaptureFromCAM(0);
-	 cvSetCaptureProperty(capture,CV_CAP_PROP_FPS,15)
+	
 	
 	screen_width = sw;
 	screen_height = sh;
@@ -128,14 +128,15 @@ void ARGraphicController::calculateFPS()
 
 void ARGraphicController::drawBackGround()
 {
-	glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
+	// Switch to window coordinates to render
+	glMatrixMode( GL_MODELVIEW );
+	glPushMatrix();
+		glLoadIdentity();    
+
+		glMatrixMode( GL_PROJECTION );
+		glPushMatrix();
 		glLoadIdentity();
 		glOrtho(-1, 1, -1, 1, 0, 1);
-
-		// Switch to Model View Matrix		
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
 
 		
 		glBindTexture(GL_TEXTURE_2D,textureID);
@@ -149,10 +150,11 @@ void ARGraphicController::drawBackGround()
 			glTexCoord2f(0, 1); glVertex2f(-1, -1);
 			
 		glEnd();
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix(); // Pops our orthographic projection matrix, which restores the old one
-	glMatrixMode(GL_MODELVIEW); 
-	
+
+
+		glPopMatrix();
+	glMatrixMode( GL_MODELVIEW );
+	glPopMatrix();
 }
 
 
@@ -247,34 +249,39 @@ void ARGraphicController::RenderSceneCB()
 
 	if(detectedBoard)
 	{
-		
+		glEnable(GL_COLOR_MATERIAL);								// enables opengl to use glColor3f to define material color
+		glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 		drawBoard();
-		draw_circle(-0.2f,-0.2f,0.05f,GREEN_COLOR );
-	}else{
-		draw_circle(-0.2f,-0.2f,0.05f, RED_COLOR );
+		glDisable(GL_COLOR_MATERIAL);
 	}
 
+	glEnable(GL_COLOR_MATERIAL);								// enables opengl to use glColor3f to define material color
+	glDisable(GL_LIGHTING);
+	//glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+	glMatrixMode( GL_MODELVIEW );
+	glPushMatrix();
+		glLoadIdentity();    
 
-	glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
+		glMatrixMode( GL_PROJECTION );
+		glPushMatrix();
 		glLoadIdentity();
-		glMatrixMode(GL_MODELVIEW);
 
-		glLoadIdentity();
-			//  Print the FPS to the window in bottom right corner
-			std::string msg = "FPS: " + floatToString(fps);
-			draw_text(0.70f,-0.96f, SOLID_RED_COLOR, msg);
+		//  Print the FPS to the window in bottom right corner
+		std::string msg = "FPS: " + floatToString(fps);
+		draw_text(0.70f,-0.96f, SOLID_RED_COLOR, msg);
 
-	
-			//std::string msg2 = "test";
-			//draw_text(0.5,0, GREEN_COLOR, msg2);
+		//print board status bar
+		if(detectedBoard){
+			draw_circle(-0.95f,-0.93f,0.05f,GREEN_COLOR );
+		}else{
+			draw_circle(-0.95f,-0.93f,0.05f, RED_COLOR );
+		}
 		
 
-
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix(); // Pops our orthographic projection matrix, which restores the old one
-	glMatrixMode(GL_MODELVIEW); 
-	
+	glPopMatrix();
+	glMatrixMode( GL_MODELVIEW );
+	glPopMatrix();
+	glDisable(GL_COLOR_MATERIAL);
 
 
 	glFlush();
@@ -310,7 +317,7 @@ void ARGraphicController::gl_idle_func()
 		//GL_BGR
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, frameImg.cols, frameImg.rows, 0, GL_BGR_EXT, GL_UNSIGNED_BYTE, undistortImage.data);
 		
-		detectedBoard = false;//d.detectMove();
+		detectedBoard =d.detectMove();
 		
 		//release frame data
 		frameImg = cv::Mat();
@@ -326,7 +333,7 @@ void ARGraphicController::init()
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-	glEnable(GL_TEXTURE_2D);
+	
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -335,8 +342,6 @@ void ARGraphicController::init()
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-	glEnable(GL_LIGHT0);
-	glEnable(GL_LIGHTING);
 
 	//glMaterial(GL_FRONT, GL_SPECULAR, specularColor);				// sets specular material color
 	//glMaterialf(GL_FRONT, GL_SHININESS, 25.0f);					// sets shininess
@@ -349,8 +354,7 @@ void ARGraphicController::init()
 	glEnable(GL_LIGHTING);										// enables lighting
 	glEnable(GL_LIGHT0);										// enables light0
 		
-	glEnable(GL_COLOR_MATERIAL);								// enables opengl to use glColor3f to define material color
-	glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+	
 
 	/* Use depth buffering for hidden surface elimination. */
 	glEnable(GL_DEPTH_TEST);

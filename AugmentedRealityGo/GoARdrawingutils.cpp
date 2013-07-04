@@ -54,6 +54,7 @@ void drawGoStone(GLfloat a, GLfloat b, GLfloat c, GLint nSlice, GLint nStack, fl
          }
 		 */
          //side
+
          for (j=0; j<nSlice2; j++)
          {
              GLfloat r = a + c * sin(fStep2 * j);
@@ -62,10 +63,11 @@ void drawGoStone(GLfloat a, GLfloat b, GLfloat c, GLint nSlice, GLint nStack, fl
              GLfloat nr = sin(fStep2 * j);
              GLfloat nZ = cos(fStep2 * j);
 			nZ+=b;
-
+			 /*
 			 glNormal3f(nr * fX, nr * fY,nZ );
              glVertex3f(r * fX+origin[0],r * fY+origin[1], z+origin[2] );
 			
+			*/
 			 glNormal3f(nr * fX1,  nr * fY1,nZ);
              glVertex3f(r * fX1+origin[0], r * fY1+origin[1], z+origin[2]);
              rs += dr;
@@ -171,36 +173,26 @@ void buildProjectionMatrix(float* m, float intrinsic_array[][3], int screen_widt
 
 
 void draw_circle(float x, float y, float radius, const float* color) { 
-	
-	glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-		glLoadIdentity();
-		glMatrixMode(GL_MODELVIEW);
 
-		glLoadIdentity();
-			
-		int i;
-		int triangleAmount = 14; //# of triangles used to draw circle
-		//GLfloat radius = 0.8f; //radius
-		GLfloat twicePi = 2.0f * M_PI;
+	int i;
+	int triangleAmount = 20; //# of triangles used to draw circle
+	//GLfloat radius = 0.8f; //radius
+	GLfloat twicePi = 2.0f * M_PI;
 		
 
-		glBegin(GL_TRIANGLE_FAN);
-			glColor3f(0,0, 1.0f);
-			//glColor4f(color[0], color[1], color[2], color[3]);
-			glVertex2f(x, y); // center of circle
-			for(i = 0; i <= triangleAmount;i++) {
-				glVertex2f(
-				x + (radius * cos(i * twicePi / triangleAmount)) *480/640,
-				y + (radius * sin(i * twicePi / triangleAmount))
-				);
-			}
-		glEnd();
+	glBegin(GL_TRIANGLE_FAN);
+		//glColor3f(0,0, 1.0f);
+		glColor4f(color[0], color[1], color[2], color[3]);
+		glVertex2f(x, y); // center of circle
+		for(i = 0; i <= triangleAmount;i++) {
+			glVertex2f(
+			x + (radius * cos(i * twicePi / triangleAmount)) *480/640,
+			y + (radius * sin(i * twicePi / triangleAmount))
+			);
+		}
+	glEnd();
 
-
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix(); // Pops our orthographic projection matrix, which restores the old one
-	glMatrixMode(GL_MODELVIEW); 
+		
 
 }
 
