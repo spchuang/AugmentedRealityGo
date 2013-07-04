@@ -1,0 +1,9 @@
+
+7/4/13
+- add freeglut to display text
+- fix fuego interaction
+- add territory counting
+
+7/3/13
+- added boost process to communicate with fuego
+- implemented fuego wrapper interface
