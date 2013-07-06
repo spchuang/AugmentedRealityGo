@@ -44,7 +44,7 @@ static const float SOLID_RED_COLOR[]		= {1.0f, 0.0f, 0.0f, 1.0f};
 static const float GREEN_COLOR[]		= {0.0f, 1.0f, 0.0f, 0.75f};
 
 void drawGoStone(GLfloat a, GLfloat b, GLfloat c, GLint nSlice, GLint nStack, float* origin, int color);
-void DrawPoint(float* origin,int size, const float* color);
+void DrawPoint(float* origin,float size, const float* color);
 
 void drawCoordinateAxis();
 void buildProjectionMatrix(float* m, float intrinsic_array[][3], int screen_width, int screen_height);

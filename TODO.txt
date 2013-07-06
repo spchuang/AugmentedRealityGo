@@ -7,3 +7,15 @@
 7/3/13
 - added boost process to communicate with fuego
 - implemented fuego wrapper interface
+
+
+TODO:
+
+- add territory counting
+ -> possibly use: http://sourceforge.net/apps/trac/fuego/wiki/ShowingTerritoryStatistics
+- connect with ktp server
+- play against another go engine
+- add AR controlling mechanism
+- show joseki corner suggestions
+- Juseki corner support
+

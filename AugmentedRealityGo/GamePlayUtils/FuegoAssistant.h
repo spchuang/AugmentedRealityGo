@@ -23,15 +23,22 @@ public:
 	FuegoAssistant();
 	~FuegoAssistant();
 	bool getBookPositions();
+	bool estimateTerritory(int color);
 	void clear_board();
 	void genMove(std::string color);
-	static std::vector<int> bookMoves;
+	
 	void addMove(std::string move, int color);
 	void showBoard();
+	void sendCommandWithEmptyResponse(std::string command);
+	//public variables
+	static std::vector<int> bookMoves;
+	static std::vector<float> estimateScore;
 private:
+
 	static boost::process::child c;
-	
-	
+	bool setTerritoryParam;
+	std::string prevMove;
+	bool bookLoaded;
 };
 	
 #endif

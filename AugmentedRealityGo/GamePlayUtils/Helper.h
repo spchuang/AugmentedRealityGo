@@ -16,13 +16,23 @@ static int convert_string_move(std::string move)
 	return (19*(y-1)+x);
 }
 
+static std::string convert_int_color(int color)
+{
+	if(color == COLOR_BLACK)
+		return std::string("b");
+	else if(color == COLOR_WHITE)
+		return std::string("w");
+
+
+}
+
 static int convert_string_color(std::string color)
 {
 	if(color == "black" || color =="b")
 		return COLOR_BLACK;
 	else if(color =="white"|| color =="w")
 		return COLOR_WHITE;
-
+	return -1;
 }
 
 static std::string convert_index_move(int move)
@@ -51,6 +61,10 @@ static unsigned int split(const std::string &txt, std::vector<std::string> &strs
         initialPos = pos + 1;
 
         pos = txt.find( ch, initialPos );
+		
+		while(txt[pos+1]== ch)
+			pos++;
+		
     }
 
     // Add the last one

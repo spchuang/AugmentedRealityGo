@@ -27,13 +27,19 @@ stream<file_descriptor_source> readFromFuego =  stream<file_descriptor_source>(p
 stream<file_descriptor_sink> writeToFuego = stream<file_descriptor_sink>(parent_sink);
 //end binding pipes 
 vector<int> FuegoAssistant::bookMoves;
-
+vector<float> FuegoAssistant::estimateScore;
 
 
 FuegoAssistant::FuegoAssistant()
 {
+	//set the territory statistic flag in fuego
 
-
+	setTerritoryParam = false;
+	prevMove = "none";
+	for(int i=0; i<19*19; i++)
+	{
+		estimateScore.push_back(0);
+	}
 
 }
 
@@ -46,17 +52,102 @@ FuegoAssistant::~FuegoAssistant()
 }
 void FuegoAssistant::clear_board()
 {
-	string command = "clear_board";
+	sendCommandWithEmptyResponse("clear_board");
 
+}
+void FuegoAssistant::sendCommandWithEmptyResponse(string command)
+{
 	writeToFuego << command<<endl;
 	writeToFuego.flush();
 
 	string readLine;
 	do{
 		getline(readFromFuego, readLine);
+
 	}while(readLine[0]!='=');
+	cout <<command<<endl<<readLine<<endl;
+}
+
+bool FuegoAssistant::estimateTerritory(int color)
+{
+	string command;
+	string readLine;
+	//uct_param_globalsearch territory_statistics 1
+	if(!setTerritoryParam){
+		sendCommandWithEmptyResponse("uct_param_globalsearch territory_statistics 1");
+		setTerritoryParam = true;
+	}
+
+	//the problem here is that i need to generate a move from fuego first before i can see the territory stats
+	//first, disable tree search (node threhold normally = 3)
+	//uct_param_search expand_threshold 10000000   
+	sendCommandWithEmptyResponse("uct_param_search expand_threshold 10000000");
+	
+	//if there are book moves, should probably disable book first
+	command = "book_moves";
+	writeToFuego << command<<endl;
+	writeToFuego.flush();
+	do{
+		getline(readFromFuego, readLine);
+	}while(readLine[0]!='=');	
+	vector<string> l;
+	if(split(readLine, l, ' ') >1)
+	{
+		//needs to remove book
+		sendCommandWithEmptyResponse("book_clear");
+	}
+
+	//generate a fake move from fuego
+	sendCommandWithEmptyResponse(string("genmove ")+ convert_int_color(color));
+	//undo the move
+	sendCommandWithEmptyResponse("undo");
+	//get territory stats
+	command = "uct_stat_territory";
+	writeToFuego << command<<endl;
+	writeToFuego.flush();
+	do{
+		getline(readFromFuego, readLine);
+
+	}while(readLine[0]!='=' && readLine[0]!='?');
+	
+	if(readLine[0] == '?'){
+		cout <<"something is wrong probably cuz fuego uses forced opening moves"<<endl;
+		for(int i=0; i<19*19; i++){
+			estimateScore[i] = 0;
+		}
+		return false;
+	}
+
+	
+	//the line after?
+
+		getline(readFromFuego, readLine);
+
+		cout<<"return: "<<endl<<readLine<<endl<<"END"<<endl;
+		split(readLine, l, ' ');
+		cout <<"size: "<< l.size()<<endl;
+		for(int j=0; j<l.size(); j++)
+		{
+			cout <<j << " : " << l[j] <<endl;
+
+		}
+		
+
+	
+	
+
+
+	//cout<<endl<<endl<<readLine<<endl<<endl;
+	
+	
+	
+
+
+	
+	return true;
 
 }
+
 void FuegoAssistant::addMove(std::string move, int color){
 	//realStones[stone_index] = color;
 	string command;
@@ -72,6 +163,7 @@ void FuegoAssistant::addMove(std::string move, int color){
 		getline(readFromFuego, readLine);
 	}while(readLine[0]!='=');
 	
+	getBookPositions();
 }
 
 bool FuegoAssistant::getBookPositions()

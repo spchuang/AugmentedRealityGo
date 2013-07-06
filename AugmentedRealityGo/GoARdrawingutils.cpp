@@ -100,7 +100,7 @@ void drawGoStone(GLfloat a, GLfloat b, GLfloat c, GLint nSlice, GLint nStack, fl
      }
  }
 
-void DrawPoint(float* origin,int size, const float* color)
+void DrawPoint(float* origin,float size, const float* color)
 {
 	glEnable(GL_BLEND);
 	glPointSize(size);

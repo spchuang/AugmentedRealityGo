@@ -197,13 +197,14 @@ void ARGraphicController::drawBoard()
 				DrawPoint(p,5);
 			}*/
 		}
+		size_t s;
 		switch(assistant_mode)
 		{
 			case A_MODE_NONE:
 				break;
 			case A_MODE_FUEGO_BOOK:
-				
-				for(size_t i=0; i<(fuego->bookMoves).size(); i++)
+				s = (fuego->bookMoves).size();
+				for(size_t i=0; i<s; i++)
 				{
 					int index = fuego->bookMoves[i];
 					float p[]={-d.Board3DPoint[index+4].x ,-d.Board3DPoint[index+4].y,-d.Board3DPoint[index+4].z};
@@ -212,6 +213,19 @@ void ARGraphicController::drawBoard()
 					else
 						DrawPoint(p,7, HALF_TRAN_GREEN_COLOR);
 				}
+				break;
+			case A_MODE_TERRITORY:
+				/*
+				s = (fuego->estimateScore).size();
+				for(size_t i=0; i<s; i++)
+				{
+					float score = fuego->estimateScore[i];
+					float p[]={-d.Board3DPoint[i+4].x ,-d.Board3DPoint[i+4].y,-d.Board3DPoint[i+4].z};
+					if(score<0)
+						DrawPoint(p, score*-10, HALF_TRAN_GREEN_COLOR);
+					else
+						DrawPoint(p, score*10, HALF_TRAN_GREEN_COLOR);
+				}*/
 				break;
 
 		}
@@ -275,6 +289,24 @@ void ARGraphicController::RenderSceneCB()
 			draw_circle(-0.95f,-0.93f,0.05f,GREEN_COLOR );
 		}else{
 			draw_circle(-0.95f,-0.93f,0.05f, RED_COLOR );
+		}
+
+		//print assistant mode
+		switch(assistant_mode)
+		{
+			case A_MODE_NONE:
+				msg = "Assistant Mode: No";
+				draw_text(-0.97f,0.92f, GREEN_COLOR, msg);
+				break;
+			case A_MODE_FUEGO_BOOK:
+				
+				msg = "Assistant Mode: Opening book";
+				draw_text(-0.97f,0.92f, GREEN_COLOR, msg);
+				break;
+			case A_MODE_TERRITORY:
+				msg = "Assistant Mode: Territory Estimation";
+				draw_text(-0.97f,0.92f, GREEN_COLOR, msg);
+				break;
 		}
 		
 
@@ -424,9 +456,12 @@ void ARGraphicController::keyFunc(unsigned char key, int x, int y)
 			case A_MODE_NONE:
 				break;
 			case A_MODE_FUEGO_BOOK:
+
 				fuego->getBookPositions();
 				break;
-
+			case A_MODE_TERRITORY:
+				fuego->estimateTerritory(board->getMoveTurnColor());
+				break;
 		}
 		
 		break;
@@ -434,14 +469,8 @@ void ARGraphicController::keyFunc(unsigned char key, int x, int y)
 		d.changePostMethod();
 		break;
 	case 't':
-		cv::Mat r;
-		cv::Rodrigues(d.GoBoardRaux, r);
-		std::cout<<r<<std::endl;
 		//d.GoBoardTaux.convertTo(Tvec ,CV_32F);
 		break;
-	
-
-
   
 	}
 }

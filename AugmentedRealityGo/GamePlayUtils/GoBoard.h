@@ -18,7 +18,8 @@ public:
 	GoBoard(FuegoAssistant* f);
 	//void clearBoard();
 	bool checkNewBoardState(char newRealBoardStones[361], char newMoveColor);
-	
+	void changeTurn();
+	int getMoveTurnColor();
     void addVirtualStone(std::string move, std::string color);
 	void addRealStone(int stone_index, int color);
 	std::string getNewMove();
@@ -30,7 +31,7 @@ public:
 
 	static FuegoAssistant* fuego;
 private:
-
+	int currentMoveColor;
 	
 	
 };

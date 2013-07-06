@@ -20,8 +20,8 @@
 //assistant mode
 const int A_MODE_NONE		=0;
 const int A_MODE_FUEGO_BOOK	=1;
-#define A_MODE_TERRITORY	2;
-#define NUMBER_OF_A_MODE 2;
+const int A_MODE_TERRITORY	=2;
+#define NUMBER_OF_A_MODE 3;
 
 #define M_PI 3.1415926
 

@@ -98,7 +98,7 @@ void ARGoController::startAR()
 		}else if(command == "boardsize"){
 
 		}else if(command == "clear_board"){
-			//board.clear_board();
+			board.clear_board();
 		}else if(command == "komi"){
 
 		}else if(command == "play"){

@@ -9,7 +9,7 @@ GoBoard::GoBoard(FuegoAssistant* f)
 		realStones[i] = 2;
 		wrongRealStones[i] = 2;
 	}
-	
+	currentMoveColor = COLOR_WHITE;
 }
 
 void GoBoard::clear_board()
@@ -22,9 +22,21 @@ void GoBoard::clear_board()
 	}
 	//clear fuego state too
 	fuego->clear_board();
-	
+	currentMoveColor = COLOR_WHITE;
 }
 
+int GoBoard::getMoveTurnColor()
+{
+	return currentMoveColor;
+}
+void GoBoard::changeTurn()
+{
+	if(currentMoveColor == COLOR_WHITE)
+		currentMoveColor = COLOR_BLACK;
+	else if(currentMoveColor == COLOR_BLACK)
+		currentMoveColor = COLOR_WHITE;
+
+}
 
 void GoBoard::addVirtualStone(std::string move, std::string color)
 {
@@ -35,6 +47,7 @@ void GoBoard::addVirtualStone(std::string move, std::string color)
 	else if(color =="white"|| color =="w")
 		virtualStones[stone_index] = COLOR_WHITE;
 	fuego->addMove(move, convert_string_color(color));
+	changeTurn();
 }
 
 void GoBoard::addRealStone(int stone_index, int color){
@@ -42,7 +55,7 @@ void GoBoard::addRealStone(int stone_index, int color){
 	realStones[stone_index] = color;
 
 	fuego->addMove(convert_index_move(stone_index), color);
-
+	changeTurn();
 }
 
 
