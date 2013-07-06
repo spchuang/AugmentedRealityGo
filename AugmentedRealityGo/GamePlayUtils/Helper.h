@@ -57,6 +57,7 @@ static unsigned int split(const std::string &txt, std::vector<std::string> &strs
 
     // Decompose statement
     while( pos != std::string::npos ) {
+		std::cout<<"substr: "<< txt.substr( initialPos, pos - initialPos + 1 ) <<std::endl;
         strs.push_back( txt.substr( initialPos, pos - initialPos + 1 ) );
         initialPos = pos + 1;
 

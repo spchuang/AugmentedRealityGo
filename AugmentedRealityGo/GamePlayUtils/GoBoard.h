@@ -28,7 +28,7 @@ public:
 	volatile char virtualStones[361];
 	volatile char wrongRealStones[361];
 	volatile int newMoveIndex;
-
+	static bool newMoveIsMade;
 	static FuegoAssistant* fuego;
 private:
 	int currentMoveColor;

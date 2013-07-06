@@ -33,6 +33,7 @@ public:
 	//public variables
 	static std::vector<int> bookMoves;
 	static std::vector<float> estimateScore;
+	
 private:
 
 	static boost::process::child c;

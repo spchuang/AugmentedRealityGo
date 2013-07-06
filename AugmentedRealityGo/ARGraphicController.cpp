@@ -353,6 +353,25 @@ void ARGraphicController::gl_idle_func()
 		
 		//release frame data
 		frameImg = cv::Mat();
+
+
+		if(board->newMoveIsMade)
+		{
+			switch(assistant_mode){
+				case A_MODE_NONE:
+					break;
+				case A_MODE_FUEGO_BOOK:
+
+					fuego->getBookPositions();
+					break;
+				case A_MODE_TERRITORY:
+					fuego->estimateTerritory(board->getMoveTurnColor());
+					break;
+			}
+			board->newMoveIsMade = false;
+		}
+
+
 		glutPostRedisplay();
 	}else
        Sleep(1);  // don't be a CPU hog 

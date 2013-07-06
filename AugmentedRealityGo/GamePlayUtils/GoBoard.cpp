@@ -1,6 +1,7 @@
 #include "GoBoard.h"
 
 FuegoAssistant* GoBoard::fuego;
+bool GoBoard::newMoveIsMade;
 GoBoard::GoBoard(FuegoAssistant* f)
 {
 	fuego = f;
@@ -10,6 +11,7 @@ GoBoard::GoBoard(FuegoAssistant* f)
 		wrongRealStones[i] = 2;
 	}
 	currentMoveColor = COLOR_WHITE;
+	newMoveIsMade = false;
 }
 
 void GoBoard::clear_board()
@@ -35,7 +37,7 @@ void GoBoard::changeTurn()
 		currentMoveColor = COLOR_BLACK;
 	else if(currentMoveColor == COLOR_BLACK)
 		currentMoveColor = COLOR_WHITE;
-
+	newMoveIsMade = true;
 }
 
 void GoBoard::addVirtualStone(std::string move, std::string color)

@@ -36,6 +36,7 @@ FuegoAssistant::FuegoAssistant()
 
 	setTerritoryParam = false;
 	prevMove = "none";
+	
 	for(int i=0; i<19*19; i++)
 	{
 		estimateScore.push_back(0);
@@ -124,11 +125,13 @@ bool FuegoAssistant::estimateTerritory(int color)
 		getline(readFromFuego, readLine);
 
 		cout<<"return: "<<endl<<readLine<<endl<<"END"<<endl;
+		cout <<"is this okay?"<<endl;
 		split(readLine, l, ' ');
+
 		cout <<"size: "<< l.size()<<endl;
-		for(int j=0; j<l.size(); j++)
+		for(int z=0; z<l.size(); z++)
 		{
-			cout <<j << " : " << l[j] <<endl;
+			cout <<z << " : " << l[z] <<endl;
 
 		}
 		
@@ -163,7 +166,8 @@ void FuegoAssistant::addMove(std::string move, int color){
 		getline(readFromFuego, readLine);
 	}while(readLine[0]!='=');
 	
-	getBookPositions();
+
+	//getBookPositions();
 }
 
 bool FuegoAssistant::getBookPositions()
