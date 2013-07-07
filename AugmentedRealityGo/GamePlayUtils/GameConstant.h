@@ -18,10 +18,21 @@
 #define ERROR_NEW_MOVE_WRONG_COLOR		4
 
 //assistant mode
-const int A_MODE_NONE		=0;
-const int A_MODE_FUEGO_BOOK	=1;
-const int A_MODE_TERRITORY	=2;
-#define NUMBER_OF_A_MODE 3;
+namespace ASSISTANT_MODE{
+	typedef enum
+	{
+	   NONE,
+	   FUEGO_BOOK,
+	   TERRITORY
+	} MODE_NUMBER;
+	//const int NONE			=0;
+	//const int FUEGO_BOOK	=1;
+	//const int TERRITORY		=2;
+	const int NUMBER		=3;
+
+}
+
+
 
 #define M_PI 3.1415926
 

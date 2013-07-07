@@ -78,6 +78,7 @@
     <ClCompile Include="ARGoController.cpp" />
     <ClCompile Include="ARGraphicController.cpp" />
     <ClCompile Include="GamePlayUtils\FuegoAssistant.cpp" />
+    <ClCompile Include="GamePlayUtils\GoAssistantController.cpp" />
     <ClCompile Include="GoARdrawingutils.cpp" />
     <ClCompile Include="BoardTracking\GoBoardDetector.cpp" />
     <ClCompile Include="GamePlayUtils\GoBoard.cpp" />
@@ -100,6 +101,7 @@
   <ItemGroup>
     <ClInclude Include="ARGoController.h" />
     <ClInclude Include="ARGraphicController.h" />
+    <ClInclude Include="GamePlayUtils\GoAssistantController.h" />
     <ClInclude Include="GamePlayUtils\FuegoAssistant.h" />
     <ClInclude Include="GamePlayUtils\GameConstant.h" />
     <ClInclude Include="GamePlayUtils\Helper.h" />

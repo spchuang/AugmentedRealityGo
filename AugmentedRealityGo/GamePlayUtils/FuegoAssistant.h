@@ -29,8 +29,8 @@ public:
 	
 	void addMove(std::string move, int color);
 	void showBoard();
-	void sendCommandWithEmptyResponse(std::string command);
-	//public variables
+	bool sendCommandWithEmptyResponse(std::string command, std::string& readLine);
+
 	static std::vector<int> bookMoves;
 	static std::vector<float> estimateScore;
 	
@@ -38,8 +38,8 @@ private:
 
 	static boost::process::child c;
 	bool setTerritoryParam;
-	std::string prevMove;
 	bool bookLoaded;
+	
 };
 	
 #endif

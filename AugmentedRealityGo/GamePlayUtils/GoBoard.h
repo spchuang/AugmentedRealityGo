@@ -15,24 +15,34 @@
 class GoBoard
 {
 public:
-	GoBoard(FuegoAssistant* f);
+	GoBoard();
 	//void clearBoard();
+	void setFuego(FuegoAssistant* f);
 	bool checkNewBoardState(char newRealBoardStones[361], char newMoveColor);
+	
+	
+	//clear board
+	void clear_board();
+
+	//add stones
 	void changeTurn();
-	int getMoveTurnColor();
     void addVirtualStone(std::string move, std::string color);
 	void addRealStone(int stone_index, int color);
+
+	//return the color of current turn
+	int getMoveTurnColor();
+
 	std::string getNewMove();
-	void clear_board();
+	
 	volatile char realStones[361];
 	volatile char virtualStones[361];
 	volatile char wrongRealStones[361];
 	volatile int newMoveIndex;
 	static bool newMoveIsMade;
-	static FuegoAssistant* fuego;
+	
 private:
 	int currentMoveColor;
-	
+	FuegoAssistant* fuego;
 	
 };
 	

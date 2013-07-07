@@ -1,3 +1,6 @@
+7/7/13
+- fixed territory counting bug
+- make assistance threaded
 
 7/4/13
 - add freeglut (instead of original glut) to display text

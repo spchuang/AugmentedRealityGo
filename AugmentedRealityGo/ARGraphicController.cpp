@@ -26,12 +26,12 @@ GLfloat light_specular[4] = {1.0f,1.0f,1.0f,1.0f};
 GLfloat light_position[4]= {1.0f,1.0f,1.0f,0.0f};  /* Infinite light location. */
 
 float intrinsic_array[3][3]=
-	{{836.4486992622585, 0, 323.0858931708451},
-	{0, 826.8277262586329, 213.3817272250332},
-	{0, 0, 1}};
+	{{836.4486992622585f, 0.0f, 323.0858931708451f},
+	{0.0f, 826.8277262586329f, 213.3817272250332f},
+	{0.0f, 0.0f, 1.0f}};
 
 float distCoeffs_array[5] =
-	{-0.001934653862378617, -0.01807873574764167, -0.004907823919307007, 0.001827540747833625, 0.1252985971583606};
+	{-0.001934653862378617f, -0.01807873574764167f, -0.004907823919307007f, 0.001827540747833625f, 0.1252985971583606f};
 
 cv::Mat intrinsic = cv::Mat(3, 3, CV_32FC1, &intrinsic_array);
 cv::Mat distCoeffs = cv::Mat(5, 1, CV_32FC1, &distCoeffs_array);
@@ -50,9 +50,9 @@ volatile int ARGraphicController::newMoveColor;
 int ARGraphicController::assistant_mode;
 
 GoBoard* ARGraphicController::board;
-FuegoAssistant* ARGraphicController::fuego;
+GoAssistantController* ARGraphicController::goAssistant;
 
-ARGraphicController::ARGraphicController(int sw, int sh, GoBoard* b, FuegoAssistant* f)
+ARGraphicController::ARGraphicController(int sw, int sh, GoBoard* b, GoAssistantController* ass)
 {
 	textureID = -1;
 	detectedBoard = false;
@@ -66,9 +66,9 @@ ARGraphicController::ARGraphicController(int sw, int sh, GoBoard* b, FuegoAssist
 	genMove = false;
 
 	board = b;
-	fuego = f;
+	goAssistant = ass;
 
-	assistant_mode = A_MODE_NONE;
+	assistant_mode = ASSISTANT_MODE::NONE;
 }
 
 ARGraphicController::~ARGraphicController()
@@ -179,7 +179,7 @@ void ARGraphicController::drawBoard()
 							-Tvec(0) -0.053 , -Tvec(1) , -Tvec(2), 1.0f};
 		glLoadMatrixd(post_m);
 		float p[]={0,0,0};
-		drawGoStone(0.01,0.01,0.01,2,2,p,0);
+		drawGoStone(0.01f,0.01f,0.01f,2,2,p,0);
 		for(size_t i=4; i<d.Board3DPoint.size();i++)
 		{
 			
@@ -191,6 +191,7 @@ void ARGraphicController::drawBoard()
 			else if(board->virtualStones[i-4] == 1)
 				drawGoStone(0.055f,0.045f,0.026f,14,14,p,1);
 			
+			//display error showing there are wrong board state
 			/*
 			if(board->wrongRealStones[i-4]!=0)
 			{
@@ -198,43 +199,45 @@ void ARGraphicController::drawBoard()
 			}*/
 		}
 		size_t s;
-		switch(assistant_mode)
-		{
-			case A_MODE_NONE:
-				break;
-			case A_MODE_FUEGO_BOOK:
-				s = (fuego->bookMoves).size();
-				for(size_t i=0; i<s; i++)
-				{
-					int index = fuego->bookMoves[i];
-					float p[]={-d.Board3DPoint[index+4].x ,-d.Board3DPoint[index+4].y,-d.Board3DPoint[index+4].z};
-					if(i==0)
-						DrawPoint(p,7, HALF_TRAN_BLUE_COLOR);
-					else
-						DrawPoint(p,7, HALF_TRAN_GREEN_COLOR);
-				}
-				break;
-			case A_MODE_TERRITORY:
-				/*
-				s = (fuego->estimateScore).size();
-				for(size_t i=0; i<s; i++)
-				{
-					float score = fuego->estimateScore[i];
-					float p[]={-d.Board3DPoint[i+4].x ,-d.Board3DPoint[i+4].y,-d.Board3DPoint[i+4].z};
-					if(score<0)
-						DrawPoint(p, score*-10, HALF_TRAN_GREEN_COLOR);
-					else
-						DrawPoint(p, score*10, HALF_TRAN_GREEN_COLOR);
-				}*/
-				break;
+
+		//only show assistant if ...
+		if(assistant_mode == goAssistant->currentMode && !goAssistant->isProcessing){
+			switch(assistant_mode)
+			{
+				case ASSISTANT_MODE::NONE:
+					break;
+				case ASSISTANT_MODE::FUEGO_BOOK:
+
+					s = (goAssistant->FuegoBookMoves)->size();
+					for(size_t i=0; i<s; i++)
+					{
+						int index = (*goAssistant->FuegoBookMoves)[i];
+						float p[]={-d.Board3DPoint[index+4].x ,-d.Board3DPoint[index+4].y,-d.Board3DPoint[index+4].z};
+						if(i==0)
+							DrawPoint(p,7, HALF_TRAN_BLUE_COLOR);
+						else
+							DrawPoint(p,7, HALF_TRAN_GREEN_COLOR);
+					}
+					break;
+				case ASSISTANT_MODE::TERRITORY:
+				
+					s = (goAssistant->FuegoEstimateScore)->size();
+					for(size_t i=0; i<s; i++)
+					{
+						float score = (*goAssistant->FuegoEstimateScore)[i];
+						float p[]={-d.Board3DPoint[i+4].x ,-d.Board3DPoint[i+4].y,-d.Board3DPoint[i+4].z};
+						if(score<0)
+							DrawPoint(p, score*-18, HALF_TRAN_BLUE_COLOR);
+						else
+							DrawPoint(p, score*18, HALF_TRAN_GREEN_COLOR);
+					}
+					break;
+
+			}
 
 		}
-		//int i=22;
-		//float p[]={-d.Board3DPoint_GL[i].x,-d.Board3DPoint_GL[i].y,-d.Board3DPoint_GL[i].z};
-		//drawGoStone(0.05,0.04,0.023,10,10,p,1);
-	
-		//drawGoStone(0.06,0.11,0.023,50,50,p,1);
-		//draw cooridnate
+
+		
 
 
 		drawCoordinateAxis();
@@ -294,19 +297,25 @@ void ARGraphicController::RenderSceneCB()
 		//print assistant mode
 		switch(assistant_mode)
 		{
-			case A_MODE_NONE:
+			case ASSISTANT_MODE::NONE:
 				msg = "Assistant Mode: No";
 				draw_text(-0.97f,0.92f, GREEN_COLOR, msg);
 				break;
-			case A_MODE_FUEGO_BOOK:
+			case ASSISTANT_MODE::FUEGO_BOOK:
+				if(goAssistant->isProcessing)
+					msg = "Assistant Mode: Opening book ...";
+				else 
+					msg = "Assistant Mode: Opening book";
+				draw_text(-0.97f,0.92f, GREEN_COLOR, msg);
+				break;
+			case ASSISTANT_MODE::TERRITORY:
+				if(goAssistant->isProcessing)
+					msg = "Assistant Mode: Territory Estimation ...";
+				else 
+					msg = "Assistant Mode: Territory Estimation";
+				draw_text(-0.97f,0.92f, GREEN_COLOR, msg);
+				break;
 				
-				msg = "Assistant Mode: Opening book";
-				draw_text(-0.97f,0.92f, GREEN_COLOR, msg);
-				break;
-			case A_MODE_TERRITORY:
-				msg = "Assistant Mode: Territory Estimation";
-				draw_text(-0.97f,0.92f, GREEN_COLOR, msg);
-				break;
 		}
 		
 
@@ -354,23 +363,11 @@ void ARGraphicController::gl_idle_func()
 		//release frame data
 		frameImg = cv::Mat();
 
-
 		if(board->newMoveIsMade)
 		{
-			switch(assistant_mode){
-				case A_MODE_NONE:
-					break;
-				case A_MODE_FUEGO_BOOK:
-
-					fuego->getBookPositions();
-					break;
-				case A_MODE_TERRITORY:
-					fuego->estimateTerritory(board->getMoveTurnColor());
-					break;
-			}
+			goAssistant->pushAssistantMode(assistant_mode);
 			board->newMoveIsMade = false;
 		}
-
 
 		glutPostRedisplay();
 	}else
@@ -424,7 +421,7 @@ void ARGraphicController::keyFunc(unsigned char key, int x, int y)
 		_exit (0);
         break;
     case 's': 
-		fuego->showBoard();
+		//fuego->showBoard();
 	
 		break;
 	case 'r':
@@ -469,20 +466,9 @@ void ARGraphicController::keyFunc(unsigned char key, int x, int y)
 		}
 		break;
 	case 'a':
-		assistant_mode = (assistant_mode+1)%NUMBER_OF_A_MODE;
-		switch(assistant_mode)
-		{
-			case A_MODE_NONE:
-				break;
-			case A_MODE_FUEGO_BOOK:
-
-				fuego->getBookPositions();
-				break;
-			case A_MODE_TERRITORY:
-				fuego->estimateTerritory(board->getMoveTurnColor());
-				break;
-		}
-		
+		assistant_mode = (assistant_mode+1)%ASSISTANT_MODE::NUMBER;
+		//push the assistant request in queue
+		goAssistant->pushAssistantMode(assistant_mode);
 		break;
 	case 'p':
 		d.changePostMethod();

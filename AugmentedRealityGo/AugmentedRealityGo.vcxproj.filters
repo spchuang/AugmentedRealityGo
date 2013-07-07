@@ -54,6 +54,9 @@
     <ClCompile Include="GamePlayUtils\FuegoAssistant.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GamePlayUtils\GoAssistantController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram1.cd" />
@@ -104,6 +107,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GamePlayUtils\Helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GamePlayUtils\GoAssistantController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

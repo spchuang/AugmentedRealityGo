@@ -12,10 +12,11 @@
 
 #include "ARGraphicController.h"
 #include "GamePlayUtils/GoBoard.h"
-#include "GamePlayUtils/FuegoAssistant.h"
+#include "GamePlayUtils/GoAssistantController.h"
+
 
 /**
-	control the game status, methods switch, ar and vision 
+	Main Controller: control the game state, methods switch for ar graphics/vision and assistance
 */
 
 class ARGoController
@@ -23,14 +24,23 @@ class ARGoController
 public:
 	ARGoController(int sw, int sh);
 	~ARGoController();
+
+	//The main loop of this app. It spawns the threads to run openGL and goAssistance then it enters a loop to read
+	//GTP commands from stdin/stdout
 	void startAR();
   
 private:
 
+	//thread running openGL and openCV
 	ARGraphicController graphic_controller;
 	boost::thread* graphic_handler;
+
+	//thread running Assistant controller
+	GoAssistantController assistant_controller;
+	boost::thread* assistant_handler;
+
+	//board state 
 	static GoBoard board;
-	static FuegoAssistant fuego;
 
 };
 	

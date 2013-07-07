@@ -35,38 +35,44 @@ FuegoAssistant::FuegoAssistant()
 	//set the territory statistic flag in fuego
 
 	setTerritoryParam = false;
-	prevMove = "none";
 	
 	for(int i=0; i<19*19; i++)
 	{
 		estimateScore.push_back(0);
 	}
+	bookLoaded = true;
 
 }
 
 FuegoAssistant::~FuegoAssistant()
 {
-	cout<<"terminate"<<endl;
+	fprintf(stderr, "[FuegoAssistant]terminate\n");
 	terminate(c);
 
 
 }
 void FuegoAssistant::clear_board()
 {
-	sendCommandWithEmptyResponse("clear_board");
+	string readLine;
+	sendCommandWithEmptyResponse("clear_board", readLine);
 
 }
-void FuegoAssistant::sendCommandWithEmptyResponse(string command)
+bool FuegoAssistant::sendCommandWithEmptyResponse(string command, string& readLine)
 {
 	writeToFuego << command<<endl;
 	writeToFuego.flush();
 
-	string readLine;
 	do{
 		getline(readFromFuego, readLine);
 
-	}while(readLine[0]!='=');
-	cout <<command<<endl<<readLine<<endl;
+	}while(readLine[0]!='=' && readLine[0]!='?');
+
+	if(readLine[0] == '?'){
+		return false;
+	}
+
+	fprintf(stderr, "[FuegoAssistant]%s\n[FuegoAssistant]%s\n\n", command.c_str(), readLine.c_str());
+	return true;
 }
 
 bool FuegoAssistant::estimateTerritory(int color)
@@ -75,14 +81,14 @@ bool FuegoAssistant::estimateTerritory(int color)
 	string readLine;
 	//uct_param_globalsearch territory_statistics 1
 	if(!setTerritoryParam){
-		sendCommandWithEmptyResponse("uct_param_globalsearch territory_statistics 1");
+		sendCommandWithEmptyResponse("uct_param_globalsearch territory_statistics 1", readLine);
 		setTerritoryParam = true;
 	}
 
 	//the problem here is that i need to generate a move from fuego first before i can see the territory stats
 	//first, disable tree search (node threhold normally = 3)
 	//uct_param_search expand_threshold 10000000   
-	sendCommandWithEmptyResponse("uct_param_search expand_threshold 10000000");
+	sendCommandWithEmptyResponse("uct_param_search expand_threshold 10000000", readLine);
 	
 	//if there are book moves, should probably disable book first
 	command = "book_moves";
@@ -92,27 +98,21 @@ bool FuegoAssistant::estimateTerritory(int color)
 		getline(readFromFuego, readLine);
 	}while(readLine[0]!='=');	
 	vector<string> l;
-	if(split(readLine, l, ' ') >1)
+	if(helper::split(readLine, l, ' ') >1)
 	{
 		//needs to remove book
-		sendCommandWithEmptyResponse("book_clear");
+		sendCommandWithEmptyResponse("book_clear", readLine);
+		bookLoaded =false;
 	}
 
 	//generate a fake move from fuego
-	sendCommandWithEmptyResponse(string("genmove ")+ convert_int_color(color));
+	sendCommandWithEmptyResponse(string("genmove ")+ helper::convert_int_color(color), readLine);
 	//undo the move
-	sendCommandWithEmptyResponse("undo");
-	//get territory stats
-	command = "uct_stat_territory";
-	writeToFuego << command<<endl;
-	writeToFuego.flush();
-	do{
-		getline(readFromFuego, readLine);
+	sendCommandWithEmptyResponse("undo", readLine);
 
-	}while(readLine[0]!='=' && readLine[0]!='?');
-	
-	if(readLine[0] == '?'){
-		cout <<"something is wrong probably cuz fuego uses forced opening moves"<<endl;
+	//get territory stats
+	if(!sendCommandWithEmptyResponse("uct_stat_territory", readLine)){
+		fprintf(stderr, "[FuegoAssistant]something is wrong probably cuz fuego uses forced opening moves\n");
 		for(int i=0; i<19*19; i++){
 			estimateScore[i] = 0;
 		}
@@ -120,33 +120,33 @@ bool FuegoAssistant::estimateTerritory(int color)
 	}
 
 	
-	//the line after?
-
+	//save the result
+	for(int i=18; i>=0; i--){
 		getline(readFromFuego, readLine);
 
-		cout<<"return: "<<endl<<readLine<<endl<<"END"<<endl;
-		cout <<"is this okay?"<<endl;
-		split(readLine, l, ' ');
+		//cout<<"return: "<<endl<<readLine<<endl<<"END"<<endl;
+		//cout <<"is this okay?"<<endl;
+		helper::split(readLine, l, ' ');
 
-		cout <<"size: "<< l.size()<<endl;
+		int j=0;
 		for(int z=0; z<l.size(); z++)
 		{
-			cout <<z << " : " << l[z] <<endl;
+			if(l[z][0] != ' '){
+				estimateScore[i*19+j] = ::atof(l[z].c_str());
+				j++;
+			}
 
 		}
-		
+	}	
 
-	
-	
+	//load the book back
+	if(!bookLoaded){
+		command = "book_load  \"Fuego\\book.dat\"";
+		if(!sendCommandWithEmptyResponse(command, readLine)){
+			fprintf(stderr, "[FuegoAssistant]%s\n\n", readLine);
 
-
-	//cout<<endl<<endl<<readLine<<endl<<endl;
-	
-	
-	
-
-
-	
+		}
+	}
 	return true;
 
 }
@@ -192,17 +192,16 @@ bool FuegoAssistant::getBookPositions()
 	vector<string> l;
 	//parse first line
 	transform(first_line.begin(), first_line.end(), first_line.begin(), ::tolower);
-	if(split(first_line, l, ' ') <4)
+	if(helper::split(first_line, l, ' ') <4)
 		return false;
 	
-	bookMoves.push_back(convert_string_move(l[3]));
+	bookMoves.push_back(helper::convert_string_move(l[3]));
 
 	//parse second line
 	transform(second_line.begin(), second_line.end(), second_line.begin(), ::tolower);
-	if(split(second_line, l, ' ') >=3){
+	if(helper::split(second_line, l, ' ') >=3){
 		for(size_t i=2; i<l.size(); i++){
-			//cout<<l[i] <<" : "<<convert_string_move(l[i])<<endl;
-			bookMoves.push_back(convert_string_move(l[i]));
+			bookMoves.push_back(helper::convert_string_move(l[i]));
 		}
 	}
 
@@ -210,20 +209,21 @@ bool FuegoAssistant::getBookPositions()
 	
 	return true;
 }
+
+//not sure why i need this..
 void FuegoAssistant::genMove(string color)
 {
 	string command;
+	string readLine;
 	if(color == "black" || color =="b")
 		command = "genmove b";
 	else if(color =="white"|| color =="w")
 		command = "genmove w";
-	writeToFuego << command<<endl;
-	writeToFuego.flush();
 
-	std::string s;
-    std::getline(readFromFuego, s);
+	sendCommandWithEmptyResponse(command, readLine);
 
-	cout<<"return"<<endl<<s<<endl;
+
+	cout<<"return"<<endl<<readLine<<endl;
 }
 
 void FuegoAssistant::showBoard()
@@ -238,9 +238,11 @@ void FuegoAssistant::showBoard()
 		getline(readFromFuego, response);
 	}while(response[0]!='=');
 
+	fprintf(stderr, "[FuegoAssistant]Board State:\n");
 	for(int i=0; i<21;i++){
 		getline(readFromFuego, response);
-		cout <<response<<endl;
+		fprintf(stderr, "%s\n", response);
+
 	}
 
 

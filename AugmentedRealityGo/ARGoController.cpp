@@ -4,22 +4,25 @@
 #include <string>
 
 using namespace std;
-FuegoAssistant ARGoController::fuego = FuegoAssistant();
-GoBoard ARGoController::board = GoBoard(&fuego);
+//FuegoAssistant ARGoController::fuego = FuegoAssistant();
+GoBoard ARGoController::board = GoBoard();
 
 
 
 ARGoController::ARGoController(int sw, int sh)
-	:graphic_controller(sw, sh, &board, &fuego)
+	:assistant_controller(&board)
+	,graphic_controller(sw, sh, &board, &assistant_controller)
 {
 	
 	
 }
 ARGoController::~ARGoController()
 {
-	
-	
+	delete graphic_handler;
+	delete assistant_handler;
+	fprintf(stderr, "ARGoController destructed\n");
 
+	
 }
 vector<string> parse_command(string command)
 {
@@ -47,24 +50,21 @@ vector<string> parse_command(string command)
 
 void ARGoController::startAR()
 {
-	//graphic_controller.test = 0;
+	//spawn thread for graphic controller
 	char *argv [1];
 	int argc=1;
 	argv [0]=_strdup ("ARGo");
 	graphic_handler = new boost::thread(boost::bind(&ARGraphicController::start, &graphic_controller, argc, argv));
+
+	//spawn thread for assistant controller
+	assistant_handler = new boost::thread(boost::bind(&GoAssistantController::AssistantMainLoop, &assistant_controller));
+
 	//boost::thread workerThread(workerFunc); 
 	//graphic_controller.start(argc,argv)
 	//graphic_controller.global_data = 0;
 	//read from cin
 	string command_line;
 
-	/*
-	while(1)
-	{
-		cout<<"in main control: a: "<<board.a<<endl;
-		
-		graphic_handler->timed_join(boost::posix_time::seconds(1));
-	}*/
 	while(1)
 	{
 		getline(cin, command_line);
@@ -74,8 +74,6 @@ void ARGoController::startAR()
 		vector<string> arguments = parse_command(command_line);
 		string command = arguments[0];
 		
-		//for(int i=0; i<arguments.size(); i++)
-		//	cout <<arguments[i] << endl;
 
 		string response = "= ";
 		
@@ -124,8 +122,6 @@ void ARGoController::startAR()
 					//cout << (int)graphic_controller.newMove[0] << " , " <<(int)graphic_controller.newMove[1] <<endl;
 					
 					response+= board.getNewMove();
-					//graphic_controller.newMove[0] = -1;
-					//graphic_controller.newMove[1] = -1;
 					break;
 				}
 				
