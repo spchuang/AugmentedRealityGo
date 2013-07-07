@@ -52,6 +52,11 @@ int ARGraphicController::assistant_mode;
 GoBoard* ARGraphicController::board;
 GoAssistantController* ARGraphicController::goAssistant;
 
+//loading msg animation
+int ARGraphicController::loadingMsg;
+int currentMsgTime =0;
+int prevMsgTime =0 ;
+
 ARGraphicController::ARGraphicController(int sw, int sh, GoBoard* b, GoAssistantController* ass)
 {
 	textureID = -1;
@@ -69,6 +74,7 @@ ARGraphicController::ARGraphicController(int sw, int sh, GoBoard* b, GoAssistant
 	goAssistant = ass;
 
 	assistant_mode = ASSISTANT_MODE::NONE;
+	loadingMsg = 0;
 }
 
 ARGraphicController::~ARGraphicController()
@@ -124,6 +130,20 @@ void ARGraphicController::calculateFPS()
         //  Reset frame count
         frameCount = 0;
     }
+
+
+	//also use this to calculate the loadign msg animation
+	//in terms of milliseconds
+	currentMsgTime = glutGet(GLUT_ELAPSED_TIME);
+	if( (currentMsgTime - prevMsgTime)/300 >0){
+
+		prevMsgTime = currentMsgTime;
+		loadingMsg = (loadingMsg+1)%4;
+	}
+
+
+	
+	
 }
 
 void ARGraphicController::drawBackGround()
@@ -294,6 +314,9 @@ void ARGraphicController::RenderSceneCB()
 			draw_circle(-0.95f,-0.93f,0.05f, RED_COLOR );
 		}
 
+		std::string loadingString = "";
+		for(int i=0; i<loadingMsg; i++)
+			loadingString+=".";
 		//print assistant mode
 		switch(assistant_mode)
 		{
@@ -303,14 +326,14 @@ void ARGraphicController::RenderSceneCB()
 				break;
 			case ASSISTANT_MODE::FUEGO_BOOK:
 				if(goAssistant->isProcessing)
-					msg = "Assistant Mode: Opening book ...";
+					msg = "Assistant Mode: Opening book "+loadingString;
 				else 
 					msg = "Assistant Mode: Opening book";
 				draw_text(-0.97f,0.92f, GREEN_COLOR, msg);
 				break;
 			case ASSISTANT_MODE::TERRITORY:
 				if(goAssistant->isProcessing)
-					msg = "Assistant Mode: Territory Estimation ...";
+					msg = "Assistant Mode: Territory Estimation" + loadingString;
 				else 
 					msg = "Assistant Mode: Territory Estimation";
 				draw_text(-0.97f,0.92f, GREEN_COLOR, msg);

@@ -52,7 +52,7 @@ public:
 	static GoAssistantController* goAssistant;
 	
 private:
-	
+	static int loadingMsg;
 	static volatile int newMoveColor;
 	int screen_width, screen_height;
 	static int assistant_mode;

@@ -139,14 +139,7 @@ bool FuegoAssistant::estimateTerritory(int color)
 		}
 	}	
 
-	//load the book back
-	if(!bookLoaded){
-		command = "book_load  \"Fuego\\book.dat\"";
-		if(!sendCommandWithEmptyResponse(command, readLine)){
-			fprintf(stderr, "[FuegoAssistant]%s\n\n", readLine);
-
-		}
-	}
+	
 	return true;
 
 }
@@ -172,7 +165,18 @@ void FuegoAssistant::addMove(std::string move, int color){
 
 bool FuegoAssistant::getBookPositions()
 {
-	string command = "book_position";
+	string command;
+	string readLine;
+	//load the book back
+	if(!bookLoaded){
+		command = "book_load  \"Fuego\\book.dat\"";
+		if(!sendCommandWithEmptyResponse(command, readLine)){
+			fprintf(stderr, "[FuegoAssistant]%s\n\n", readLine);
+
+		}
+	}
+
+	command = "book_position";
 	writeToFuego << command<<endl;
 	writeToFuego.flush();
 
