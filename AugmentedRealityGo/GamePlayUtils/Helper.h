@@ -14,6 +14,7 @@ namespace helper
 	//convert string move (ex. A1) to index for board (ex. 0)
 	static int convert_string_move(const std::string move)
 	{
+		
 		int x = (int)(move[0]-'a');
 		if(x>8)
 			x--;
@@ -91,6 +92,17 @@ namespace helper
 		strs.push_back( txt.substr( initialPos,(std::min)( pos, txt.size() ) - initialPos + 1 ) );
 
 		return strs.size();
+	}
+
+	static std::string trim(std::string str)
+	{
+		//trim input
+		char const* whiteSpace = " \t\r";
+		size_t pos = str.find_first_not_of(whiteSpace);
+		str.erase(0, pos);
+		pos = str.find_last_not_of(whiteSpace);
+		str.erase(pos + 1); 
+		return str;
 	}
 }
 

@@ -39,6 +39,9 @@ public:
 	volatile char wrongRealStones[361];
 	volatile int newMoveIndex;
 	static bool newMoveIsMade;
+
+	std::vector<int> bStones;
+	std::vector<int> wStones;
 	
 private:
 	int currentMoveColor;

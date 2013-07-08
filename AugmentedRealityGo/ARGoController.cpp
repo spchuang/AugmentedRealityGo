@@ -28,10 +28,7 @@ vector<string> parse_command(string command)
 {
 	//trim input
 	char const* whiteSpace = " \t\r";
-	size_t pos = command.find_first_not_of(whiteSpace);
-	command.erase(0, pos);
-	pos = command.find_last_not_of(whiteSpace);
-	command.erase(pos + 1); 
+	command = helper::trim(command);
 
 	size_t p =0;
 	vector<string> arguments;

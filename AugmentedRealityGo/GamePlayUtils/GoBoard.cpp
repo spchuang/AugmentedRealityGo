@@ -4,12 +4,14 @@ bool GoBoard::newMoveIsMade;
 GoBoard::GoBoard()
 {
 	for(int i=0; i<19*19; i++){
-		virtualStones[i] = 2;
-		realStones[i] = 2;
-		wrongRealStones[i] = 2;
+		virtualStones[i] = COLOR_NONE;
+		realStones[i] = COLOR_NONE;
+		wrongRealStones[i] = NO_WRONG_MOVE;
 	}
 	currentMoveColor = COLOR_BLACK;
 	newMoveIsMade = false;
+	bStones.clear();
+	wStones.clear();
 }
 
 void GoBoard::setFuego(FuegoAssistant* f)
@@ -23,13 +25,15 @@ void GoBoard::clear_board()
 {
 	
 	for(int i=0; i<19*19; i++){
-		virtualStones[i] = 2;
-		realStones[i] = 2;
-		wrongRealStones[i] = 2;
+		virtualStones[i] = COLOR_NONE;
+		realStones[i] = COLOR_NONE;
+		wrongRealStones[i] = NO_WRONG_MOVE;
 	}
 	//clear fuego state too
 	fuego->clear_board();
 	currentMoveColor = COLOR_WHITE;
+	bStones.clear();
+	wStones.clear();
 }
 
 int GoBoard::getMoveTurnColor()
@@ -43,20 +47,85 @@ void GoBoard::changeTurn()
 	else if(currentMoveColor == COLOR_BLACK)
 		currentMoveColor = COLOR_WHITE;
 	newMoveIsMade = true;
+
+	//get fuego board state
+	std::vector<int> bs, ws;
+	fuego->boardState(bs,ws);
+
+	std::vector<int> removeStones;
+
+	if(bStones.size() > bs.size()){
+		//compare the list of black and white moves
+		for(int i=0; i<bStones.size(); i++){
+			bool exists = false;
+			for(int j=0; j<bs.size(); j++){
+				if(bStones[i] == bs[j]){
+					exists = true;
+					break;
+				}
+			}
+			//this black stone should be removed
+			if(!exists){
+				removeStones.push_back(bStones[i]);
+			}
+		}
+	}
+	if(wStones.size() > ws.size()){
+		std::cout<<"check white.."<<std::endl;
+		for(int i=0; i<wStones.size(); i++){
+			bool exists = false;
+			for(int j=0; j<ws.size(); j++){
+				if(wStones[i] == ws[j]){
+					exists = true;
+					break;
+				}
+			}
+			//this black stone should be removed
+			if(!exists){
+				removeStones.push_back(wStones[i]);
+			}
+		}
+	}
+	
+	//remove the stones
+	for(int i=0; i<removeStones.size(); i++){
+		int removeIndex = removeStones[i];
+		if(virtualStones[removeIndex]!= COLOR_NONE){
+			virtualStones[removeIndex] = COLOR_NONE;
+		}else{
+			//if the real stone should be removed, put that index on the list
+			wrongRealStones[removeIndex] = ERROR_REMOVE_THIS_STONE;
+			realStones[removeIndex] = COLOR_NONE;
+
+		}
+	}
+
+	//update stones vectors
+	wStones = ws;
+	bStones = bs;
 }
+
+
 
 bool GoBoard::addVirtualStone(std::string move, std::string color)
 {
 	//check if this is valid move first
 	if(!fuego->addMove(move, helper::convert_string_color(color)))
 		return false;
+
+
 	int stone_index = helper::convert_string_move(move);
 	//std::cout<<"#add virtual stone at: "<<stone_index<<std::endl;
-	if(color == "black" || color =="b")
+	if(color == "black" || color =="b"){
 		virtualStones[stone_index] = COLOR_BLACK;
-	else if(color =="white"|| color =="w")
+		bStones.push_back(stone_index);
+	}else if(color =="white"|| color =="w"){
 		virtualStones[stone_index] = COLOR_WHITE;
+		wStones.push_back(stone_index);
+	}
 	
+
+
 	changeTurn();
 	return true;
 }
@@ -65,6 +134,11 @@ bool GoBoard::addRealStone(int stone_index, int color){
 	//check if this is valid move first
 	if(!fuego->addMove(helper::convert_index_move(stone_index), color))
 		return false;
+	if(color == COLOR_BLACK){
+		bStones.push_back(stone_index);
+	}else if(color == COLOR_WHITE){
+		wStones.push_back(stone_index);
+	}
 	realStones[stone_index] = color;
 	changeTurn();
 	return true;

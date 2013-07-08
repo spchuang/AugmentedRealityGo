@@ -89,6 +89,10 @@ bool FuegoAssistant::estimateTerritory(int color)
 	//first, disable tree search (node threhold normally = 3)
 	//uct_param_search expand_threshold 10000000   
 	sendCommandWithEmptyResponse("uct_param_search expand_threshold 10000000", readLine);
+
+	//disable forced player move
+	sendCommandWithEmptyResponse("uct_param_player forced_opening_moves 0", readLine);
+	
 	
 	//if there are book moves, should probably disable book first
 	command = "book_moves";
@@ -112,6 +116,7 @@ bool FuegoAssistant::estimateTerritory(int color)
 
 	//get territory stats
 	if(!sendCommandWithEmptyResponse("uct_stat_territory", readLine)){
+		//this problem should be fixed
 		fprintf(stderr, "[FuegoAssistant]something is wrong probably cuz fuego uses forced opening moves\n");
 		for(int i=0; i<19*19; i++){
 			estimateScore[i] = 0;
@@ -234,7 +239,62 @@ void FuegoAssistant::genMove(string color)
 
 	cout<<"return"<<endl<<readLine<<endl;
 }
+void FuegoAssistant::boardState(vector<int>& bStones, vector<int>& wStones)
+{
+	bStones.clear();
+	wStones.clear();
+	string command = "go_board";
+	string readLine;
+	sendCommandWithEmptyResponse(command, readLine);
+	//flush out 4 lines first
+	for(int i=0; i<4; i++){
+		getline(readFromFuego, readLine);
+	}
+	//read 5th and 6th which shows number of black and white stones
+	string firstWord;
+	do{
+		getline(readFromFuego, readLine);
+		//first word
+		firstWord = readLine.substr( 0, readLine.find( ' ' ) + 1 );
+	}while(firstWord!="AllBlack ");
+	transform(readLine.begin(), readLine.end(), readLine.begin(), ::tolower);
+	vector<string> l;
+	helper::split(readLine, l, ' ');
+	int n=0;
 
+	//for black stones
+	for(int i=0; i<l.size(); i++)
+	{
+		//discard space and carriage returns
+		if(l[i][0] != ' ' && l[i][0]!=(char)13){
+			if(n>1){
+				l[i] = helper::trim(l[i]);
+				bStones.push_back(helper::convert_string_move( l[i]));
+			}
+			n++;
+		}
+	}
+
+	//for white stones
+	getline(readFromFuego, readLine);
+	transform(readLine.begin(), readLine.end(), readLine.begin(), ::tolower);
+	helper::split(readLine, l, ' ');
+	n=0;
+	for(int i=0; i<l.size(); i++)
+	{
+		//discard space and carriage returns
+		if(l[i][0] != ' ' && l[i][0]!=(char)13){
+			if(n>1){
+				l[i] = helper::trim(l[i]);
+				wStones.push_back(helper::convert_string_move( l[i]));
+			}
+			n++;
+		}
+	}
+
+
+
+}
 void FuegoAssistant::showBoard()
 {
 	string command = "showboard";

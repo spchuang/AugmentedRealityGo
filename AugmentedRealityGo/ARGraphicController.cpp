@@ -244,9 +244,9 @@ void ARGraphicController::drawBoard()
 						int index = (*goAssistant->FuegoBookMoves)[i];
 						float p[]={d.Board3DPoint[index+4].x ,d.Board3DPoint[index+4].y,d.Board3DPoint[index+4].z};
 						if(i==0){
-							DrawSquare(p, 0.15, HALF_TRAN_BLUE_COLOR);
+							DrawSquare(p, 0.10, HALF_TRAN_BLUE_COLOR);
 						}else{
-							DrawSquare(p, 0.12, HALF_TRAN_GREEN_COLOR);
+							DrawSquare(p, 0.10, HALF_TRAN_GREEN_COLOR);
 						}
 					}
 					break;
@@ -370,6 +370,7 @@ void ARGraphicController::RenderSceneCB()
 			draw_circle(0.6f,0.93f,0.03f,WHITE_COLOR );
 		}
 		
+
 
 	glPopMatrix();
 	glMatrixMode( GL_MODELVIEW );
@@ -498,7 +499,7 @@ void ARGraphicController::keyFunc(unsigned char key, int x, int y)
 	
 		break;
 	case 'b':
-		d.saveBackGroundBoard();
+		//d.saveBackGroundBoard();
 		break;
 	case 'o':
 		//d.readStone(newMove);x

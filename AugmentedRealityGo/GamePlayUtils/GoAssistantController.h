@@ -14,6 +14,8 @@
 #include "FuegoAssistant.h"
 #include "GoBoard.h"
 
+//test
+#include <vector>
 class GoAssistantController
 {
 public:
