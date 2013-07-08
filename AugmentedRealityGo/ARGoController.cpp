@@ -100,10 +100,13 @@ void ARGoController::startAR()
 		}else if(command == "komi"){
 
 		}else if(command == "play"){
-			if(arguments.size() == 3)
-				board.addVirtualStone(arguments[2], arguments[1]);
-			else
+			if(arguments.size() == 3){
+				if(!board.addVirtualStone(arguments[2], arguments[1])){
+					response = "? invalid play move";
+				}
+			}else{
 				response = "? invalid play move";
+			}
 
 		}else if(command == "genmove"){
 			char color;

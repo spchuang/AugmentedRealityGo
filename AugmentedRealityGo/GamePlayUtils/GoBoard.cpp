@@ -45,24 +45,29 @@ void GoBoard::changeTurn()
 	newMoveIsMade = true;
 }
 
-void GoBoard::addVirtualStone(std::string move, std::string color)
+bool GoBoard::addVirtualStone(std::string move, std::string color)
 {
+	//check if this is valid move first
+	if(!fuego->addMove(move, helper::convert_string_color(color)))
+		return false;
 	int stone_index = helper::convert_string_move(move);
 	//std::cout<<"#add virtual stone at: "<<stone_index<<std::endl;
 	if(color == "black" || color =="b")
 		virtualStones[stone_index] = COLOR_BLACK;
 	else if(color =="white"|| color =="w")
 		virtualStones[stone_index] = COLOR_WHITE;
-	fuego->addMove(move, helper::convert_string_color(color));
+	
 	changeTurn();
+	return true;
 }
 
-void GoBoard::addRealStone(int stone_index, int color){
-
+bool GoBoard::addRealStone(int stone_index, int color){
+	//check if this is valid move first
+	if(!fuego->addMove(helper::convert_index_move(stone_index), color))
+		return false;
 	realStones[stone_index] = color;
-
-	fuego->addMove(helper::convert_index_move(stone_index), color);
 	changeTurn();
+	return true;
 }
 
 

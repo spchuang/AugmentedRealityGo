@@ -144,7 +144,7 @@ bool FuegoAssistant::estimateTerritory(int color)
 
 }
 
-void FuegoAssistant::addMove(std::string move, int color){
+bool FuegoAssistant::addMove(std::string move, int color){
 	//realStones[stone_index] = color;
 	string command;
 	if(color == COLOR_BLACK)
@@ -157,9 +157,13 @@ void FuegoAssistant::addMove(std::string move, int color){
 	string readLine;
 	do{
 		getline(readFromFuego, readLine);
-	}while(readLine[0]!='=');
-	
+	}while(readLine[0]!='=' && readLine[0]!='?');
 
+	if(readLine[0] == '?'){
+		return false;
+	}
+	
+	return true;
 	//getBookPositions();
 }
 

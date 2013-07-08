@@ -27,7 +27,7 @@ public:
 	void clear_board();
 	void genMove(std::string color);
 	
-	void addMove(std::string move, int color);
+	bool addMove(std::string move, int color);
 	void showBoard();
 	bool sendCommandWithEmptyResponse(std::string command, std::string& readLine);
 

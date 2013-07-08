@@ -485,8 +485,12 @@ void ARGraphicController::keyFunc(unsigned char key, int x, int y)
 
 			if(board->checkNewBoardState(newRealBoardStones, newMoveColor)){
 
-				board->addRealStone(board->newMoveIndex, newMoveColor);
-				genMove = false;
+				if(!board->addRealStone(board->newMoveIndex, newMoveColor)){
+					//not a valid move
+					fprintf(stderr, "ERROR: Invalid move\n");
+				}else{
+					genMove = false;
+				}
 			}
 
 			

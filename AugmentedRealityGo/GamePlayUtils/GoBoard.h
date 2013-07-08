@@ -26,8 +26,8 @@ public:
 
 	//add stones
 	void changeTurn();
-    void addVirtualStone(std::string move, std::string color);
-	void addRealStone(int stone_index, int color);
+    bool addVirtualStone(std::string move, std::string color);
+	bool addRealStone(int stone_index, int color);
 
 	//return the color of current turn
 	int getMoveTurnColor();
