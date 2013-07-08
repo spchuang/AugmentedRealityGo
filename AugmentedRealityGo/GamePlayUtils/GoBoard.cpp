@@ -8,7 +8,7 @@ GoBoard::GoBoard()
 		realStones[i] = 2;
 		wrongRealStones[i] = 2;
 	}
-	currentMoveColor = COLOR_WHITE;
+	currentMoveColor = COLOR_BLACK;
 	newMoveIsMade = false;
 }
 
@@ -16,6 +16,8 @@ void GoBoard::setFuego(FuegoAssistant* f)
 {
 	fuego = f;
 }
+
+
 
 void GoBoard::clear_board()
 {

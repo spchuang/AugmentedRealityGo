@@ -20,7 +20,7 @@ public:
 	GoAssistantController(GoBoard* b);
 	void pushAssistantMode(int a);
 	void AssistantMainLoop();
-
+	void showBoard();
 	static std::vector<int>* FuegoBookMoves;
 	static std::vector<float>* FuegoEstimateScore;
 

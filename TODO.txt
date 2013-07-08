@@ -1,6 +1,9 @@
 7/7/13
 - fixed territory counting bug
+- add territory counting
+ -> used: http://sourceforge.net/apps/trac/fuego/wiki/ShowingTerritoryStatistics
 - make assistance threaded
+- added animated loading message
 
 7/4/13
 - add freeglut (instead of original glut) to display text
@@ -14,11 +17,15 @@
 
 TODO:
 
-- add territory counting
- -> possibly use: http://sourceforge.net/apps/trac/fuego/wiki/ShowingTerritoryStatistics
+
 - connect with ktp server
 - play against another go engine
 - add AR controlling mechanism
 - show joseki corner suggestions
 - Juseki corner support
 
+
+NEED:
+boost thread, process (may include atomic)
+opencv 2.4
+openGL

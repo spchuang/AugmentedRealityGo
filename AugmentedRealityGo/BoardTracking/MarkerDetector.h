@@ -12,6 +12,7 @@ class Marker;
 
 /**
 * A top-level class that encapsulate marker detector algorithm
+NOTE: this is based on the open source Fuego marker detector library
 */
 
 class MarkerDetector

@@ -26,7 +26,10 @@ void GoAssistantController::pushAssistantMode(int a)
 		pushMutex_.unlock();
 	}
 }
-
+void GoAssistantController::showBoard()
+{
+	fuego.showBoard();
+}
 
 
 void GoAssistantController::AssistantMainLoop()

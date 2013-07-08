@@ -217,6 +217,16 @@ void ARGraphicController::drawBoard()
 			{
 				DrawPoint(p,5);
 			}*/
+			/*
+			{
+				p[0]*=-1;
+				p[1]*=-1;
+				p[2]*=-1;
+				DrawSquare(p, 0.15, WHITE_COLOR);
+			}
+			*/
+			
+
 		}
 		size_t s;
 
@@ -232,11 +242,12 @@ void ARGraphicController::drawBoard()
 					for(size_t i=0; i<s; i++)
 					{
 						int index = (*goAssistant->FuegoBookMoves)[i];
-						float p[]={-d.Board3DPoint[index+4].x ,-d.Board3DPoint[index+4].y,-d.Board3DPoint[index+4].z};
-						if(i==0)
-							DrawPoint(p,7, HALF_TRAN_BLUE_COLOR);
-						else
-							DrawPoint(p,7, HALF_TRAN_GREEN_COLOR);
+						float p[]={d.Board3DPoint[index+4].x ,d.Board3DPoint[index+4].y,d.Board3DPoint[index+4].z};
+						if(i==0){
+							DrawSquare(p, 0.15, HALF_TRAN_BLUE_COLOR);
+						}else{
+							DrawSquare(p, 0.12, HALF_TRAN_GREEN_COLOR);
+						}
 					}
 					break;
 				case ASSISTANT_MODE::TERRITORY:
@@ -245,17 +256,22 @@ void ARGraphicController::drawBoard()
 					for(size_t i=0; i<s; i++)
 					{
 						float score = (*goAssistant->FuegoEstimateScore)[i];
-						float p[]={-d.Board3DPoint[i+4].x ,-d.Board3DPoint[i+4].y,-d.Board3DPoint[i+4].z};
+						float p[]={d.Board3DPoint[i+4].x ,d.Board3DPoint[i+4].y,d.Board3DPoint[i+4].z};
 						if(score<0)
-							DrawPoint(p, score*-18, HALF_TRAN_BLUE_COLOR);
+							DrawSquare(p, score*-0.20, WHITE_COLOR);
+							//DrawPoint(p, score*-18, WHITE_COLOR);
 						else
-							DrawPoint(p, score*18, HALF_TRAN_GREEN_COLOR);
+							DrawSquare(p, score*0.20, BLACK_COLOR);
+							//DrawPoint(p, score*18, BLACK_COLOR);
 					}
 					break;
 
 			}
 
 		}
+
+		
+    
 
 		
 
@@ -311,6 +327,8 @@ void ARGraphicController::RenderSceneCB()
 		if(detectedBoard){
 			draw_circle(-0.95f,-0.93f,0.05f,GREEN_COLOR );
 		}else{
+			msg = "Marker Not Detected!";
+			draw_text(-0.90f,-0.964f, RED_COLOR, msg);
 			draw_circle(-0.95f,-0.93f,0.05f, RED_COLOR );
 		}
 
@@ -339,6 +357,17 @@ void ARGraphicController::RenderSceneCB()
 				draw_text(-0.97f,0.92f, GREEN_COLOR, msg);
 				break;
 				
+		}
+
+		//print player turns
+		if(board->getMoveTurnColor() == COLOR_BLACK){
+			msg = "Black's turn";
+			draw_text(0.64f,0.91f, BLUE_COLOR, msg);
+			draw_circle(0.6f,0.93f,0.03f,BLACK_COLOR );
+		}else{
+			msg = "White's turn";
+			draw_text(0.64f,0.91f, WHITE_COLOR, msg);
+			draw_circle(0.6f,0.93f,0.03f,WHITE_COLOR );
 		}
 		
 
@@ -444,7 +473,7 @@ void ARGraphicController::keyFunc(unsigned char key, int x, int y)
 		_exit (0);
         break;
     case 's': 
-		//fuego->showBoard();
+		goAssistant->showBoard();
 	
 		break;
 	case 'r':

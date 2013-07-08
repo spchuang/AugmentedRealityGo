@@ -174,6 +174,7 @@ bool FuegoAssistant::getBookPositions()
 			fprintf(stderr, "[FuegoAssistant]%s\n\n", readLine);
 
 		}
+		bookLoaded = true;
 	}
 
 	command = "book_position";

@@ -114,6 +114,20 @@ void DrawPoint(float* origin,float size, const float* color)
 	glColor4f(1.f, 1.f, 1.f, 1.f);
 }
 
+//the origin points is inverted in the function
+void DrawSquare(float* origin, float size, const float* color)
+{
+	//draw squaure
+	glBegin(GL_POLYGON);
+		glColor4f(color[0], color[1], color[2], color[3]);
+		glVertex3f( -1*(origin[0]-size/2), -1*(origin[1]-size/2), -origin[2]);
+		glVertex3f(-1*(origin[0]-size/2), -1*(origin[1]+size/2), -origin[2]);
+		glVertex3f(-1*(origin[0]+size/2), -1*(origin[1]+size/2), -origin[2]);
+		glVertex3f(-1*(origin[0]+size/2), -1*(origin[1]-size/2), -origin[2]);
+	glEnd();
+	glColor4f(1.f, 1.f, 1.f, 1.f);
+
+}
 void drawCoordinateAxis()
 {
   static float lineX[] = {0,0,0,-1,0,0};
