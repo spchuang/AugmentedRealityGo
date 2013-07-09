@@ -1,6 +1,7 @@
 7/9
 Goal: add joseki corner support..
 - add config file reading 
+- fixed the weird bug of darkened screen background (turned out to be easy fix!)
 
 7/8
 - make assitance shown in perspective transform

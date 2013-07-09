@@ -322,13 +322,15 @@ void ARGraphicController::RenderSceneCB()
 		}else{
 			msg = "Marker Not Detected!";
 			draw_text(-0.90f,-0.964f, RED_COLOR, msg);
-			draw_circle(-0.95f,-0.93f,0.05f, RED_COLOR );
+			draw_circle(-0.95f,-0.93f,0.05f, RED_COLOR);
 		}
 
-		
+
 		std::string loadingString = "";
 		for(int i=0; i<loadingMsg; i++)
 			loadingString+=".";
+
+		
 		//print assistant mode
 		switch(assistant_mode)
 		{
@@ -403,12 +405,14 @@ void ARGraphicController::gl_idle_func()
 		undistortImage = d->getUndistortImage(frameImg);
 		
 		//GL_BGR
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, frameImg.cols, frameImg.rows, 0, GL_BGR_EXT, GL_UNSIGNED_BYTE, undistortImage.data);
-		
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, undistortImage.cols, undistortImage.rows, 0, GL_BGR_EXT, GL_UNSIGNED_BYTE, undistortImage.data);
+
 		detectedBoard =d->detectMove();
 		
 		//release frame data
 		frameImg = cv::Mat();
+
+
 
 		if(board->newMoveIsMade)
 		{

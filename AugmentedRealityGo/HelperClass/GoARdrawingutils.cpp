@@ -33,9 +33,9 @@ void drawGoStone(GLfloat a, GLfloat b, GLfloat c, GLint nSlice, GLint nStack, fl
         glBegin(GL_TRIANGLE_STRIP);
 		
 		if(color == COLOR_BLACK)
-			glColor3f(0.00f,0.00f, 0.00f);
+			glColor4f(0.00f,0.00f, 0.00f, 1.0f);
 		else if(color == COLOR_WHITE)
-			glColor3f(1.0f,1.0f, 1.0f);
+			glColor4f(1.0f,1.0f, 1.0f, 1.0f);
          //bottom
 		
         for (j=0; j<nSlice1; j++)
@@ -98,6 +98,7 @@ void drawGoStone(GLfloat a, GLfloat b, GLfloat c, GLint nSlice, GLint nStack, fl
 
          glEnd();
      }
+	 glColor4f(1.f, 1.f, 1.f, 1.f);
  }
 
 void DrawPoint(float* origin,float size, const float* color)
@@ -114,20 +115,7 @@ void DrawPoint(float* origin,float size, const float* color)
 	glColor4f(1.f, 1.f, 1.f, 1.f);
 }
 
-//the origin points is inverted in the function
-void DrawSquare(float* origin, float size, const float* color)
-{
-	//draw squaure
-	glBegin(GL_POLYGON);
-		glColor4f(color[0], color[1], color[2], color[3]);
-		glVertex3f( -1*(origin[0]-size/2), -1*(origin[1]-size/2), -origin[2]);
-		glVertex3f(-1*(origin[0]-size/2), -1*(origin[1]+size/2), -origin[2]);
-		glVertex3f(-1*(origin[0]+size/2), -1*(origin[1]+size/2), -origin[2]);
-		glVertex3f(-1*(origin[0]+size/2), -1*(origin[1]-size/2), -origin[2]);
-	glEnd();
-	glColor4f(1.f, 1.f, 1.f, 1.f);
 
-}
 void drawCoordinateAxis()
 {
   static float lineX[] = {0,0,0,-1,0,0};
@@ -193,7 +181,6 @@ void draw_circle(float x, float y, float radius, const float* color) {
 	//GLfloat radius = 0.8f; //radius
 	GLfloat twicePi = 2.0f * M_PI;
 		
-
 	glBegin(GL_TRIANGLE_FAN);
 		//glColor3f(0,0, 1.0f);
 		glColor4f(color[0], color[1], color[2], color[3]);
@@ -205,8 +192,21 @@ void draw_circle(float x, float y, float radius, const float* color) {
 			);
 		}
 	glEnd();
+	glColor4f(1.f, 1.f, 1.f, 1.f);
+}
 
-		
+//the origin points is inverted in the function
+void DrawSquare(float* origin, float size, const float* color)
+{
+	//draw squaure
+	glBegin(GL_POLYGON);
+		glColor4f(color[0], color[1], color[2], color[3]);
+		glVertex3f( -1*(origin[0]-size/2), -1*(origin[1]-size/2), -origin[2]);
+		glVertex3f(-1*(origin[0]-size/2), -1*(origin[1]+size/2), -origin[2]);
+		glVertex3f(-1*(origin[0]+size/2), -1*(origin[1]+size/2), -origin[2]);
+		glVertex3f(-1*(origin[0]+size/2), -1*(origin[1]-size/2), -origin[2]);
+	glEnd();
+	glColor4f(1.f, 1.f, 1.f, 1.f);
 
 }
 
@@ -217,5 +217,5 @@ void draw_text(float x, float y, const float* color, std::string msg)
 	//
 	
 	glutBitmapString(GLUT_BITMAP_HELVETICA_18, (const unsigned char*)msg.c_str());
-
+	glColor4f(1.f, 1.f, 1.f, 1.f);
 }
