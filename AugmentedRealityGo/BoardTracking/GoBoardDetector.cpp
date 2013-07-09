@@ -22,6 +22,7 @@ GoBoardDetector::GoBoardDetector(cv::Mat camM, cv::Mat camD)
 	boardMarkerID[2] = 906;
 	boardMarkerID[3] = 508;
 	boardMarkerID[4] = 680;
+
 	boardMarkerID[5] = 915;
 	boardMarkerID[6] = 518;
 	boardMarkerID[7] = 360;

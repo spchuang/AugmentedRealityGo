@@ -19,7 +19,7 @@
 //self library
 #include "GamePlayUtils/GameConstant.h"
 #include "BoardTracking/GoBoardDetector.h"
-#include "GoARdrawingutils.h"
+#include "HelperClass/GoARdrawingutils.h"
 #include "GamePlayUtils/GoBoard.h"
 #include "GamePlayUtils/GoAssistantController.h"
 

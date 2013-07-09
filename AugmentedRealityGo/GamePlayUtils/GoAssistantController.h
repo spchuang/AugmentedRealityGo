@@ -10,7 +10,7 @@
 #include <queue>
 #include <iostream>
 #include "GameConstant.h"
-#include "Helper.h"
+#include "../HelperClass/Helper.h"
 #include "FuegoAssistant.h"
 #include "GoBoard.h"
 

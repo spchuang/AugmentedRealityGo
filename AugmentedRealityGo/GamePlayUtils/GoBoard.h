@@ -10,7 +10,7 @@
 	Representation of Go Board
 */
 #include "GameConstant.h"
-#include "Helper.h"
+#include "../HelperClass/Helper.h"
 #include "FuegoAssistant.h"
 class GoBoard
 {

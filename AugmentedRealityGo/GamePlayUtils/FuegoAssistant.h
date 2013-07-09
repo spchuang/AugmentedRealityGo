@@ -9,7 +9,7 @@
 #include <boost/iostreams/device/file_descriptor.hpp>
 #include <boost/iostreams/stream.hpp>
 #include <boost/process.hpp>
-#include "Helper.h"
+#include "../HelperClass/Helper.h"
 #include "GameConstant.h"
 /*
 	wrapper to communicate with fuego 

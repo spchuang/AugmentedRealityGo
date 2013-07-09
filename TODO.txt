@@ -1,3 +1,7 @@
+7/9
+Goal: add joseki corner support..
+- add config file reading 
+
 7/8
 - make assitance shown in perspective transform
 - fix bug on adding stones

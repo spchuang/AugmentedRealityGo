@@ -46,6 +46,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>C:\Users\Sam\Downloads\opencv\include</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -79,7 +80,8 @@
     <ClCompile Include="ARGraphicController.cpp" />
     <ClCompile Include="GamePlayUtils\FuegoAssistant.cpp" />
     <ClCompile Include="GamePlayUtils\GoAssistantController.cpp" />
-    <ClCompile Include="GoARdrawingutils.cpp" />
+    <ClCompile Include="HelperClass\config.cpp" />
+    <ClCompile Include="HelperClass\GoARdrawingutils.cpp" />
     <ClCompile Include="BoardTracking\GoBoardDetector.cpp" />
     <ClCompile Include="GamePlayUtils\GoBoard.cpp" />
     <ClCompile Include="BoardTracking\CVHelper.cpp" />
@@ -104,8 +106,9 @@
     <ClInclude Include="GamePlayUtils\GoAssistantController.h" />
     <ClInclude Include="GamePlayUtils\FuegoAssistant.h" />
     <ClInclude Include="GamePlayUtils\GameConstant.h" />
-    <ClInclude Include="GamePlayUtils\Helper.h" />
-    <ClInclude Include="GoARdrawingutils.h" />
+    <ClInclude Include="HelperClass\config.h" />
+    <ClInclude Include="HelperClass\Helper.h" />
+    <ClInclude Include="HelperClass\GoARdrawingutils.h" />
     <ClInclude Include="GamePlayUtils\GoBoard.h" />
     <ClInclude Include="BoardTracking\GoBoardDetector.h" />
     <ClInclude Include="BoardTracking\CVHelper.h" />
@@ -125,9 +128,14 @@
     <Reference Include="sgfutils, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>external\sgfutils.dll</HintPath>
     </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Data.SQLite, Version=1.0.65.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139">
       <HintPath>external\System.Data.SQLite.dll</HintPath>
     </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

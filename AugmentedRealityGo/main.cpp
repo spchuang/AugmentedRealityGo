@@ -8,7 +8,7 @@
 
 //self library
 #include "ARGoController.h"
-
+#include "HelperClass\config.h"
 
 
 using namespace std;
@@ -51,16 +51,10 @@ int main(int argc, char *argv[])
 	} */
 
 
-    ARGoController controller(640,480);
+	Config config("config.json");
+    ARGoController controller(config.cam.width,config.cam.height);
 	
 	controller.startAR();
 	
-	
-
-
-
-
-
-	std::cout<<"back to main.."<<std::endl;
     return 0;
 }

@@ -71,7 +71,6 @@ void GoBoard::changeTurn()
 		}
 	}
 	if(wStones.size() > ws.size()){
-		std::cout<<"check white.."<<std::endl;
 		for(int i=0; i<wStones.size(); i++){
 			bool exists = false;
 			for(int j=0; j<ws.size(); j++){
@@ -162,7 +161,7 @@ bool GoBoard::checkNewBoardState(char newRealBoardStones[361], char newMoveColor
 		//first check if real stone overlaps with virtual stone
 		if((virtualStones[i]==0 ||virtualStones[i]==1) && newRealBoardStones[i]!=2)
 		{
-			fprintf(stderr, "ERROR: real stone overlaps with virtual\n");
+			std::cerr<<"ERROR: real stone overlaps with virtual\n";
 			wrongRealStones[i] = ERROR_REAL_OVERLAPS_VIRTUAL;
 			realOverlapVirtual = true;
 		}
@@ -170,7 +169,7 @@ bool GoBoard::checkNewBoardState(char newRealBoardStones[361], char newMoveColor
 		//check if a real stone was placed, but the new board state shows it's changed
 		if( (realStones[i]==0 ||realStones[i]==1) && realStones[i] != newRealBoardStones[i])
 		{
-			fprintf(stderr, "ERROR: stone state is changed\n");
+			std::cerr<<"ERROR: stone state is changed\n";
 
 			wrongRealStones[i] = ERROR_OLD_REAL_STONE_MOVED;
 			oldBoardStonesChanged = true;
@@ -194,10 +193,10 @@ bool GoBoard::checkNewBoardState(char newRealBoardStones[361], char newMoveColor
 		//check if there are more than one new moves 
 		if(allNewMoveIndex.size()==0)
 		{
-			fprintf(stderr, "ERROR: didn't read the move, try again\n");
+			std::cerr<<"ERROR: didn't read the move, try again\n";
 
 		}else if(allNewMoveIndex.size()>1){
-			fprintf(stderr, "ERROR: there are more than one new move\n");
+			 std::cerr<<"ERROR: there are more than one new move\n";
 
 			for(int i=0; i<allNewMoveIndex.size(); i++)
 			{
@@ -214,7 +213,7 @@ bool GoBoard::checkNewBoardState(char newRealBoardStones[361], char newMoveColor
 				//addRealStone(allNewMoveIndex[0], newMoveColor);
 				return true;
 			}
-			fprintf(stderr, "ERROR: the new stone is the wrong color!\n");
+			std::cerr<<"ERROR: the new stone is the wrong color!\n";
 
 			wrongRealStones[allNewMoveIndex[0]] = ERROR_NEW_MOVE_WRONG_COLOR;
 			

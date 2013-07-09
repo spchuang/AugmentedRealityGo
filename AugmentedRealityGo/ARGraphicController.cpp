@@ -63,7 +63,6 @@ ARGraphicController::ARGraphicController(int sw, int sh, GoBoard* b, GoAssistant
 	detectedBoard = false;
 	cap = cvCaptureFromCAM(0);
 	
-	
 	screen_width = sw;
 	screen_height = sh;
 	buildProjectionMatrix(camera_matrix, intrinsic_array, screen_width, screen_height);
@@ -244,9 +243,9 @@ void ARGraphicController::drawBoard()
 						int index = (*goAssistant->FuegoBookMoves)[i];
 						float p[]={d.Board3DPoint[index+4].x ,d.Board3DPoint[index+4].y,d.Board3DPoint[index+4].z};
 						if(i==0){
-							DrawSquare(p, 0.10, HALF_TRAN_BLUE_COLOR);
+							DrawSquare(p, 0.10f, HALF_TRAN_BLUE_COLOR);
 						}else{
-							DrawSquare(p, 0.10, HALF_TRAN_GREEN_COLOR);
+							DrawSquare(p, 0.10f, HALF_TRAN_GREEN_COLOR);
 						}
 					}
 					break;
@@ -258,10 +257,10 @@ void ARGraphicController::drawBoard()
 						float score = (*goAssistant->FuegoEstimateScore)[i];
 						float p[]={d.Board3DPoint[i+4].x ,d.Board3DPoint[i+4].y,d.Board3DPoint[i+4].z};
 						if(score<0)
-							DrawSquare(p, score*-0.20, WHITE_COLOR);
+							DrawSquare(p, score*-0.20f, WHITE_COLOR);
 							//DrawPoint(p, score*-18, WHITE_COLOR);
 						else
-							DrawSquare(p, score*0.20, BLACK_COLOR);
+							DrawSquare(p, score*0.20f, BLACK_COLOR);
 							//DrawPoint(p, score*18, BLACK_COLOR);
 					}
 					break;

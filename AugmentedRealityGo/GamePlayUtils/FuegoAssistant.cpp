@@ -46,7 +46,7 @@ FuegoAssistant::FuegoAssistant()
 
 FuegoAssistant::~FuegoAssistant()
 {
-	fprintf(stderr, "[FuegoAssistant]terminate\n");
+	std::cerr<<"[FuegoAssistant]terminate\n";
 	terminate(c);
 
 
@@ -237,7 +237,7 @@ void FuegoAssistant::genMove(string color)
 	sendCommandWithEmptyResponse(command, readLine);
 
 
-	cout<<"return"<<endl<<readLine<<endl;
+	std::cerr<<"return"<<endl<<readLine<<endl;
 }
 void FuegoAssistant::boardState(vector<int>& bStones, vector<int>& wStones)
 {
@@ -307,7 +307,7 @@ void FuegoAssistant::showBoard()
 		getline(readFromFuego, response);
 	}while(response[0]!='=');
 
-	fprintf(stderr, "[FuegoAssistant]Board State:\n");
+	std::cerr<<"[FuegoAssistant]Board State:\n";
 	for(int i=0; i<21;i++){
 		getline(readFromFuego, response);
 		fprintf(stderr, "%s\n", response);
