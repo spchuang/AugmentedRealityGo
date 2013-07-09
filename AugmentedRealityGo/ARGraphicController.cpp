@@ -2,29 +2,19 @@
 
 //  The number of frames
 int frameCount = 0;
-//  Number of frames per second
 float fps = 0;
 
 //  currentTime - previousTime is the time elapsed
 //  between every call of the Idle function
 int currentTime = 0, previousTime = 0;
-/*
-	//logitec older camera
-	float intrinsic_array[3][3]=
-	{{552.920601109929, 0, 320.7381303851895},
-		{0, 547.0613005769327, 241.6573588058826},
-		{0, 0, 1}};
 
-	float distCoeffs_array[5] =
-	{0.09425473192693991, -0.2856049801580997, -0.001101232983093059, 0.0007837444168083567, 0.1274994588642529};
-	*/
-	//hard code it for now
 //for ar projection
 GLfloat light_ambient[4] = {0.3f, 0.3f, 0.3f, 1.0f};  
 GLfloat light_diffuse[4] = {1.0f,1.0f,1.0f,1.0f}; 
 GLfloat light_specular[4] = {1.0f,1.0f,1.0f,1.0f}; 
 GLfloat light_position[4]= {1.0f,1.0f,1.0f,0.0f};  /* Infinite light location. */
 
+/*
 float intrinsic_array[3][3]=
 	{{836.4486992622585f, 0.0f, 323.0858931708451f},
 	{0.0f, 826.8277262586329f, 213.3817272250332f},
@@ -32,10 +22,8 @@ float intrinsic_array[3][3]=
 
 float distCoeffs_array[5] =
 	{-0.001934653862378617f, -0.01807873574764167f, -0.004907823919307007f, 0.001827540747833625f, 0.1252985971583606f};
+	*/
 
-cv::Mat intrinsic = cv::Mat(3, 3, CV_32FC1, &intrinsic_array);
-cv::Mat distCoeffs = cv::Mat(5, 1, CV_32FC1, &distCoeffs_array);
-GoBoardDetector d(intrinsic, distCoeffs);
 
 float camera_matrix[16];
 GLuint textureID;
@@ -51,26 +39,30 @@ int ARGraphicController::assistant_mode;
 
 GoBoard* ARGraphicController::board;
 GoAssistantController* ARGraphicController::goAssistant;
+Config* ARGraphicController::config;
+GoBoardDetector* ARGraphicController::d;
 
 //loading msg animation
 int ARGraphicController::loadingMsg;
 int currentMsgTime =0;
 int prevMsgTime =0 ;
 
-ARGraphicController::ARGraphicController(int sw, int sh, GoBoard* b, GoAssistantController* ass)
+ARGraphicController::ARGraphicController(Config* c, GoBoard* b, GoAssistantController* ass)
 {
-	textureID = -1;
-	detectedBoard = false;
-	cap = cvCaptureFromCAM(0);
-	
-	screen_width = sw;
-	screen_height = sh;
-	buildProjectionMatrix(camera_matrix, intrinsic_array, screen_width, screen_height);
-
-	genMove = false;
-
+	//assign
 	board = b;
 	goAssistant = ass;
+	config = c;
+	d = new GoBoardDetector(c);
+
+	textureID = -1;
+	cap = cvCaptureFromCAM(0);
+	detectedBoard = false;
+
+	buildProjectionMatrix(camera_matrix, config->cam.intrinsic_array, config->cam.width, config->cam.height);
+	genMove = false;
+
+	
 
 	assistant_mode = ASSISTANT_MODE::NONE;
 	loadingMsg = 0;
@@ -87,7 +79,7 @@ void ARGraphicController::start(int argc, char *argv[])
 	//start openGL
 	glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA | GLUT_DEPTH);
-    glutInitWindowSize(screen_width,screen_height);
+    glutInitWindowSize(config->cam.width,config->cam.height);
     glutInitWindowPosition(100, 100);
     winID = glutCreateWindow("AR Go");
 	glutDisplayFunc(&ARGraphicController::RenderSceneCB);
@@ -104,7 +96,6 @@ void ARGraphicController::start(int argc, char *argv[])
 	init();
 
     glutMainLoop();
-	std::cout<<"oka..."<<std::endl;
 }
 void ARGraphicController::calculateFPS()
 {
@@ -190,8 +181,8 @@ void ARGraphicController::drawBoard()
 		
 		cv::Mat_<float> Tvec;
 		cv::Mat_<float> rotMat;
-		d.GoBoardRaux.convertTo(rotMat,CV_32F);
-		d.GoBoardTaux.convertTo(Tvec ,CV_32F);
+		d->GoBoardRaux.convertTo(rotMat,CV_32F);
+		d->GoBoardTaux.convertTo(Tvec ,CV_32F);
 		double post_m[16] =  {rotMat(0), rotMat(3), rotMat(6), 0.0f,
 							rotMat(1), rotMat(4), rotMat(7), 0.0f,
 							rotMat(2), rotMat(5), rotMat(8), 0.0f,
@@ -199,15 +190,15 @@ void ARGraphicController::drawBoard()
 		glLoadMatrixd(post_m);
 		float p[]={0,0,0};
 		drawGoStone(0.01f,0.01f,0.01f,2,2,p,0);
-		for(size_t i=4; i<d.Board3DPoint.size();i++)
+		for(size_t i=0; i< 19*19;i++)
 		{
 			
-			float p[]={-d.Board3DPoint[i].x ,-d.Board3DPoint[i].y,-d.Board3DPoint[i].z};
+			float p[]={-d->Board3DPoint[i+4].x ,-d->Board3DPoint[i+4].y,-d->Board3DPoint[i+4].z};
 
 			
-			if(board->virtualStones[i-4] == 0)
+			if(board->virtualStones[i] == 0)
 				drawGoStone(0.055f,0.045f,0.026f,14,14,p,0);
-			else if(board->virtualStones[i-4] == 1)
+			else if(board->virtualStones[i] == 1)
 				drawGoStone(0.055f,0.045f,0.026f,14,14,p,1);
 			
 			//display error showing there are wrong board state
@@ -241,7 +232,7 @@ void ARGraphicController::drawBoard()
 					for(size_t i=0; i<s; i++)
 					{
 						int index = (*goAssistant->FuegoBookMoves)[i];
-						float p[]={d.Board3DPoint[index+4].x ,d.Board3DPoint[index+4].y,d.Board3DPoint[index+4].z};
+						float p[]={d->Board3DPoint[index+4].x ,d->Board3DPoint[index+4].y,d->Board3DPoint[index+4].z};
 						if(i==0){
 							DrawSquare(p, 0.10f, HALF_TRAN_BLUE_COLOR);
 						}else{
@@ -255,7 +246,7 @@ void ARGraphicController::drawBoard()
 					for(size_t i=0; i<s; i++)
 					{
 						float score = (*goAssistant->FuegoEstimateScore)[i];
-						float p[]={d.Board3DPoint[i+4].x ,d.Board3DPoint[i+4].y,d.Board3DPoint[i+4].z};
+						float p[]={d->Board3DPoint[i+4].x ,d->Board3DPoint[i+4].y,d->Board3DPoint[i+4].z};
 						if(score<0)
 							DrawSquare(p, score*-0.20f, WHITE_COLOR);
 							//DrawPoint(p, score*-18, WHITE_COLOR);
@@ -306,9 +297,11 @@ void ARGraphicController::RenderSceneCB()
 		drawBoard();
 		glDisable(GL_COLOR_MATERIAL);
 	}
-
-	glEnable(GL_COLOR_MATERIAL);								// enables opengl to use glColor3f to define material color
+	
+	//glEnable(GL_COLOR_MATERIAL);								// enables opengl to use glColor3f to define material color
 	glDisable(GL_LIGHTING);
+	glDisable(GL_LIGHT0);										// enables light0
+		
 	//glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 	glMatrixMode( GL_MODELVIEW );
 	glPushMatrix();
@@ -322,6 +315,7 @@ void ARGraphicController::RenderSceneCB()
 		std::string msg = "FPS: " + floatToString(fps);
 		draw_text(0.70f,-0.96f, SOLID_RED_COLOR, msg);
 
+		
 		//print board status bar
 		if(detectedBoard){
 			draw_circle(-0.95f,-0.93f,0.05f,GREEN_COLOR );
@@ -331,6 +325,7 @@ void ARGraphicController::RenderSceneCB()
 			draw_circle(-0.95f,-0.93f,0.05f, RED_COLOR );
 		}
 
+		
 		std::string loadingString = "";
 		for(int i=0; i<loadingMsg; i++)
 			loadingString+=".";
@@ -369,14 +364,14 @@ void ARGraphicController::RenderSceneCB()
 			draw_circle(0.6f,0.93f,0.03f,WHITE_COLOR );
 		}
 		
-
+		
 
 	glPopMatrix();
 	glMatrixMode( GL_MODELVIEW );
 	glPopMatrix();
-	glDisable(GL_COLOR_MATERIAL);
+	//glDisable(GL_COLOR_MATERIAL);
 
-
+	
 	glFlush();
 	glutSwapBuffers();
 }
@@ -405,12 +400,12 @@ void ARGraphicController::gl_idle_func()
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S , GL_REPEAT );
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
 		cv::Mat undistortImage;
-		undistortImage = d.getUndistortImage(frameImg);
+		undistortImage = d->getUndistortImage(frameImg);
 		
 		//GL_BGR
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, frameImg.cols, frameImg.rows, 0, GL_BGR_EXT, GL_UNSIGNED_BYTE, undistortImage.data);
 		
-		detectedBoard =d.detectMove();
+		detectedBoard =d->detectMove();
 		
 		//release frame data
 		frameImg = cv::Mat();
@@ -470,6 +465,7 @@ void ARGraphicController::keyFunc(unsigned char key, int x, int y)
 		glutDestroyWindow (winID);
 		cvDestroyAllWindows();
 		cvReleaseCapture(&cap);
+		delete(d);
 		_exit (0);
         break;
     case 's': 
@@ -481,7 +477,7 @@ void ARGraphicController::keyFunc(unsigned char key, int x, int y)
 		if(genMove==true){
 			
 			char newRealBoardStones[361];
-			d.readStone(newRealBoardStones);
+			d->readStone(newRealBoardStones);
 
 			if(board->checkNewBoardState(newRealBoardStones, newMoveColor)){
 
@@ -515,8 +511,6 @@ void ARGraphicController::keyFunc(unsigned char key, int x, int y)
 
 				else if(board->virtualStones[i*19+j]==2 && board->realStones[i*19+j]==COLOR_NONE)
 					std::cout <<"o ";
-				
-
 			}
 			std::cout<<std::endl;
 		}
@@ -527,7 +521,7 @@ void ARGraphicController::keyFunc(unsigned char key, int x, int y)
 		goAssistant->pushAssistantMode(assistant_mode);
 		break;
 	case 'p':
-		d.changePostMethod();
+		d->changePostMethod();
 		break;
 	case 't':
 		//d.GoBoardTaux.convertTo(Tvec ,CV_32F);

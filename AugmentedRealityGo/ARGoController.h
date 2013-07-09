@@ -22,7 +22,7 @@
 class ARGoController
 {
 public:
-	ARGoController(int sw, int sh);
+	ARGoController(Config* c);
 	~ARGoController();
 
 	//The main loop of this app. It spawns the threads to run openGL and goAssistance then it enters a loop to read
@@ -41,7 +41,7 @@ private:
 
 	//board state 
 	static GoBoard board;
-
+	static Config* config;
 };
 	
 #endif

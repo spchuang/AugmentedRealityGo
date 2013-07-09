@@ -2,18 +2,18 @@
 
 #include <iostream> // for standard I/O
 #include <string>
+#include "HelperClass/config.h"
 
 using namespace std;
 //FuegoAssistant ARGoController::fuego = FuegoAssistant();
 GoBoard ARGoController::board = GoBoard();
+Config* ARGoController::config;
 
-
-
-ARGoController::ARGoController(int sw, int sh)
+ARGoController::ARGoController(Config* c)
 	:assistant_controller(&board)
-	,graphic_controller(sw, sh, &board, &assistant_controller)
+	,graphic_controller(c, &board, &assistant_controller)
 {
-	
+	config = c;
 	
 }
 ARGoController::~ARGoController()

@@ -26,8 +26,8 @@ public:
 	struct camera{
 		int height;
 		int width;
-		double intrinsic_array[3][3];
-		double distCoeffs_array[5];
+		float intrinsic_array[3][3];
+		float distCoeffs_array[5];
 	}cam;
 	
 	struct boardConfiguration{

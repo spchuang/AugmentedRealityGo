@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
 
 
 	Config config("config.json");
-    ARGoController controller(config.cam.width,config.cam.height);
+    ARGoController controller(&config);
 	
 	controller.startAR();
 	

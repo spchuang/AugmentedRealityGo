@@ -7,6 +7,7 @@
 #include <opencv2/opencv.hpp>
 #include "Marker.h"
 #include "stoneDetector.h"
+#include "../HelperClass/config.h"
 //#include "aruco-1.2.4/aruco.h"
 
 ////////////////////////////////////////////////////////////////////
@@ -21,26 +22,15 @@
 class GoBoardDetector
 {
 public:
-	//make board properties public
-	//board parameter
-	int numPoint;
-	double markerLength;
-	double widthGap;
-	double heightGap;
-	double boardHeight;
-	double boardWidth;
-	double boardLength;
-	double gap;
-	double widthInterval;
-	double heightInterval;
-	double blockLength;
+	//constructor
+	GoBoardDetector(Config* c);
 
 	std::vector<cv::Point3f> Board3DPoint;
 
 	//camera world position transformation 
 	cv::Mat GoBoardRaux,GoBoardTaux;
-	//constructor
-	GoBoardDetector(cv::Mat camM, cv::Mat camD);
+	
+	
 	void setCameraIntrinsics(cv::Mat camM, cv::Mat camD);
 
 	cv::Mat getUndistortImage(cv::Mat& srcImage);
@@ -64,10 +54,6 @@ private:
 	std::vector<cv::Point2f> UnidistortBoardPoint;
 
 	bool detectBoard;
-	//0 = black
-	//1 = white
-	//2 = none
-
 	StoneDetector sd;
 
 	cv::Mat m_grayscaleImage;
@@ -75,11 +61,11 @@ private:
 	cv::Mat undistortImage;
 	cv::Mat srcFrame;
 	
-	
+	double gap;
+	int numPoint;
 	//variables for occlusion object detection (ex. hand)
-
 	cv::Mat backGroundBoard;
-	bool detectOcclusion;
+
 	//MarkerDetector m_md;
 	cv::Mat camMatrix;
 	cv::Mat distCoeff;

@@ -19,9 +19,11 @@
 //self library
 #include "GamePlayUtils/GameConstant.h"
 #include "BoardTracking/GoBoardDetector.h"
+#include "HelperClass/config.h"
 #include "HelperClass/GoARdrawingutils.h"
 #include "GamePlayUtils/GoBoard.h"
 #include "GamePlayUtils/GoAssistantController.h"
+
 
 /**
 	Responsible for main OpenGL functions. display augmented reality graphics
@@ -30,7 +32,7 @@
 class ARGraphicController
 {
 public:
-	ARGraphicController(int sw, int sh, GoBoard* b, GoAssistantController* ass);
+	ARGraphicController(Config* c, GoBoard* b, GoAssistantController* ass);
 	~ARGraphicController();
 	
 	static void calculateFPS();
@@ -50,11 +52,12 @@ public:
 	static volatile bool genMove;
 	static GoBoard* board;
 	static GoAssistantController* goAssistant;
+	static Config* config;
+	static GoBoardDetector* d;
 	
 private:
 	static int loadingMsg;
 	static volatile int newMoveColor;
-	int screen_width, screen_height;
 	static int assistant_mode;
 	
 };

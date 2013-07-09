@@ -14,46 +14,31 @@
 //#include "aruco-1.2.4/aruco.h"
 #include "CVHelper.h"
 #include "RPP/RPP.h"
-GoBoardDetector::GoBoardDetector(cv::Mat camM, cv::Mat camD)
+GoBoardDetector::GoBoardDetector(Config* c)
 	:boardMarkerID(18)
 {
-	boardMarkerID[0] = 664; 
-	boardMarkerID[1] = 562;
-	boardMarkerID[2] = 906;
-	boardMarkerID[3] = 508;
-	boardMarkerID[4] = 680;
+	for(int i=0; i<18; i++){
+		boardMarkerID[i] = c->marker.boardMarkerID[i];
+	}
+	numPoint		= c->board.numPoint;
 
-	boardMarkerID[5] = 915;
-	boardMarkerID[6] = 518;
-	boardMarkerID[7] = 360;
-	boardMarkerID[8] = 767;
-	boardMarkerID[9] = 108;
-	boardMarkerID[10] = 376;
-	boardMarkerID[11] = 961;
-	boardMarkerID[12] = 786;
-	boardMarkerID[13] = 913;
-	boardMarkerID[14] = 112;
-	boardMarkerID[15] = 708;
-	boardMarkerID[16] = 156;
-	boardMarkerID[17] = 804;
 	//board parameter
-	numPoint		= 19;
-	//markerLength	= 90;
-	markerLength	= 81.8;
-	widthGap		= 9.2/markerLength;
-	heightGap		= 13/markerLength;
-	boardHeight		= 31.5/markerLength;
-	boardWidth		= 279/markerLength;
-	boardLength		= 306/markerLength;
-	gap				= (markerLength+15.7)/markerLength;
-	
-	widthInterval	= 14.55/markerLength;
-	heightInterval	= 15.7/markerLength;
-	blockLength		= 9/markerLength;
+	double markerLength		= c->marker.markerLength;
+	double widthGap			= c->board.widthGap/markerLength;
+	double heightGap		= c->board.heightGap/markerLength;
+	double boardHeight		= c->board.boardHeight/markerLength;
+	double boardWidth		= c->board.boardWidth/markerLength;
+	double boardLength		= c->board.boardLength/markerLength;
+	gap						= (markerLength+c->board.gap)/markerLength;
+	double widthInterval	= c->board.widthInterval/markerLength;
+	double heightInterval	= c->board.heightInterval/markerLength;
+	double blockLength		= c->board.blockLength / markerLength;
+
 	m_PoseMethod = RPP;
-	//Board3DPoint.push_back(cv::Point3f(0,0,0));
+
 	//push the 4 wider corner first
-	Board3DPoint.push_back(cv::Point3f(		gap+widthGap-blockLength,
+	
+	Board3DPoint.push_back(cv::Point3f(	gap+widthGap-blockLength,
 											   heightGap-blockLength+gap,
 											   boardHeight));
 	Board3DPoint.push_back(cv::Point3f( gap+widthGap-blockLength,	
@@ -71,33 +56,15 @@ GoBoardDetector::GoBoardDetector(cv::Mat camM, cv::Mat camD)
 		//vertical points
 		for(int j=0; j<numPoint; j++)
 		{
-
 			Board3DPoint.push_back(cv::Point3f(	gap+widthGap+widthInterval*j,
 												heightGap+heightInterval*i+gap,							
 											   boardHeight));
 		}
 	}
-	//same with GL board points with slightly higher values of width interval and height intervals
-	/*widthInterval	= 14.67/markerLength;
-	heightInterval	= 15.57/markerLength;
-	Board3DPoint_GL.push_back(cv::Point3f(		gap+widthGap-blockLength,
-											   heightGap-blockLength+gap,
-											   boardHeight));
-	Board3DPoint_GL.push_back(cv::Point3f( gap+widthGap-blockLength,	
-											   heightGap+heightInterval*18+blockLength+gap,
-											   boardHeight));
-	Board3DPoint_GL.push_back(cv::Point3f(gap+widthGap+widthInterval*18+blockLength,	
-											   heightGap+heightInterval*18+blockLength+gap,
-											   boardHeight));
-	Board3DPoint_GL.push_back(cv::Point3f(  gap+widthGap+widthInterval*18+blockLength,
-											   heightGap-blockLength+gap,
-											   boardHeight));
-	*/
-	detectOcclusion = false;
+	
 
-	camMatrix = camM;
-	distCoeff = camD;
-
+	camMatrix = cv::Mat(3, 3, CV_32FC1, &(c->cam.intrinsic_array));
+	distCoeff = cv::Mat(5, 1, CV_32FC1, &(c->cam.distCoeffs_array));
 }
 
 void GoBoardDetector::setCameraIntrinsics(cv::Mat camM, cv::Mat camD)
@@ -122,8 +89,7 @@ bool GoBoardDetector::detectMove()
 		return false;
 	
 	undistortBoard();
-	if(detectOcclusion)
-		detectOcclusionObject();
+
 
 	return true;
 }
@@ -336,7 +302,6 @@ void GoBoardDetector::undistortBoard()
 
 void GoBoardDetector::detectOcclusionObject()
 {
-	detectOcclusion= true;
 	cv::Mat fore;
 	cv::Mat back;
 	/*cv::BackgroundSubtractorMOG2 bg; 
