@@ -16,6 +16,7 @@
 #include "RPP/RPP.h"
 GoBoardDetector::GoBoardDetector(Config* c)
 	:boardMarkerID(18)
+	, sd(c->board.whiteStoneThresh, c->board.blackStoneThresh)
 {
 	for(int i=0; i<18; i++){
 		boardMarkerID[i] = c->marker.boardMarkerID[i];

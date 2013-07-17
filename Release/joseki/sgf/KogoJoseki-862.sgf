@@ -1,0 +1,30 @@
+(;
+FF[4]
+KM[0.00]
+DT[29.11.2012]
+CA[UTF-8]
+AP[CGoban:3]
+ST[2]
+RU[Japanese]
+SZ[19]
+GN[Kogo's Joseki Dictionary]
+CP[see below]
+GC[Commercial distribution without permission and a link to the KJD webpage is a copyright violation. Please ask for permission prior to distribution.
+Contact: kogo@waterfire.us.
+Updates available at: http://waterfire.us/joseki.htm.
+
+Portions copyright 2010-2012 by Alexandre Dinerchtein.
+Portions copyright 2006-2007 by Andre Ay.
+Portions copyright 2000-2001 by Stefan Verstraeten. 
+Copyright 1998-2013 by Gary Odom.
+]
+
+;B[qd];W[oc];B[md];W[mc];B[nd];W[nc];B[od];W[pd];B[pc];W[pe]
+;B[qc];W[lc];B[rf];W[nf];B[ld];W[kd];B[mf];W[ng];B[kf];W[ke]
+;B[le];W[jf];B[kg];W[pj];B[dd];W[dc];B[ed];W[be];B[dg];W[ie]
+;B[ec];W[fp];B[mp];W[hc];B[cf];W[ce];B[de];W[bf];B[ch];W[cp]
+;B[pm];W[qg];B[rg];W[do];B[nm];W[mj];B[mg];W[qq];B[qr];W[rr]
+;B[qp];W[rq];B[pp];W[pr];B[or];W[qs];B[nh];W[oh];B[ni];W[nj]
+;B[oi];W[pi];B[og];W[ph];B[of];W[oj];B[qk];W[rh];B[kj];W[ml]
+;B[dn];W[cn];B[cm];W[bo];B[bn];W[mm];B[nn];W[rp];B[qo];W[ip]
+;B[co];W[qf];B[qe];W[cn])

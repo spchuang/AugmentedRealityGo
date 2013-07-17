@@ -46,7 +46,7 @@ FuegoAssistant::FuegoAssistant()
 
 FuegoAssistant::~FuegoAssistant()
 {
-	std::cerr<<"[FuegoAssistant]terminate\n";
+	std::cerr<<"[FuegoAssistant]terminate" <<endl;
 	terminate(c);
 
 

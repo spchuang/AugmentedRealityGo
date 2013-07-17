@@ -10,7 +10,7 @@ GoBoard ARGoController::board = GoBoard();
 Config* ARGoController::config;
 
 ARGoController::ARGoController(Config* c)
-	:assistant_controller(&board)
+	:assistant_controller(&board, c)
 	,graphic_controller(c, &board, &assistant_controller)
 {
 	config = c;

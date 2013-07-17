@@ -1,0 +1,47 @@
+(;
+FF[4]
+KM[0.00]
+DT[29.11.2012]
+CA[UTF-8]
+AP[CGoban:3]
+ST[2]
+RU[Japanese]
+SZ[19]
+GN[Kogo's Joseki Dictionary]
+CP[see below]
+GC[Commercial distribution without permission and a link to the KJD webpage is a copyright violation. Please ask for permission prior to distribution.
+Contact: kogo@waterfire.us.
+Updates available at: http://waterfire.us/joseki.htm.
+
+Portions copyright 2010-2012 by Alexandre Dinerchtein.
+Portions copyright 2006-2007 by Andre Ay.
+Portions copyright 2000-2001 by Stefan Verstraeten. 
+Copyright 1998-2013 by Gary Odom.
+]
+
+;B[oc];W[qd];B[qf];W[pe];B[pf];W[ne];B[md];W[pj];B[oi];W[qn]
+;B[qb];W[pi];B[og];W[me];B[ld];W[mg];B[oj];W[pk];B[mi];W[kg]
+;B[ki];W[ig];B[ke];W[he];B[ii];W[gg];B[dg];W[nq];B[pn];W[pm]
+;B[qo];W[on];B[po];W[qm];B[np];W[mp];B[no];W[or];B[pr];W[pq]
+;B[qq];W[oq];B[nl];W[jq];B[cn];W[nd];B[nc];W[hc];B[jc];W[kf]
+;B[eo];W[cl];B[fq];W[fr];B[er];W[ep];B[dr];W[fp];B[gq];W[gr]
+;B[hr];W[hq];B[gp];W[ir];B[hp];W[iq];B[cq];W[dp];B[fo];W[bp]
+;B[bo];W[go];B[ho];W[gn];B[do];W[hn];B[io];W[jn];B[jo];W[ko]
+;B[in];W[co];B[dn];W[bn];B[bm];W[ao];B[cm];W[bl];B[im];W[el]
+;B[fm];W[br];B[al];W[ak];B[am];W[fl];B[gm];W[di];B[hh];W[je]
+;B[bk];W[ck];B[aj];W[gh];B[hg];W[hf];B[gi];W[eh];B[fi];W[eg]
+;B[df];W[dc];B[ec];W[cd];B[ed];W[cc];B[gf];W[fe];B[be];W[ce]
+;B[bf];W[eb];B[fb];W[da];B[ef];W[ff];B[fa];W[bd];B[bb];W[ad]
+;B[gc];W[ab];B[gd];W[ge];B[hd];W[kn];B[ri];W[rj];B[qi];W[ph]
+;B[rg];W[qj];B[rn];W[rm];B[ro];W[oh];B[nh];W[ng];B[qh];W[pg]
+;B[rd];W[rc];B[re];W[qc];B[qr];W[hj];B[hi];W[hl];B[hm];W[bi]
+;B[lp];W[mo];B[lo];W[ln];B[mq];W[mn];B[lq];W[mr];B[lr];W[kp]
+;B[ls];W[jk];B[jj];W[kk];B[gl];W[lj];B[ik];W[li];B[rb];W[fk]
+;B[pc];W[hk];B[gk];W[il];B[jl];W[ij];B[gj];W[ik];B[cj];W[dj]
+;B[ci];W[bj];B[ch];W[ak];B[bq];W[cr];B[bk];W[kr];B[op];W[ak]
+;B[dk];W[dl];B[bk];W[ns];B[ps];W[ak];B[fh];W[fg];B[bk];W[ks]
+;B[os];W[ak];B[hs];W[is];B[bk];W[kq];B[nr];W[ak];B[dq];W[aq]
+;B[bk];W[nq];B[ms];W[ak];B[ar];W[as];B[bk];W[an];B[jm];W[ak]
+;B[lh];W[ll];B[kh];W[mh];B[bk];W[of];B[sc];W[ak];B[ej];W[ek]
+;B[bk];W[jh];B[ji];W[ak];B[mk];W[lk];B[bk];W[id];B[ic];W[ak]
+;B[fs];W[gs];B[bk];W[cf];B[cg];W[ak];B[bs];W[cs];B[bk];W[jd])

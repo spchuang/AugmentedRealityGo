@@ -19,7 +19,10 @@ void GoBoard::setFuego(FuegoAssistant* f)
 	fuego = f;
 }
 
-
+void GoBoard::setJoseki(JosekiAssistant* j)
+{
+	joseki = j;
+}
 
 void GoBoard::clear_board()
 {

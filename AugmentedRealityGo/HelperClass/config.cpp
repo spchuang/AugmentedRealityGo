@@ -52,12 +52,19 @@ Config::Config(std::string config_file)
 	board.blockLength	= configTree.get<double>("boardConfiguration.blockLength");
 
 	//marker configuration
-	marker.markerLength = configTree.get<double>("MarkerConfiguration.markerLength");
-	i = configTree.get_child("MarkerConfiguration.markerID");
+	marker.markerLength = configTree.get<double>("markerConfiguration.markerLength");
+	i = configTree.get_child("markerConfiguration.markerID");
 	j=0;
 	BOOST_FOREACH(boost::property_tree::ptree::value_type& v,i){
 		marker.boardMarkerID[j] = boost::lexical_cast<float>(v.second.data());
 		j++;
 	}
 
+	//stone detection configuration
+	board.whiteStoneThresh		= configTree.get<int>("stoneDetection.blackThrehold");
+	board.blackStoneThresh		= configTree.get<int>("stoneDetection.whiteThrehold");
+
+	//joseki setting
+	joseki.dbFile = configTree.get<string>("joseki.databaseFileName");
+	joseki.sgfDirectory = configTree.get<string>("joseki.sgfFolderPath");
 }

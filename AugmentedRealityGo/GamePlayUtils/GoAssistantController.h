@@ -9,17 +9,19 @@
 #include <boost/thread/thread.hpp>
 #include <queue>
 #include <iostream>
-#include "GameConstant.h"
 #include "../HelperClass/Helper.h"
-#include "FuegoAssistant.h"
+#include "GameConstant.h"
 #include "GoBoard.h"
+#include "FuegoAssistant.h"
+#include "JosekiAssistant.h"
+#include "../HelperClass/config.h"
 
 //test
 #include <vector>
 class GoAssistantController
 {
 public:
-	GoAssistantController(GoBoard* b);
+	GoAssistantController(GoBoard* b, Config* c);
 	void pushAssistantMode(int a);
 	void AssistantMainLoop();
 	void showBoard();
@@ -35,6 +37,7 @@ private:
 	std::queue<int> assistant_queue;
 	static int assistant_mode;
 	static FuegoAssistant fuego;
+	static JosekiAssistant joseki;
 	GoBoard* board;
 	boost::mutex pushMutex_;
 };

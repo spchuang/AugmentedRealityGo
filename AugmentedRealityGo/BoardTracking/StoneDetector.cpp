@@ -8,12 +8,12 @@
 #include "StoneDetector.h"
 
 
-StoneDetector::StoneDetector()
+StoneDetector::StoneDetector(int w_thresh = 190, int b_thresh = 60)
 {
 	//testing values
 	//if it's dark, black_thresh shoudl be lower and vice versa for white
-	white_thresh = 190;
-	black_thresh = 60;
+	white_thresh = w_thresh;
+	black_thresh = b_thresh;
 	min_radius = 4;
 	max_radius = 15;
 	border = 5; //border padding

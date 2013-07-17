@@ -1,17 +1,21 @@
 #include "GoAssistantController.h"
 FuegoAssistant GoAssistantController::fuego = FuegoAssistant();
+JosekiAssistant GoAssistantController::joseki = JosekiAssistant();
 
 std::vector<int>* GoAssistantController::FuegoBookMoves;
 std::vector<float>* GoAssistantController::FuegoEstimateScore;
 volatile int GoAssistantController::currentMode;
 volatile bool GoAssistantController::isProcessing;
 
-GoAssistantController::GoAssistantController(GoBoard* b)
+GoAssistantController::GoAssistantController(GoBoard* b, Config* c)
 {
 	currentMode = -1;
 	board = b;
 	//pass the pointer reference of fuego to board class
 	b->setFuego(&fuego);
+	b->setJoseki(&joseki);
+	joseki.loadDB(c->joseki.dbFile, c->joseki.sgfDirectory);
+
 	FuegoBookMoves = &(fuego.bookMoves);
 	FuegoEstimateScore = &(fuego.estimateScore);
 	isProcessing = false;
@@ -51,6 +55,9 @@ void GoAssistantController::AssistantMainLoop()
 				case ASSISTANT_MODE::FUEGO_BOOK:
 					fprintf(stderr, "[GoAssistant]processing fuego book\n");
 					fuego.getBookPositions();
+					break;
+				case ASSISTANT_MODE::JOSEKI:
+					joseki.getJoseki(board->bStones, board->wStones);
 					break;
 				case ASSISTANT_MODE::TERRITORY:
 					fprintf(stderr, "[GoAssistant]processing territory estimation\n");

@@ -4,15 +4,15 @@
 #include <iomanip>  // for controlling float print precision
 #include <sstream>  // string to number conversion
 
-
+#include "GamePlayUtils/JosekiAssistant.h"
 
 //self library
 #include "ARGoController.h"
 #include "HelperClass\config.h"
 
 
+
 using namespace std;
-//using namespace PatternLibrary;
 
 
 int main(int argc, char *argv[])
@@ -51,10 +51,13 @@ int main(int argc, char *argv[])
 	} */
 
 
+
+	JosekiAssistant j;
+
 	Config config("config.json");
     ARGoController controller(&config);
 	
 	controller.startAR();
-	
     return 0;
 }
+

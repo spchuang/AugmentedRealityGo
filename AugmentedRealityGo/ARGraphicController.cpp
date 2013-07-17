@@ -240,6 +240,8 @@ void ARGraphicController::drawBoard()
 						}
 					}
 					break;
+				case ASSISTANT_MODE::JOSEKI:
+					break;
 				case ASSISTANT_MODE::TERRITORY:
 				
 					s = (goAssistant->FuegoEstimateScore)->size();
@@ -343,6 +345,13 @@ void ARGraphicController::RenderSceneCB()
 					msg = "Assistant Mode: Opening book "+loadingString;
 				else 
 					msg = "Assistant Mode: Opening book";
+				draw_text(-0.97f,0.92f, GREEN_COLOR, msg);
+				break;
+			case ASSISTANT_MODE::JOSEKI:
+				if(goAssistant->isProcessing)
+					msg = "Assistant Mode: Joseki" + loadingString;
+				else 
+					msg = "Assistant Mode: Joseki";
 				draw_text(-0.97f,0.92f, GREEN_COLOR, msg);
 				break;
 			case ASSISTANT_MODE::TERRITORY:
@@ -492,8 +501,6 @@ void ARGraphicController::keyFunc(unsigned char key, int x, int y)
 					genMove = false;
 				}
 			}
-
-			
 		}
 	
 		break;

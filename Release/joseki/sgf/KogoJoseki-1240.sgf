@@ -1,0 +1,41 @@
+(;
+FF[4]
+KM[0.00]
+DT[29.11.2012]
+CA[UTF-8]
+AP[CGoban:3]
+ST[2]
+RU[Japanese]
+SZ[19]
+GN[Kogo's Joseki Dictionary]
+CP[see below]
+GC[Commercial distribution without permission and a link to the KJD webpage is a copyright violation. Please ask for permission prior to distribution.
+Contact: kogo@waterfire.us.
+Updates available at: http://waterfire.us/joseki.htm.
+
+Portions copyright 2010-2012 by Alexandre Dinerchtein.
+Portions copyright 2006-2007 by Andre Ay.
+Portions copyright 2000-2001 by Stefan Verstraeten. 
+Copyright 1998-2013 by Gary Odom.
+]
+
+;B[qd];W[oc];B[ld];W[oe];B[pf];W[qc];B[rc];W[qb];B[pd];W[od]
+;B[qj];W[dh];B[hc];W[lb];B[ed];W[ec];B[fd];W[fc];B[gd];W[cd]
+;B[bd];W[bc];B[dd];W[cc];B[fq];W[dn];B[dr];W[cq];B[iq];W[cf]
+;B[be];W[df];B[de];W[dk];B[po];W[kd];B[ke];W[je];B[kf];W[jd]
+;B[ef];W[qm];B[of];W[qp];B[qo];W[ro];B[rn];W[qi];B[pj];W[rp]
+;B[qn];W[pp];B[op];W[oq];B[qq];W[rq];B[or];W[nq];B[np];W[rm]
+;B[rr];W[rj];B[rk];W[rh];B[pl];W[qr];B[pr];W[rs];B[sr];W[mp]
+;B[on];W[nr];B[qs];W[qf];B[pe];W[re];B[pc];W[pb];B[rd];W[sk]
+;B[sl];W[sj];B[pi];W[ph];B[sh];W[sg];B[rg];W[qk];B[qg];W[pk]
+;B[ok];W[ql];B[sm];W[pm];B[mo];W[rl];B[sn];W[qh];B[sf];W[ni]
+;B[oj];W[pg];B[se];W[ng];B[nf];W[om];B[nm];W[nl];B[ol];W[nn]
+;B[mm];W[so];B[lp];W[nk];B[lc];W[kb];B[mb];W[mc];B[nc];W[nb]
+;B[md];W[ma];B[ib];W[jb];B[gb];W[fb];B[fo];W[jf];B[ac];W[ab]
+;B[eh];W[di];B[cr];W[br];B[kg];W[jg];B[fm];W[kh];B[mg];W[ip]
+;B[jq];W[bg];B[gi];W[hj];B[gj];W[hi];B[gk];W[hk];B[hh];W[ih]
+;B[hg];W[hm];B[dm];W[cm];B[cn];W[em];B[en];W[do];B[el];W[dl]
+;B[dq];W[bp];B[in];W[hn];B[ho];W[io];B[im];W[hp];B[go];W[kn]
+;B[jo];W[lo];B[ln];W[jn];B[il];W[jl];B[jp];W[ik];B[hq];W[hl]
+;B[gp];W[ko];B[mq];W[ll];B[lh];W[li];B[mi];W[lj];B[ki];W[jh]
+;B[mj];W[nj];B[lk];W[kj];B[kk];W[jj];B[mk];W[cs];B[ek])

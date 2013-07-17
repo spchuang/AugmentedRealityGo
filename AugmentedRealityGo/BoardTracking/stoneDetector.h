@@ -16,7 +16,7 @@ This class is responsible for detecting the stones presented on the Go Board
 class StoneDetector
 {
 public:
-	StoneDetector();
+	StoneDetector(int w_thresh, int b_thresh);
 	//this creates a bar to see which threhold is the best
 	void testThrehold();
 	void setupDetection(cv::Mat b, std::vector<cv::Point2f> sp);

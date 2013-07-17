@@ -1,5 +1,10 @@
+MAIN TODO
+- show joseki corner suggestions (Juseki corner support)
+- Fuego best move support (useful when no more openmove are avaliable)
+- connect with ktp server
+
 7/9
-Goal: add joseki corner support..
+Goal: add joseki corner support.. (failed)
 - add config file reading 
 - fixed the weird bug of darkened screen background (turned out to be easy fix!)
 
@@ -7,6 +12,7 @@ Goal: add joseki corner support..
 - make assitance shown in perspective transform
 - fix bug on adding stones
 - fix bug in events of capturing stones
+- play against another go engine (gogui-twogtp)
 
 7/7/13
 - fixed territory counting bug
@@ -26,16 +32,20 @@ Goal: add joseki corner support..
 
 
 TODO:
-
-
-- connect with ktp server
-- play against another go engine
 - add AR controlling mechanism
-- show joseki corner suggestions
-- Juseki corner support
 
+simple shell script 
+for f in variation/*
+do
+  ./sgfmerge -c < $f >test/$f
+done
+
+split joseki using
+http://homepages.cwi.nl/~aeb/go/sgfutils/html/sgfmerge.html
 
 NEED:
-boost thread, process (may include atomic)
+boost thread, process (may include atomic), and some other boost stuff like variable cast?
+sqlite3 for the library 
+for windows, see: http://dcravey.wordpress.com/2011/03/21/using-sqlite-in-a-visual-c-application/
 opencv 2.4
 openGL

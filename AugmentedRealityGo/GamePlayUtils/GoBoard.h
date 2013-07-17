@@ -12,12 +12,15 @@
 #include "GameConstant.h"
 #include "../HelperClass/Helper.h"
 #include "FuegoAssistant.h"
+#include "JosekiAssistant.h"
+
 class GoBoard
 {
 public:
 	GoBoard();
 	//void clearBoard();
 	void setFuego(FuegoAssistant* f);
+	void setJoseki(JosekiAssistant* j);
 	bool checkNewBoardState(char newRealBoardStones[361], char newMoveColor);
 	
 	
@@ -46,6 +49,7 @@ public:
 private:
 	int currentMoveColor;
 	FuegoAssistant* fuego;
+	JosekiAssistant* joseki;
 	
 };
 	

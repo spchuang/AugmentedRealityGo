@@ -24,12 +24,11 @@ namespace ASSISTANT_MODE{
 	{
 	   NONE,
 	   FUEGO_BOOK,
+	   JOSEKI,
 	   TERRITORY
 	} MODE_NUMBER;
-	//const int NONE			=0;
-	//const int FUEGO_BOOK	=1;
-	//const int TERRITORY		=2;
-	const int NUMBER		=3;
+
+	const int NUMBER		=4;
 
 }
 

@@ -41,12 +41,19 @@ public:
 		double widthInterval;
 		double heightInterval;
 		double blockLength;
+		int whiteStoneThresh;
+		int blackStoneThresh;
 	}board;
 
 	struct markerConfiguration{
 		int boardMarkerID[18];
 		double markerLength;
 	}marker;
+
+	struct JosekiConfiguration{
+		std::string dbFile;
+		std::string sgfDirectory;
+	}joseki;
 
 private:
 	

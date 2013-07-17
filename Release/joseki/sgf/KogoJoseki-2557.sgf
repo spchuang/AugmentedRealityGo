@@ -1,0 +1,25 @@
+(;
+FF[4]
+KM[0.00]
+DT[29.11.2012]
+CA[UTF-8]
+AP[CGoban:3]
+ST[2]
+RU[Japanese]
+SZ[19]
+GN[Kogo's Joseki Dictionary]
+CP[see below]
+GC[Commercial distribution without permission and a link to the KJD webpage is a copyright violation. Please ask for permission prior to distribution.
+Contact: kogo@waterfire.us.
+Updates available at: http://waterfire.us/joseki.htm.
+
+Portions copyright 2010-2012 by Alexandre Dinerchtein.
+Portions copyright 2006-2007 by Andre Ay.
+Portions copyright 2000-2001 by Stefan Verstraeten. 
+Copyright 1998-2013 by Gary Odom.
+]
+
+;B[qd];W[od];B[mc];W[md];B[ld];W[lc];B[nc];W[nd];B[oc];W[pc]
+;B[pd];W[pb];B[lb];W[kc];B[kb];W[jc];B[jb];W[ic];B[le];W[ob]
+;B[na];W[of];B[rb];W[pe];B[qe];W[qf];B[rf];W[rg];B[re];W[ib]
+;B[qg];W[nb];B[mb];W[ja];B[pf];W[oe];B[og];W[mf])

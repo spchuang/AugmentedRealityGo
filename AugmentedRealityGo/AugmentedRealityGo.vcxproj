@@ -67,7 +67,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>opencv_core245.lib;opencv_imgproc245.lib;opencv_highgui245.lib;opencv_ml245.lib;opencv_video245.lib;opencv_features2d245.lib;opencv_calib3d245.lib;opencv_objdetect245.lib;opencv_contrib245.lib;opencv_legacy245.lib;opencv_flann245.lib;opengl32.lib;glew32.lib</AdditionalDependencies>
+      <AdditionalDependencies>opencv_core245.lib;opencv_imgproc245.lib;opencv_highgui245.lib;opencv_ml245.lib;opencv_video245.lib;opencv_features2d245.lib;opencv_calib3d245.lib;opencv_objdetect245.lib;opencv_contrib245.lib;opencv_legacy245.lib;opencv_flann245.lib;opengl32.lib;glew32.lib;sqlite3.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Program Files\boost\lib;C:\Users\Sam\Downloads\opencv\lib</AdditionalLibraryDirectories>
       <SubSystem>NotSet</SubSystem>
     </Link>
@@ -80,6 +80,12 @@
     <ClCompile Include="ARGraphicController.cpp" />
     <ClCompile Include="GamePlayUtils\FuegoAssistant.cpp" />
     <ClCompile Include="GamePlayUtils\GoAssistantController.cpp" />
+    <ClCompile Include="GamePlayUtils\JosekiAssistant.cpp" />
+    <ClCompile Include="GamePlayUtils\kombilo\abstractboard.cpp" />
+    <ClCompile Include="GamePlayUtils\kombilo\algos.cpp" />
+    <ClCompile Include="GamePlayUtils\kombilo\pattern.cpp" />
+    <ClCompile Include="GamePlayUtils\kombilo\search.cpp" />
+    <ClCompile Include="GamePlayUtils\kombilo\sgfparser.cpp" />
     <ClCompile Include="HelperClass\config.cpp" />
     <ClCompile Include="HelperClass\GoARdrawingutils.cpp" />
     <ClCompile Include="BoardTracking\GoBoardDetector.cpp" />
@@ -106,6 +112,13 @@
     <ClInclude Include="GamePlayUtils\GoAssistantController.h" />
     <ClInclude Include="GamePlayUtils\FuegoAssistant.h" />
     <ClInclude Include="GamePlayUtils\GameConstant.h" />
+    <ClInclude Include="GamePlayUtils\JosekiAssistant.h" />
+    <ClInclude Include="GamePlayUtils\kombilo\abstractboard.h" />
+    <ClInclude Include="GamePlayUtils\kombilo\algos.h" />
+    <ClInclude Include="GamePlayUtils\kombilo\pattern.h" />
+    <ClInclude Include="GamePlayUtils\kombilo\search.h" />
+    <ClInclude Include="GamePlayUtils\kombilo\sgfparser.h" />
+    <ClInclude Include="GamePlayUtils\kombilo\sqlite3.h" />
     <ClInclude Include="HelperClass\config.h" />
     <ClInclude Include="HelperClass\Helper.h" />
     <ClInclude Include="HelperClass\GoARdrawingutils.h" />
