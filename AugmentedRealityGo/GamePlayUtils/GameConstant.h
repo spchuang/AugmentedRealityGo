@@ -18,6 +18,13 @@
 #define ERROR_NEW_MOVE_WRONG_COLOR		4
 #define ERROR_REMOVE_THIS_STONE			5
 
+
+static const float CORNER_JOSEKI_COLOR[4][4]	= {{0.7f, 0.7f, 0.0f, 0.5f},
+											 {0.0f, 0.7f, 0.7f, 0.5f},
+											 {0.7f, 0.0f, 0.7f, 0.5f},
+											 {2.0f, 0.6f, 0.5f, 0.5f}};
+
+
 //assistant mode
 namespace ASSISTANT_MODE{
 	typedef enum
@@ -25,10 +32,11 @@ namespace ASSISTANT_MODE{
 	   NONE,
 	   FUEGO_BOOK,
 	   JOSEKI,
+	   FUEGO_MOVE,
 	   TERRITORY
 	} MODE_NUMBER;
 
-	const int NUMBER		=4;
+	const int NUMBER		=5;
 
 }
 

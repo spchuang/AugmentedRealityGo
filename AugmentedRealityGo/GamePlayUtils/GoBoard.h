@@ -43,6 +43,8 @@ public:
 	volatile int newMoveIndex;
 	static bool newMoveIsMade;
 
+	volatile int warningMsg;
+
 	std::vector<int> bStones;
 	std::vector<int> wStones;
 	

@@ -66,13 +66,33 @@ bool FuegoAssistant::sendCommandWithEmptyResponse(string command, string& readLi
 		getline(readFromFuego, readLine);
 
 	}while(readLine[0]!='=' && readLine[0]!='?');
-
+	
 	if(readLine[0] == '?'){
 		return false;
 	}
 
 	fprintf(stderr, "[FuegoAssistant]%s\n[FuegoAssistant]%s\n\n", command.c_str(), readLine.c_str());
 	return true;
+}
+void FuegoAssistant::getFuegoMove(int color)
+{
+	string readLine;
+	sendCommandWithEmptyResponse("uct_param_search expand_threshold 3", readLine);
+	//enable forced player move
+	sendCommandWithEmptyResponse("uct_param_player forced_opening_moves 1", readLine);
+
+	//generate a best move from fuego
+	sendCommandWithEmptyResponse(string("genmove ")+ helper::convert_int_color(color), readLine);
+
+	bookMoves.clear();
+	vector<string> l;
+
+	transform(readLine.begin(), readLine.end(), readLine.begin(), ::tolower);
+	helper::split(readLine, l, ' ');
+	bookMoves.push_back(helper::convert_string_move(l[1]));
+
+	//undo the move
+	sendCommandWithEmptyResponse("undo", readLine);
 }
 
 bool FuegoAssistant::estimateTerritory(int color)

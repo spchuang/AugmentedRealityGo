@@ -61,8 +61,8 @@ Config::Config(std::string config_file)
 	}
 
 	//stone detection configuration
-	board.whiteStoneThresh		= configTree.get<int>("stoneDetection.blackThrehold");
-	board.blackStoneThresh		= configTree.get<int>("stoneDetection.whiteThrehold");
+	board.whiteStoneThresh		= configTree.get<int>("stoneDetection.whiteThrehold");
+	board.blackStoneThresh		= configTree.get<int>("stoneDetection.blackThrehold");
 
 	//joseki setting
 	joseki.dbFile = configTree.get<string>("joseki.databaseFileName");

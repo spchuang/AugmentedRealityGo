@@ -47,6 +47,8 @@ int ARGraphicController::loadingMsg;
 int currentMsgTime =0;
 int prevMsgTime =0 ;
 
+
+
 ARGraphicController::ARGraphicController(Config* c, GoBoard* b, GoAssistantController* ass)
 {
 	//assign
@@ -171,6 +173,7 @@ void ARGraphicController::drawBackGround()
 
 void ARGraphicController::drawBoard()
 {
+	
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 		
@@ -190,6 +193,8 @@ void ARGraphicController::drawBoard()
 		glLoadMatrixd(post_m);
 		float p[]={0,0,0};
 		drawGoStone(0.01f,0.01f,0.01f,2,2,p,0);
+
+		
 		for(size_t i=0; i< 19*19;i++)
 		{
 			
@@ -202,22 +207,16 @@ void ARGraphicController::drawBoard()
 				drawGoStone(0.055f,0.045f,0.026f,14,14,p,1);
 			
 			//display error showing there are wrong board state
-			/*
-			if(board->wrongRealStones[i-4]!=0)
+			if(board->warningMsg != NO_WRONG_MOVE && (int)board->wrongRealStones[i]!=NO_WRONG_MOVE)
 			{
-				DrawPoint(p,5);
-			}*/
-			/*
-			{
-				p[0]*=-1;
-				p[1]*=-1;
-				p[2]*=-1;
-				DrawSquare(p, 0.15, WHITE_COLOR);
+				float p[]={d->Board3DPoint[i+4].x ,d->Board3DPoint[i+4].y,d->Board3DPoint[i+4].z};
+				DrawSquare(p, 0.10f, HALF_TRAN_RED_COLOR);
+
 			}
-			*/
 			
 
 		}
+	
 		size_t s;
 
 		//only show assistant if ...
@@ -241,6 +240,33 @@ void ARGraphicController::drawBoard()
 					}
 					break;
 				case ASSISTANT_MODE::JOSEKI:
+					s = (goAssistant->josekiMoves)->size();
+					for(size_t i=0; i<s; i++)
+					{
+						int index = (*goAssistant->josekiMoves)[i].id;
+						int corner = (*goAssistant->josekiMoves)[i].corner;
+
+
+						float p[]={d->Board3DPoint[index+4].x ,d->Board3DPoint[index+4].y,d->Board3DPoint[index+4].z};
+
+						DrawSquare(p, 0.10f, CORNER_JOSEKI_COLOR[corner]);
+
+
+					}
+
+					break;
+				case ASSISTANT_MODE::FUEGO_MOVE:
+					s = (goAssistant->FuegoBookMoves)->size();
+					for(size_t i=0; i<s; i++)
+					{
+						int index = (*goAssistant->FuegoBookMoves)[i];
+						float p[]={d->Board3DPoint[index+4].x ,d->Board3DPoint[index+4].y,d->Board3DPoint[index+4].z};
+						if(i==0){
+							DrawSquare(p, 0.10f, HALF_TRAN_BLUE_COLOR);
+						}else{
+							DrawSquare(p, 0.10f, HALF_TRAN_GREEN_COLOR);
+						}
+					}
 					break;
 				case ASSISTANT_MODE::TERRITORY:
 				
@@ -277,6 +303,7 @@ void ARGraphicController::drawBoard()
 
 void ARGraphicController::RenderSceneCB()
 {
+
 	calculateFPS();
 	
 	
@@ -354,6 +381,14 @@ void ARGraphicController::RenderSceneCB()
 					msg = "Assistant Mode: Joseki";
 				draw_text(-0.97f,0.92f, GREEN_COLOR, msg);
 				break;
+			case ASSISTANT_MODE::FUEGO_MOVE:
+				if(goAssistant->isProcessing)
+					msg = "Assistant Mode: Fuego Move" + loadingString;
+				else 
+					msg = "Assistant Mode: Fuego Move";
+				draw_text(-0.97f,0.92f, GREEN_COLOR, msg);
+				break;
+					break;
 			case ASSISTANT_MODE::TERRITORY:
 				if(goAssistant->isProcessing)
 					msg = "Assistant Mode: Territory Estimation" + loadingString;
@@ -375,7 +410,24 @@ void ARGraphicController::RenderSceneCB()
 			draw_circle(0.6f,0.93f,0.03f,WHITE_COLOR );
 		}
 		
-		
+		//print warning if necessary
+		if(board->warningMsg != NO_WRONG_MOVE){
+			
+			if(board->warningMsg == ERROR_REMOVE_THIS_STONE){
+				msg = "Error: Those stones are captured";
+			}else if(board->warningMsg == ERROR_REAL_OVERLAPS_VIRTUAL){
+				msg = "Error: Real stone overlaps with virtual";
+			}else if(board->warningMsg == ERROR_OLD_REAL_STONE_MOVED){
+				msg = "Error: Stone state is change";
+			}else if(board->warningMsg == ERROR_MORE_THAN_ONE_NEW_MOVES){
+				msg = "Error: More than one new move";
+			} else if(board->warningMsg == ERROR_NEW_MOVE_WRONG_COLOR){
+				msg = "Error: New stone is the wrong color";
+			}     
+			draw_text(-0.90f,0.824f, RED_COLOR, msg);
+			draw_circle(-0.95f,0.85f,0.04f, RED_COLOR);
+
+		}
 
 	glPopMatrix();
 	glMatrixMode( GL_MODELVIEW );
@@ -491,6 +543,7 @@ void ARGraphicController::keyFunc(unsigned char key, int x, int y)
 			
 			char newRealBoardStones[361];
 			d->readStone(newRealBoardStones);
+			
 
 			if(board->checkNewBoardState(newRealBoardStones, newMoveColor)){
 
@@ -505,6 +558,7 @@ void ARGraphicController::keyFunc(unsigned char key, int x, int y)
 	
 		break;
 	case 'b':
+	
 		//d.saveBackGroundBoard();
 		break;
 	case 'o':
@@ -537,6 +591,25 @@ void ARGraphicController::keyFunc(unsigned char key, int x, int y)
 	case 't':
 		//d.GoBoardTaux.convertTo(Tvec ,CV_32F);
 		break;
-  
+	case '2':
+		assistant_mode = ASSISTANT_MODE::FUEGO_BOOK;
+		goAssistant->pushAssistantMode(assistant_mode);
+		break;
+	case '3':
+		assistant_mode = ASSISTANT_MODE::JOSEKI;
+		goAssistant->pushAssistantMode(assistant_mode);
+		break;
+	case '4':
+		assistant_mode = ASSISTANT_MODE::FUEGO_MOVE;
+		goAssistant->pushAssistantMode(assistant_mode);
+		break;
+	case '5':
+		assistant_mode = ASSISTANT_MODE::TERRITORY;
+		goAssistant->pushAssistantMode(assistant_mode);
+		break;
+	case '1':
+		assistant_mode = ASSISTANT_MODE::NONE;
+		goAssistant->pushAssistantMode(assistant_mode);
+		break;
 	}
 }

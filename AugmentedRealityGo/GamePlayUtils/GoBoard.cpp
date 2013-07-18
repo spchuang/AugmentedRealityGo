@@ -12,6 +12,9 @@ GoBoard::GoBoard()
 	newMoveIsMade = false;
 	bStones.clear();
 	wStones.clear();
+	warningMsg = NO_WRONG_MOVE;
+
+	
 }
 
 void GoBoard::setFuego(FuegoAssistant* f)
@@ -32,6 +35,7 @@ void GoBoard::clear_board()
 		realStones[i] = COLOR_NONE;
 		wrongRealStones[i] = NO_WRONG_MOVE;
 	}
+	warningMsg = NO_WRONG_MOVE;
 	//clear fuego state too
 	fuego->clear_board();
 	currentMoveColor = COLOR_WHITE;
@@ -45,6 +49,7 @@ int GoBoard::getMoveTurnColor()
 }
 void GoBoard::changeTurn()
 {
+	
 	if(currentMoveColor == COLOR_WHITE)
 		currentMoveColor = COLOR_BLACK;
 	else if(currentMoveColor == COLOR_BLACK)
@@ -88,7 +93,7 @@ void GoBoard::changeTurn()
 			}
 		}
 	}
-	
+	warningMsg = NO_WRONG_MOVE;
 	//remove the stones
 	for(int i=0; i<removeStones.size(); i++){
 		int removeIndex = removeStones[i];
@@ -96,9 +101,11 @@ void GoBoard::changeTurn()
 			virtualStones[removeIndex] = COLOR_NONE;
 		}else{
 			//if the real stone should be removed, put that index on the list
+
 			wrongRealStones[removeIndex] = ERROR_REMOVE_THIS_STONE;
 			realStones[removeIndex] = COLOR_NONE;
-
+			if(warningMsg ==NO_WRONG_MOVE)
+				warningMsg = ERROR_REMOVE_THIS_STONE;
 		}
 	}
 
@@ -153,8 +160,10 @@ bool GoBoard::checkNewBoardState(char newRealBoardStones[361], char newMoveColor
 	for(int i=0; i<19*19;i++)
 	{
 		wrongRealStones[i] = NO_WRONG_MOVE;
-
 	}
+
+	warningMsg = NO_WRONG_MOVE;
+
 	bool realOverlapVirtual = false;
 	bool oldBoardStonesChanged = false;
 
@@ -167,16 +176,19 @@ bool GoBoard::checkNewBoardState(char newRealBoardStones[361], char newMoveColor
 			std::cerr<<"ERROR: real stone overlaps with virtual\n";
 			wrongRealStones[i] = ERROR_REAL_OVERLAPS_VIRTUAL;
 			realOverlapVirtual = true;
+			if(warningMsg ==NO_WRONG_MOVE)
+				warningMsg = ERROR_REAL_OVERLAPS_VIRTUAL;
 		}
 
 		//check if a real stone was placed, but the new board state shows it's changed
 		if( (realStones[i]==0 ||realStones[i]==1) && realStones[i] != newRealBoardStones[i])
 		{
 			std::cerr<<"ERROR: stone state is changed\n";
-
+			
 			wrongRealStones[i] = ERROR_OLD_REAL_STONE_MOVED;
 			oldBoardStonesChanged = true;
-	
+			if(warningMsg ==NO_WRONG_MOVE)
+				warningMsg = ERROR_OLD_REAL_STONE_MOVED;
 		}
 	}
 
@@ -200,7 +212,8 @@ bool GoBoard::checkNewBoardState(char newRealBoardStones[361], char newMoveColor
 
 		}else if(allNewMoveIndex.size()>1){
 			 std::cerr<<"ERROR: there are more than one new move\n";
-
+			 if(warningMsg ==NO_WRONG_MOVE)
+				warningMsg = ERROR_MORE_THAN_ONE_NEW_MOVES;
 			for(int i=0; i<allNewMoveIndex.size(); i++)
 			{
 				wrongRealStones[allNewMoveIndex[i]] = ERROR_MORE_THAN_ONE_NEW_MOVES;
@@ -217,11 +230,23 @@ bool GoBoard::checkNewBoardState(char newRealBoardStones[361], char newMoveColor
 				return true;
 			}
 			std::cerr<<"ERROR: the new stone is the wrong color!\n";
-
+			if(warningMsg ==NO_WRONG_MOVE)
+				warningMsg = ERROR_NEW_MOVE_WRONG_COLOR;
 			wrongRealStones[allNewMoveIndex[0]] = ERROR_NEW_MOVE_WRONG_COLOR;
 			
 		}
 	}
+	/*
+	for(int i=18; i>=0;i--){
+		for(int j=0; j<19;j++)
+		{
+			if(wrongRealStones[i*19+j]!=NO_WRONG_MOVE)
+
+				std::cout<<(int)wrongRealStones[i*19+j];
+
+		}
+	}
+	*/
 	return false;
 }
 

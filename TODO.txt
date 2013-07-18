@@ -3,6 +3,10 @@ MAIN TODO
 - Fuego best move support (useful when no more openmove are avaliable)
 - connect with ktp server
 
+7/18
+- finished joseki corner suggestions
+
+
 7/9
 Goal: add joseki corner support.. (failed)
 - add config file reading 

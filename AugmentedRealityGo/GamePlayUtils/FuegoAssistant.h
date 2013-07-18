@@ -24,6 +24,8 @@ public:
 	~FuegoAssistant();
 	bool getBookPositions();
 	bool estimateTerritory(int color);
+	void getFuegoMove(int color);
+
 	void clear_board();
 	void genMove(std::string color);
 	void boardState(std::vector<int>& bStones, std::vector<int>& wStones);

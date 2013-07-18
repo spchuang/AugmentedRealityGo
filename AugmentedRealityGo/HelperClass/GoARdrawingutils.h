@@ -35,7 +35,7 @@ std::string intToString (int number){
 
       }
 	  */
-static const float HALF_TRAN_RED_COLOR[]		= {1.0f, 0.0f, 0.0f, 0.5f};
+static const float HALF_TRAN_RED_COLOR[]		= {1.0f, 0.0f, 0.0f, 0.8f};
 static const float HALF_TRAN_GREEN_COLOR[]	= {0.0f, 1.0f, 0.0f, 0.5f};
 static const float HALF_TRAN_BLUE_COLOR[]		= {0.0f, 0.0f, 1.0f, 0.5f};
 static const float HALF_TRAN_BLACK_COLOR[]		= {0.0f, 0.0f, 0.0f, 0.5f};

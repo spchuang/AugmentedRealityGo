@@ -17,6 +17,7 @@ StoneDetector::StoneDetector(int w_thresh = 190, int b_thresh = 60)
 	min_radius = 4;
 	max_radius = 15;
 	border = 5; //border padding
+
 }
 
 int thresh = 100;

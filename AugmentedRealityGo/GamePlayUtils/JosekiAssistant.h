@@ -8,6 +8,7 @@
 #include <boost/filesystem.hpp> 
 
 #include "../HelperClass/Helper.h"
+#include "GameConstant.h"
 #include "kombilo/sgfparser.h"
 #include "kombilo/search.h"
 #include "GameConstant.h"
@@ -18,22 +19,25 @@ using boost::filesystem::directory_iterator;
 using namespace std;
 
 //i know circular pointers are bad but it's an easier design
-
+struct cornerJoseki{
+	int id;
+	int corner;
+};
 class JosekiAssistant
 {
 public:
 	JosekiAssistant();
 
 	void loadDB(string dbFile, string sgfFolder);
-	void getJoseki(std::vector<int> temp_bStones,std::vector<int> temp_wStones);
+	void getJoseki(std::vector<int> temp_bStones,std::vector<int> temp_wStones, int nextMove);
 	~JosekiAssistant();
 	
-	
+	static std::vector<cornerJoseki> josekiMoves;
 private:
-	string createCornerPatternString(int sw, int width, int height, std::vector<int>& temp_bStones,std::vector<int>& temp_wStones);
+	void searchCornerJoseki(int corner, int sw, int width, int height, std::vector<int>& temp_bStones,std::vector<int>& temp_wStones);
 	GameList* gl;
 	int algos;
-
+	SearchOptions so;
 
 };
 	

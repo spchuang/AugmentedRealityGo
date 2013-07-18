@@ -1,5 +1,7 @@
 #include "JosekiAssistant.h"
 
+std::vector<cornerJoseki> JosekiAssistant::josekiMoves;
+
 JosekiAssistant::JosekiAssistant()
 {
 	algos = ALGO_FINALPOS | ALGO_MOVELIST | ALGO_HASH_FULL | ALGO_HASH_CORNER;
@@ -73,11 +75,12 @@ void JosekiAssistant::loadDB(string dbFile, string sgfFolder)
 	cout<<gl->size() <<" games." <<endl;
 	delete p_op;
 }
-string JosekiAssistant::createCornerPatternString(int sw, int width, int height, 
+
+
+void JosekiAssistant::searchCornerJoseki(int corner, int sw, int width, int height, 
 	std::vector<int>& temp_bStones,std::vector<int>& temp_wStones)
 {
 	//during this process kinda assume no stones are being played...
-
 	string patternString;
 	for(int i=height-1; i>=0; i--){
 
@@ -103,44 +106,64 @@ string JosekiAssistant::createCornerPatternString(int sw, int width, int height,
 					break;
 				}
 			}
-
 			if(!stonePlaced)
 				patternString+=".";
 		}
 	}
-	return patternString;
-}
-
-void JosekiAssistant::getJoseki(std::vector<int> temp_bStones,std::vector<int> temp_wStones, int nextMove)
-{
-	
-	//save a temporarly board state
-	//temp_bStones = board->bStones;
-	//temp_wStones = board->wStones;
-	// ------------------- set up search pattern for 4 corners of the board---------
-	string sw = createCornerPatternString(0, 10, 10, temp_bStones, temp_wStones);
-	Pattern p(CORNER_SW_PATTERN,19,10,10, sw.c_str());
-	printf("Search pattern:\n");
-	printf("%s\n", p.printPattern().c_str());
-	// -------------------- set up search options ----------------------------------
-	SearchOptions so;
-	so.fixedColor = 0;
-	so.algos = algos;
-	so.nextMove = nextMove;
+	// ------------------- set up search pattern --------------------------------
+	Pattern p(corner,19,width,height, patternString.c_str());
+	//printf("Search pattern:\n");
+	//printf("%s\n", p.printPattern().c_str());
 
 	// -------------------- do pattern search --------------------------------------
 	gl->reset();
 	gl->search(p, &so);
 
-	printf("Continuations:\n");
+	//printf("Continuations:\n");
 	//print joseki result
 	for(int y=0; y<p.sizeY; y++) {
 		for(int x=0; x<p.sizeX; x++) {
-			printf("%c", gl->lookupLabel(x,y));
+			
+			//printf("%c", gl->lookupLabel(x,y));
+
+			if(gl->lookupLabel(x,y) != '.'){
+				int id = sw+(height-y-1)*19+(x);
+				cornerJoseki j;
+				j.id = id;
+				j.corner = corner;
+				//printf("%c: (%d, %d) = %d\n",gl->lookupLabel(x,y), x, sizeY-y-1, id);
+				josekiMoves.push_back(j);
+			}
 		}
-		printf("\n");
+		cout<<endl;
 	}
+
+}
+
+void JosekiAssistant::getJoseki(std::vector<int> temp_bStones,std::vector<int> temp_wStones, int nextMove)
+{
+	int sizeX = 10;
+	int sizeY = 10;
+
+	josekiMoves.clear();
+	//save a temporarly board state
+	//temp_bStones = board->bStones;
+	//temp_wStones = board->wStones;
+
+	// -------------------- set up search options ----------------------------------
+	so.fixedColor = 0;
+	so.algos = algos;
+	so.nextMove = nextMove;
+
+	// ------------------- set up search pattern for 4 corners of the board---------
+	searchCornerJoseki(CORNER_SW_PATTERN, 0, sizeX, sizeY, temp_bStones, temp_wStones);
+	searchCornerJoseki(CORNER_SE_PATTERN, 9, sizeX, sizeY, temp_bStones, temp_wStones);
+	searchCornerJoseki(CORNER_NW_PATTERN, 171, sizeX, sizeY, temp_bStones, temp_wStones);
+	searchCornerJoseki(CORNER_NE_PATTERN, 180, sizeX, sizeY, temp_bStones, temp_wStones);
+
+
 	
+	/*
 	printf("\n");
 		printf("Statistics:\n"); 
 		printf("num hits: %d, num switched: %d, B wins: %d, W wins: %d\n", gl.num_hits, gl.num_switched, gl.Bwins, gl.Wwins);
@@ -158,7 +181,7 @@ void JosekiAssistant::getJoseki(std::vector<int> temp_bStones,std::vector<int> t
 				}
 			}
 		}
-
+		*/
 	// ------------------- set up search pattern for 4 corners of the board---------
 	//Pattern p(CORNER_NW_PATTERN,19,7,7, ".................X.....X......XO.....OO..........");
 

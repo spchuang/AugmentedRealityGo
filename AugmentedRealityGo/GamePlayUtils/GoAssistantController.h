@@ -27,11 +27,13 @@ public:
 	void showBoard();
 	static std::vector<int>* FuegoBookMoves;
 	static std::vector<float>* FuegoEstimateScore;
+	static std::vector<cornerJoseki>* josekiMoves;
 
 	//all those volatile variables should be changed to boost::atomic in the future
 	//the memory arrangement is only guaranteed in VC
 	static volatile int currentMode;
 	static volatile bool isProcessing;
+	
 private:
 	//use queue to store assistant request, and process in FIFO order
 	std::queue<int> assistant_queue;

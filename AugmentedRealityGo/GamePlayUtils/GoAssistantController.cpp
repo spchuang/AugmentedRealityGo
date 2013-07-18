@@ -4,6 +4,8 @@ JosekiAssistant GoAssistantController::joseki = JosekiAssistant();
 
 std::vector<int>* GoAssistantController::FuegoBookMoves;
 std::vector<float>* GoAssistantController::FuegoEstimateScore;
+std::vector<cornerJoseki>* GoAssistantController::josekiMoves;
+
 volatile int GoAssistantController::currentMode;
 volatile bool GoAssistantController::isProcessing;
 
@@ -18,6 +20,7 @@ GoAssistantController::GoAssistantController(GoBoard* b, Config* c)
 
 	FuegoBookMoves = &(fuego.bookMoves);
 	FuegoEstimateScore = &(fuego.estimateScore);
+	josekiMoves		= &(joseki.josekiMoves);
 	isProcessing = false;
 }
 
@@ -57,7 +60,17 @@ void GoAssistantController::AssistantMainLoop()
 					fuego.getBookPositions();
 					break;
 				case ASSISTANT_MODE::JOSEKI:
-					joseki.getJoseki(board->bStones, board->wStones);
+					int nextMoveColor;
+					if(board->getMoveTurnColor() == COLOR_BLACK){
+						nextMoveColor = 1;
+					}else{
+						nextMoveColor = 2;
+					}
+					joseki.getJoseki(board->bStones, board->wStones, nextMoveColor);
+					break;
+
+				case ASSISTANT_MODE::FUEGO_MOVE:
+					fuego.getFuegoMove(board->getMoveTurnColor());
 					break;
 				case ASSISTANT_MODE::TERRITORY:
 					fprintf(stderr, "[GoAssistant]processing territory estimation\n");
