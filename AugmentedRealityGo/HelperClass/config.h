@@ -55,6 +55,10 @@ public:
 		std::string sgfDirectory;
 	}joseki;
 
+	struct fuegoConfiguration{
+		int memoryLimit;
+	}fuego;
+
 private:
 	
 	

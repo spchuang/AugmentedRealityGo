@@ -42,7 +42,12 @@ FuegoAssistant::FuegoAssistant()
 	}
 	bookLoaded = true;
 
+	
+	
+
 }
+
+
 
 FuegoAssistant::~FuegoAssistant()
 {
@@ -51,6 +56,14 @@ FuegoAssistant::~FuegoAssistant()
 
 
 }
+void FuegoAssistant::set_memory_limit(int m)
+{
+	//set the memory limit
+	string readLine;
+
+	sendCommandWithEmptyResponse(helper::add_var_to_string("uct_max_memory ",m), readLine);
+}
+
 void FuegoAssistant::clear_board()
 {
 	string readLine;
@@ -66,7 +79,8 @@ bool FuegoAssistant::sendCommandWithEmptyResponse(string command, string& readLi
 		getline(readFromFuego, readLine);
 
 	}while(readLine[0]!='=' && readLine[0]!='?');
-	
+
+
 	if(readLine[0] == '?'){
 		return false;
 	}

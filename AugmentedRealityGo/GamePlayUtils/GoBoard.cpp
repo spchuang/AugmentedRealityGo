@@ -8,6 +8,7 @@ GoBoard::GoBoard()
 		realStones[i] = COLOR_NONE;
 		wrongRealStones[i] = NO_WRONG_MOVE;
 	}
+	newMoveIndex = -1;
 	currentMoveColor = COLOR_BLACK;
 	newMoveIsMade = false;
 	bStones.clear();
@@ -29,7 +30,6 @@ void GoBoard::setJoseki(JosekiAssistant* j)
 
 void GoBoard::clear_board()
 {
-	
 	for(int i=0; i<19*19; i++){
 		virtualStones[i] = COLOR_NONE;
 		realStones[i] = COLOR_NONE;
@@ -38,9 +38,10 @@ void GoBoard::clear_board()
 	warningMsg = NO_WRONG_MOVE;
 	//clear fuego state too
 	fuego->clear_board();
-	currentMoveColor = COLOR_WHITE;
+	currentMoveColor = COLOR_BLACK;
 	bStones.clear();
 	wStones.clear();
+	newMoveIndex = -1;
 }
 
 int GoBoard::getMoveTurnColor()
@@ -133,8 +134,8 @@ bool GoBoard::addVirtualStone(std::string move, std::string color)
 		wStones.push_back(stone_index);
 	}
 	
-
-
+	//set new move to the new virtual move
+	newMoveIndex = stone_index;
 	changeTurn();
 	return true;
 }

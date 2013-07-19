@@ -104,6 +104,13 @@ namespace helper
 		str.erase(pos + 1); 
 		return str;
 	}
+
+	template<class T>
+	static std::string add_var_to_string(std::string const &a, const T &b){
+	  std::ostringstream oss;
+	  oss<<a<<b;
+	  return oss.str();
+	}
 }
 
 #endif

@@ -47,7 +47,8 @@ int ARGraphicController::loadingMsg;
 int currentMsgTime =0;
 int prevMsgTime =0 ;
 
-
+float arrow_space_height = 0.28;
+float arrow_space_height_add = 0.25;
 
 ARGraphicController::ARGraphicController(Config* c, GoBoard* b, GoAssistantController* ass)
 {
@@ -133,9 +134,12 @@ void ARGraphicController::calculateFPS()
 		loadingMsg = (loadingMsg+1)%4;
 	}
 
+	//fps = f/s
 
-	
-	
+
+	//calculate arrow animation
+	arrow_space_height_add -= 0.25/fps;
+	if(arrow_space_height_add <0) arrow_space_height_add = 0.25;
 }
 
 void ARGraphicController::drawBackGround()
@@ -211,14 +215,30 @@ void ARGraphicController::drawBoard()
 			{
 				float p[]={d->Board3DPoint[i+4].x ,d->Board3DPoint[i+4].y,d->Board3DPoint[i+4].z};
 				DrawSquare(p, 0.10f, HALF_TRAN_RED_COLOR);
-
 			}
+
 			
-
+			
 		}
-	
-		size_t s;
 
+		//draw_arrow(p, 0.055, 0.2, arrow_space_height_add + arrow_space_height, NEW_MOVE_COLOR, false);
+		//draw arrrow to indicate new moves
+		int i = board->newMoveIndex;
+		if(i!=-1){
+			float p_m[]={-d->Board3DPoint[i+4].x ,-d->Board3DPoint[i+4].y,-d->Board3DPoint[i+4].z};
+			draw_arrow(p_m, 0.05, 0.2, arrow_space_height_add + arrow_space_height, NEW_MOVE_COLOR, false);
+		
+		}
+
+		/*
+		glLineWidth(2.5);
+		glColor3f(1.0, 0.0, 0.0);
+		glBegin(GL_LINES);
+		glVertex3f(0.0, 0.0, 0.0);
+		glVertex3f(15, 0, 0);
+		glEnd();
+		*/
+		size_t s;
 		//only show assistant if ...
 		if(assistant_mode == goAssistant->currentMode && !goAssistant->isProcessing){
 			switch(assistant_mode)
@@ -342,7 +362,7 @@ void ARGraphicController::RenderSceneCB()
 
 		//  Print the FPS to the window in bottom right corner
 		std::string msg = "FPS: " + floatToString(fps);
-		draw_text(0.70f,-0.96f, SOLID_RED_COLOR, msg);
+		draw_text(0.64f,-0.964f, SOLID_RED_COLOR, msg);
 
 		
 		//print board status bar
@@ -364,29 +384,29 @@ void ARGraphicController::RenderSceneCB()
 		switch(assistant_mode)
 		{
 			case ASSISTANT_MODE::NONE:
-				msg = "Assistant Mode: No";
-				draw_text(-0.97f,0.92f, GREEN_COLOR, msg);
+				msg = "Assistant Mode: None";
+				draw_text(-0.97f,0.90f, BLUE_COLOR, msg);
 				break;
 			case ASSISTANT_MODE::FUEGO_BOOK:
 				if(goAssistant->isProcessing)
 					msg = "Assistant Mode: Opening book "+loadingString;
 				else 
 					msg = "Assistant Mode: Opening book";
-				draw_text(-0.97f,0.92f, GREEN_COLOR, msg);
+				draw_text(-0.97f,0.90f, BLUE_COLOR, msg);
 				break;
 			case ASSISTANT_MODE::JOSEKI:
 				if(goAssistant->isProcessing)
 					msg = "Assistant Mode: Joseki" + loadingString;
 				else 
 					msg = "Assistant Mode: Joseki";
-				draw_text(-0.97f,0.92f, GREEN_COLOR, msg);
+				draw_text(-0.97f,0.90f, BLUE_COLOR, msg);
 				break;
 			case ASSISTANT_MODE::FUEGO_MOVE:
 				if(goAssistant->isProcessing)
 					msg = "Assistant Mode: Fuego Move" + loadingString;
 				else 
 					msg = "Assistant Mode: Fuego Move";
-				draw_text(-0.97f,0.92f, GREEN_COLOR, msg);
+				draw_text(-0.97f,0.90f, BLUE_COLOR, msg);
 				break;
 					break;
 			case ASSISTANT_MODE::TERRITORY:
@@ -394,7 +414,7 @@ void ARGraphicController::RenderSceneCB()
 					msg = "Assistant Mode: Territory Estimation" + loadingString;
 				else 
 					msg = "Assistant Mode: Territory Estimation";
-				draw_text(-0.97f,0.92f, GREEN_COLOR, msg);
+				draw_text(-0.97f,0.90f, BLUE_COLOR, msg);
 				break;
 				
 		}
@@ -402,12 +422,12 @@ void ARGraphicController::RenderSceneCB()
 		//print player turns
 		if(board->getMoveTurnColor() == COLOR_BLACK){
 			msg = "Black's turn";
-			draw_text(0.64f,0.91f, BLUE_COLOR, msg);
-			draw_circle(0.6f,0.93f,0.03f,BLACK_COLOR );
+			draw_text(0.59f,0.90f, BLACK_COLOR, msg);
+			draw_circle(0.55f,0.93f,0.045f,BLACK_COLOR );
 		}else{
 			msg = "White's turn";
-			draw_text(0.64f,0.91f, WHITE_COLOR, msg);
-			draw_circle(0.6f,0.93f,0.03f,WHITE_COLOR );
+			draw_text(0.59f,0.90f, WHITE_COLOR, msg);
+			draw_circle(0.55f,0.93f,0.045f,WHITE_COLOR );
 		}
 		
 		//print warning if necessary
@@ -424,8 +444,8 @@ void ARGraphicController::RenderSceneCB()
 			} else if(board->warningMsg == ERROR_NEW_MOVE_WRONG_COLOR){
 				msg = "Error: New stone is the wrong color";
 			}     
-			draw_text(-0.90f,0.824f, RED_COLOR, msg);
-			draw_circle(-0.95f,0.85f,0.04f, RED_COLOR);
+			draw_text(-0.90f,0.814f, RED_COLOR, msg);
+			draw_circle(-0.95f,0.84f,0.04f, RED_COLOR);
 
 		}
 

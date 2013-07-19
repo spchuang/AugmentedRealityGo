@@ -69,5 +69,11 @@
 		"databaseFileName":  "joseki/joseki.db",
 		"sgfFolderPath": "joseki/sgf"
 	  
+	},
+	
+	"fuego":{
+		//500000000 = 500 mb
+		"memory_limit": 10000000
+	
 	}
 }

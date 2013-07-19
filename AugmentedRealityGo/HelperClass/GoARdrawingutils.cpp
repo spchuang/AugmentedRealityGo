@@ -214,8 +214,56 @@ void draw_text(float x, float y, const float* color, std::string msg)
 {
 	glColor4f(color[0], color[1], color[2], color[3]);
 	glRasterPos2f(x, y);
-	//
+	//GLUT_BITMAP_HELVETICA_18 
 	
-	glutBitmapString(GLUT_BITMAP_HELVETICA_18, (const unsigned char*)msg.c_str());
+	glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, (const unsigned char*)msg.c_str());
 	glColor4f(1.f, 1.f, 1.f, 1.f);
+}
+
+//normally pointing up
+void draw_arrow(float* origin, float size, float height, float space_height, const float* color, bool flip)
+{
+	int DEF_D = 6;
+	int k;
+	float i=1;
+	if(flip)
+		i=-1;
+	origin[2] -= space_height;
+	
+	
+
+
+	
+	
+
+	//surrounding part
+	 glBegin(GL_TRIANGLES);
+		for (k=0;k<=360;k+=DEF_D){
+			glColor4f(color[0], color[1], color[2], color[3]);
+			glVertex3f(origin[0], origin[1], origin[2]+height*i);
+			glVertex3f(origin[0]+cos((float)k)*size, origin[1]+sin((float)k)*size, origin[2]);
+			glVertex3f(origin[0]+cos((float)k+DEF_D)*size, origin[1]+sin((float)k+DEF_D)*size, origin[2]);
+		}
+	glEnd();
+ 
+	/* bottom circle */
+	glBegin(GL_TRIANGLES);
+		for (k=0;k<=360;k+=DEF_D) {
+			glColor4f(color[0], color[1], color[2], color[3]);
+			glVertex3f(origin[0], origin[1], origin[2]);
+			glVertex3f(origin[0]+cos((float)k)*size, origin[1]+sin((float)k)*size*i, origin[2]);
+			glVertex3f(origin[0]+cos((float)k+DEF_D)*size, origin[1]+sin((float)k+DEF_D)*size*i, origin[2]);
+		}
+	glEnd();
+
+	float cylinder_h = 0.3;
+	float cylinder_s = 0.01;
+	//draw cylinder
+	glBegin(GL_QUAD_STRIP);
+		for (k=0;k<=360;k+=DEF_D) {
+			glColor4f(color[0], color[1], color[2], color[3]);
+			glVertex3f(origin[0]+cos((float)k)*cylinder_s,origin[1]+sin((float)k)*cylinder_s,origin[2]-cylinder_h);
+			glVertex3f(origin[0]+cos((float)k)*cylinder_s,origin[1]+sin((float)k)*cylinder_s,origin[2]);
+		}
+	glEnd();
 }

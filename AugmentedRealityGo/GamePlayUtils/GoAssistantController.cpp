@@ -22,6 +22,8 @@ GoAssistantController::GoAssistantController(GoBoard* b, Config* c)
 	FuegoEstimateScore = &(fuego.estimateScore);
 	josekiMoves		= &(joseki.josekiMoves);
 	isProcessing = false;
+
+	fuego.set_memory_limit(c->fuego.memoryLimit);
 }
 
 void GoAssistantController::pushAssistantMode(int a)

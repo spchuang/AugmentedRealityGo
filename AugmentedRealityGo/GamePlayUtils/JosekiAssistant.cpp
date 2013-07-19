@@ -72,7 +72,7 @@ void JosekiAssistant::loadDB(string dbFile, string sgfFolder)
 		gl->finalize_processing();
 	}
 
-	cout<<gl->size() <<" games." <<endl;
+	cerr<<"[JosekiAssistant]Total of "<<gl->size() <<" games." <<endl;
 	delete p_op;
 }
 
@@ -135,7 +135,7 @@ void JosekiAssistant::searchCornerJoseki(int corner, int sw, int width, int heig
 				josekiMoves.push_back(j);
 			}
 		}
-		cout<<endl;
+		//cout<<endl;
 	}
 
 }

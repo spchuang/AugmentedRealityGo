@@ -3,6 +3,12 @@ MAIN TODO
 - Fuego best move support (useful when no more openmove are avaliable)
 - connect with ktp server
 
+7/19
+- add memory limit for fuego
+- enlarged font size
+- show new move hint
+- add arrow hint
+
 7/18
 - finished joseki corner suggestions
 
@@ -53,3 +59,6 @@ sqlite3 for the library
 for windows, see: http://dcravey.wordpress.com/2011/03/21/using-sqlite-in-a-visual-c-application/
 opencv 2.4
 openGL
+
+gogui-twogrp:
+"C:\Program Files\GoGui\gogui-twogtp.exe" -black "C:\Program Files\gnugo-3.8\gnugo.exe --mode gtp" -white "C:\Users\Sam\Documents\Visual Studio 2010\Projects\AugmentedRealityGo\Release\AugmentedRealityGo.exe"

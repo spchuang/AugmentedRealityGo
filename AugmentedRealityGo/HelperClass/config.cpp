@@ -67,4 +67,7 @@ Config::Config(std::string config_file)
 	//joseki setting
 	joseki.dbFile = configTree.get<string>("joseki.databaseFileName");
 	joseki.sgfDirectory = configTree.get<string>("joseki.sgfFolderPath");
+
+	//fuego setting
+	fuego.memoryLimit = configTree.get<int>("fuego.memory_limit");
 }
