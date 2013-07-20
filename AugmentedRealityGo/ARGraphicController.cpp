@@ -14,17 +14,6 @@ GLfloat light_diffuse[4] = {1.0f,1.0f,1.0f,1.0f};
 GLfloat light_specular[4] = {1.0f,1.0f,1.0f,1.0f}; 
 GLfloat light_position[4]= {1.0f,1.0f,1.0f,0.0f};  /* Infinite light location. */
 
-/*
-float intrinsic_array[3][3]=
-	{{836.4486992622585f, 0.0f, 323.0858931708451f},
-	{0.0f, 826.8277262586329f, 213.3817272250332f},
-	{0.0f, 0.0f, 1.0f}};
-
-float distCoeffs_array[5] =
-	{-0.001934653862378617f, -0.01807873574764167f, -0.004907823919307007f, 0.001827540747833625f, 0.1252985971583606f};
-	*/
-
-
 float camera_matrix[16];
 GLuint textureID;
 bool detectedBoard;
@@ -50,6 +39,10 @@ int prevMsgTime =0 ;
 float arrow_space_height = 0.28;
 float arrow_space_height_add = 0.25;
 
+
+bool showAllStones;
+cv::Mat frameImg;
+
 ARGraphicController::ARGraphicController(Config* c, GoBoard* b, GoAssistantController* ass)
 {
 	//assign
@@ -69,6 +62,12 @@ ARGraphicController::ARGraphicController(Config* c, GoBoard* b, GoAssistantContr
 
 	assistant_mode = ASSISTANT_MODE::NONE;
 	loadingMsg = 0;
+
+	showAllStones = false;
+
+	glGenTextures(1, &textureID);                  // Create The Texture
+
+		
 }
 
 ARGraphicController::~ARGraphicController()
@@ -89,14 +88,19 @@ void ARGraphicController::start(int argc, char *argv[])
     glutIdleFunc(&ARGraphicController::gl_idle_func);
 	
 	glutKeyboardFunc(&ARGraphicController::keyFunc);
-	/*
-	glewInit();
-    if (!GLEW_VERSION_2_0) {
-        std::cout<<"OpenGL 2.0 not available"<<std::endl;
-		exit(1);
-    }*/
+
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	init();
+
+	glBindTexture(GL_TEXTURE_2D, textureID);               
+	glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR); 
+	glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR); 
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S , GL_REPEAT );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+
+	//initialize the texture
+	frameImg = cvQueryFrame(cap);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, frameImg.cols, frameImg.rows, 0, GL_BGR_EXT, GL_UNSIGNED_BYTE, frameImg.data);
 
     glutMainLoop();
 }
@@ -156,9 +160,7 @@ void ARGraphicController::drawBackGround()
 
 		
 		glBindTexture(GL_TEXTURE_2D,textureID);
-		// Draw a textured quad
-		//glScaled(1.0/640.0, 1.0/480.0, 1.0);
-	
+		// Draw a textured quad	
 		glBegin(GL_QUADS);
 			glTexCoord2f(0, 0); glVertex2f(-1, 1);
 			glTexCoord2f(1, 0); glVertex2f(1, 1);
@@ -193,7 +195,7 @@ void ARGraphicController::drawBoard()
 		double post_m[16] =  {rotMat(0), rotMat(3), rotMat(6), 0.0f,
 							rotMat(1), rotMat(4), rotMat(7), 0.0f,
 							rotMat(2), rotMat(5), rotMat(8), 0.0f,
-							-Tvec(0) -0.053 , -Tvec(1) , -Tvec(2), 1.0f};
+							-Tvec(0) -0.054 , -Tvec(1) , -Tvec(2), 1.0f};
 		glLoadMatrixd(post_m);
 		float p[]={0,0,0};
 		drawGoStone(0.01f,0.01f,0.01f,2,2,p,0);
@@ -205,10 +207,10 @@ void ARGraphicController::drawBoard()
 			float p[]={-d->Board3DPoint[i+4].x ,-d->Board3DPoint[i+4].y,-d->Board3DPoint[i+4].z};
 
 			
-			if(board->virtualStones[i] == 0)
-				drawGoStone(0.055f,0.045f,0.026f,14,14,p,0);
-			else if(board->virtualStones[i] == 1)
-				drawGoStone(0.055f,0.045f,0.026f,14,14,p,1);
+			if(board->virtualStones[i] == COLOR_BLACK)
+				drawGoStone(config->stone.a,config->stone.b,config->stone.c,14,14,p,0);
+			else if(board->virtualStones[i] == COLOR_WHITE)
+				drawGoStone(config->stone.a,config->stone.b,config->stone.c,14,14,p,1);
 			
 			//display error showing there are wrong board state
 			if(board->warningMsg != NO_WRONG_MOVE && (int)board->wrongRealStones[i]!=NO_WRONG_MOVE)
@@ -217,7 +219,14 @@ void ARGraphicController::drawBoard()
 				DrawSquare(p, 0.10f, HALF_TRAN_RED_COLOR);
 			}
 
-			
+			//
+			if(showAllStones)
+			{
+				p[0]*=-1;
+				p[1]*=-1;
+				p[2]*=-1;
+				DrawSquare(p, 0.05f, NEW_MOVE_COLOR);
+			}
 			
 		}
 
@@ -307,13 +316,6 @@ void ARGraphicController::drawBoard()
 			}
 
 		}
-
-		
-    
-
-		
-
-
 		drawCoordinateAxis();
 
 	glMatrixMode(GL_PROJECTION);
@@ -325,8 +327,6 @@ void ARGraphicController::RenderSceneCB()
 {
 
 	calculateFPS();
-	
-	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_TEXTURE_2D);
 	glDisable(GL_LIGHTING);
@@ -335,8 +335,6 @@ void ARGraphicController::RenderSceneCB()
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_LIGHT0);
 	glEnable(GL_LIGHTING);
-
-
 	
 
 	if(detectedBoard)
@@ -452,10 +450,8 @@ void ARGraphicController::RenderSceneCB()
 	glPopMatrix();
 	glMatrixMode( GL_MODELVIEW );
 	glPopMatrix();
-	//glDisable(GL_COLOR_MATERIAL);
 
-	
-	glFlush();
+
 	glutSwapBuffers();
 }
 
@@ -465,36 +461,25 @@ void ARGraphicController::changeGen(int c)
 	newMoveColor = c;
 	
 }
-
+int tttt=0;
 void ARGraphicController::gl_idle_func()
 {
-	//std::cout<<"in graphic control: a: "<<ARGoController::board.a<<std::endl;
-	//std::cout<<"in graphic control: a: "<<(board->a)<<std::endl;
-
-	cv::Mat frameImg = cvQueryFrame(cap);
+	
+	frameImg = cvQueryFrame(cap);
 	
 	if (!frameImg.empty()){
 		
-		glGenTextures(1, &textureID);                  // Create The Texture
-
-		glBindTexture(GL_TEXTURE_2D, textureID);               
-		glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR); 
-		glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR); 
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S , GL_REPEAT );
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+		
 		cv::Mat undistortImage;
 		undistortImage = d->getUndistortImage(frameImg);
-		
-		//GL_BGR
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, undistortImage.cols, undistortImage.rows, 0, GL_BGR_EXT, GL_UNSIGNED_BYTE, undistortImage.data);
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, textureID);           
+
+		glTexSubImage2D(GL_TEXTURE_2D, 0,0, 0,  undistortImage.cols, undistortImage.rows,GL_BGR_EXT, GL_UNSIGNED_BYTE, undistortImage.data);
+
 
 		detectedBoard =d->detectMove();
 		
-		//release frame data
-		frameImg = cv::Mat();
-
-
-
 		if(board->newMoveIsMade)
 		{
 			goAssistant->pushAssistantMode(assistant_mode);
@@ -502,8 +487,12 @@ void ARGraphicController::gl_idle_func()
 		}
 
 		glutPostRedisplay();
-	}else
-       Sleep(1);  // don't be a CPU hog 
+	}else{
+		std::cout<<"asdf"<<std::endl;
+		boost::this_thread::sleep(boost::posix_time::milliseconds(300));
+   
+	}
+
 }
 void ARGraphicController::init()
 {
@@ -522,20 +511,10 @@ void ARGraphicController::init()
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-
-	//glMaterial(GL_FRONT, GL_SPECULAR, specularColor);				// sets specular material color
-	//glMaterialf(GL_FRONT, GL_SHININESS, 25.0f);					// sets shininess
-		
-	//glLight(GL_LIGHT0, GL_POSITION, lightPosition);				// sets light position
-	//glLight(GL_LIGHT0, GL_SPECULAR, diffuseColor);				// sets specular light to white
-	//glLight(GL_LIGHT0, GL_DIFFUSE, diffuseColor);					// sets diffuse light to white
-	//glLightModel(GL_LIGHT_MODEL_AMBIENT, lModelAmbient);		// global ambient light 
 		
 	glEnable(GL_LIGHTING);										// enables lighting
 	glEnable(GL_LIGHT0);										// enables light0
 		
-	
-
 	/* Use depth buffering for hidden surface elimination. */
 	glEnable(GL_DEPTH_TEST);
 
@@ -545,6 +524,7 @@ void ARGraphicController::keyFunc(unsigned char key, int x, int y)
 {
 	
     switch (key) {
+	
     case 27: //esc
         //gFinished = true;
 		glutDestroyWindow (winID);
@@ -553,14 +533,15 @@ void ARGraphicController::keyFunc(unsigned char key, int x, int y)
 		delete(d);
 		_exit (0);
         break;
+	case 'x':
+		tttt = 0;
+		break;
     case 's': 
 		goAssistant->showBoard();
-	
 		break;
 	case 'r':
 		
 		if(genMove==true){
-			
 			char newRealBoardStones[361];
 			d->readStone(newRealBoardStones);
 			
@@ -579,7 +560,8 @@ void ARGraphicController::keyFunc(unsigned char key, int x, int y)
 		break;
 	case 'b':
 	
-		//d.saveBackGroundBoard();
+		if(showAllStones) showAllStones = false;
+		else showAllStones = true;
 		break;
 	case 'o':
 		//d.readStone(newMove);x

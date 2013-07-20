@@ -2,6 +2,11 @@
 #define ARGoController_H
 
 ////////////////////////////////////////////////////////////////////
+
+
+#include <iostream> // for standard I/O
+#include <string>
+
 //opencv
 #include <opencv2/imgproc/imgproc.hpp>  // Gaussian Blur
 #include <opencv2/core/core.hpp>        // Basic OpenCV structures (cv::Mat, Scalar)
@@ -14,7 +19,7 @@
 #include "GamePlayUtils/GoBoard.h"
 #include "GamePlayUtils/GoAssistantController.h"
 
-
+#include "HelperClass/config.h"
 /**
 	Main Controller: control the game state, methods switch for ar graphics/vision and assistance
 */

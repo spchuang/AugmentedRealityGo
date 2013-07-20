@@ -1,9 +1,5 @@
 #include "ARGoController.h"
 
-#include <iostream> // for standard I/O
-#include <string>
-#include "HelperClass/config.h"
-
 using namespace std;
 //FuegoAssistant ARGoController::fuego = FuegoAssistant();
 GoBoard ARGoController::board = GoBoard();
@@ -62,6 +58,7 @@ void ARGoController::startAR()
 	//read from cin
 	string command_line;
 
+	//main GTP loop
 	while(1)
 	{
 		getline(cin, command_line);
@@ -119,13 +116,11 @@ void ARGoController::startAR()
 
 				if(!graphic_controller.genMove)
 				{
-					//cout << (int)graphic_controller.newMove[0] << " , " <<(int)graphic_controller.newMove[1] <<endl;
-					
 					response+= board.getNewMove();
 					break;
 				}
 				
-
+				boost::this_thread::sleep(boost::posix_time::milliseconds(300));
 			}
 
 		}else if(command == "gogui-analyze_commands"){

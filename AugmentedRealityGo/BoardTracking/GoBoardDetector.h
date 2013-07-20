@@ -47,7 +47,9 @@ protected:
 private:
 	std::vector<Marker> m_detectedMarkers;
 	std::vector<int> boardMarkerID;
-	
+	int xMarkerNumber, yMarkerNumber;
+	int topLeft, topRight, botLeft, botRight;
+	bool showMarkers;
 	//points of board on original image
 	std::vector<cv::Point2f> BoardImagePoint;
 	//points of board in the unwraped image

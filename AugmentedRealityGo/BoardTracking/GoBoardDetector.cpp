@@ -15,12 +15,17 @@
 #include "CVHelper.h"
 #include "RPP/RPP.h"
 GoBoardDetector::GoBoardDetector(Config* c)
-	:boardMarkerID(18)
-	, sd(c->board.whiteStoneThresh, c->board.blackStoneThresh)
+	:sd(c->board.whiteStoneThresh, c->board.blackStoneThresh)
 {
-	for(int i=0; i<18; i++){
-		boardMarkerID[i] = c->marker.boardMarkerID[i];
-	}
+
+	boardMarkerID = c->marker.boardMarkerID;
+	xMarkerNumber = c->marker.xMarkerNumber;
+	yMarkerNumber = c->marker.yMarkerNumber;
+	topLeft  = 0;
+	topRight = xMarkerNumber-1;
+	botLeft  = xMarkerNumber+2*yMarkerNumber-4;
+	botRight = 2*xMarkerNumber + 2*yMarkerNumber-5;
+	showMarkers = c->marker.showMarkers;
 	numPoint		= c->board.numPoint;
 
 	//board parameter
@@ -131,6 +136,7 @@ bool GoBoardDetector::calculateCameraIntrinsix()
 	cv::Mat test;
 	undistortImage.copyTo(test);
 
+
 	m_markerCorners3d.clear();
 	std::vector<cv::Point2f> imgPoints;
 	bool hasBoardMarkers = false;
@@ -142,41 +148,88 @@ bool GoBoardDetector::calculateCameraIntrinsix()
 			//if the marker is one of the board marker ids
 			if(m.id == boardMarkerID[j])
 			{
-				//front row
-				if(j>=14 && j<=17)
+				bool CorrectMarker = false;
+				float botL_x;
+				float botL_y;
+				//bottom row
+				if(j>= botLeft && j<= botRight)
 				{
+					
+					CorrectMarker = true;
 					hasBoardMarkers = true;
-					m.draw(undistortImage,cv::Scalar(0,0,255),2);
-					int factor = j-13;
+					int factor = j- botLeft;
+					
+					botL_x = gap*factor;
+					botL_y = 0;
+					imgPoints.push_back(m.points[3]);
+					imgPoints.push_back(m.points[0]);
+					imgPoints.push_back(m.points[1]);
+					imgPoints.push_back(m.points[2]);
+					m_markerCorners3d.push_back(cv::Point3f(botL_x,botL_y,0));
+					m_markerCorners3d.push_back(cv::Point3f(botL_x,botL_y+1,0));
+					m_markerCorners3d.push_back(cv::Point3f(botL_x+1,botL_y+1,0));
+					m_markerCorners3d.push_back(cv::Point3f(botL_x+1,botL_y,0));
+
+				}//top row
+				else if(j>=0 && j<=topRight)
+				{
+					CorrectMarker = true;
+					hasBoardMarkers = true;
+					int factor = j;
+					botL_x = gap*factor;
+					botL_y = (yMarkerNumber-1)*gap;
+
+					imgPoints.push_back(m.points[3]);
+					imgPoints.push_back(m.points[0]);
+					imgPoints.push_back(m.points[1]);
+					imgPoints.push_back(m.points[2]);
+					m_markerCorners3d.push_back(cv::Point3f(botL_x,botL_y,0));
+					m_markerCorners3d.push_back(cv::Point3f(botL_x,botL_y+1,0));
+					m_markerCorners3d.push_back(cv::Point3f(botL_x+1,botL_y+1,0));
+					m_markerCorners3d.push_back(cv::Point3f(botL_x+1,botL_y,0));
+
+				}//left row
+				else if((j-topRight)%2 == 1)
+				{
+					CorrectMarker = true;
+					hasBoardMarkers = true;
+					int factor = (botLeft-j)/2;
+					botL_x = 0;
+					botL_y = gap*factor;
 					
 					imgPoints.push_back(m.points[3]);
 					imgPoints.push_back(m.points[0]);
 					imgPoints.push_back(m.points[1]);
 					imgPoints.push_back(m.points[2]);
+					m_markerCorners3d.push_back(cv::Point3f(botL_x,botL_y,0));
+					m_markerCorners3d.push_back(cv::Point3f(botL_x,botL_y+1,0));
+					m_markerCorners3d.push_back(cv::Point3f(botL_x+1,botL_y+1,0));
+					m_markerCorners3d.push_back(cv::Point3f(botL_x+1,botL_y,0));
+				}//right row
+				else if((j-topRight)%2 == 0)
+				{
+					CorrectMarker = true;
+					hasBoardMarkers = true;
 					
-					m_markerCorners3d.push_back(cv::Point3f(gap*factor,0,0));
-					m_markerCorners3d.push_back(cv::Point3f(gap*factor,1,0));
-					m_markerCorners3d.push_back(cv::Point3f(gap*factor+1,1,0));
-					m_markerCorners3d.push_back(cv::Point3f(gap*factor+1,0,0)); 
+					int factor = (botLeft-(j-1))/2;
+				
+					botL_x = (xMarkerNumber-1)*gap;
+					botL_y = gap*factor;
+
+					imgPoints.push_back(m.points[3]);
+					imgPoints.push_back(m.points[0]);
+					imgPoints.push_back(m.points[1]);
+					imgPoints.push_back(m.points[2]);
+					m_markerCorners3d.push_back(cv::Point3f(botL_x,botL_y,0));
+					m_markerCorners3d.push_back(cv::Point3f(botL_x,botL_y+1,0));
+					m_markerCorners3d.push_back(cv::Point3f(botL_x+1,botL_y+1,0));
+					m_markerCorners3d.push_back(cv::Point3f(botL_x+1,botL_y,0));
 				}
-				//left row
-				else if(j==7 || j==9|| j==11 || j==13)
-				{
-					hasBoardMarkers = true;
-					m.draw(undistortImage,cv::Scalar(0,0,255),2);
-					int factor = (13-j)/2;
-					//std::cout<<factor<<std::endl;
-
-					imgPoints.push_back(m.points[3]);
-					imgPoints.push_back(m.points[0]);
-					imgPoints.push_back(m.points[1]);
-					imgPoints.push_back(m.points[2]);
-
-					
-					m_markerCorners3d.push_back(cv::Point3f(0,gap*factor,0));
-					m_markerCorners3d.push_back(cv::Point3f(0,gap*factor+1,0));
-					m_markerCorners3d.push_back(cv::Point3f(1,gap*factor+1,0));
-					m_markerCorners3d.push_back(cv::Point3f(1,gap*factor,0)); 
+				
+				if(CorrectMarker){
+					if(showMarkers){
+						m.draw(undistortImage,cv::Scalar(0,0,255),2);
+					}
 				}
 			}
 			
@@ -190,6 +243,7 @@ bool GoBoardDetector::calculateCameraIntrinsix()
 		GoBoardTaux = cv::Mat();
 		return false;
 	}
+
 
 	cv::Mat transform_r;
 	BoardImagePoint.clear();
@@ -223,10 +277,6 @@ bool GoBoardDetector::calculateCameraIntrinsix()
 			imgPoints_RPP.at<double>(0,i) = iprts[i].x;
 			imgPoints_RPP.at<double>(1,i) = iprts[i].y;	
 		}
-		//std::cout<<"data for Rpp"<<std::endl;
-		//std::cout<<m_markerCorners3d_RPP<<std::endl;
-		//std::cout<<imgPoints_RPP<<std::endl;
-		//std::cout<<GoBoardRaux<<std::endl;
 
 		if(!RPP::Rpp(m_markerCorners3d_RPP, imgPoints_RPP, GoBoardRaux, GoBoardTaux, iterations, obj_err, img_err)) {
 			fprintf(stderr, "Error with RPP\n");
@@ -248,6 +298,11 @@ bool GoBoardDetector::calculateCameraIntrinsix()
 		//if(c<4)
 		//	cv::line(undistortImage,  BoardImagePoint[c],  BoardImagePoint[(c+1)%4],  cv::Scalar(255,0,0), 2, CV_AA);
 		MyFilledCircle(undistortImage, BoardImagePoint[c], cv::Scalar(0,0,255));	
+	}
+
+	if(showMarkers){
+		cv::imshow("markers",undistortImage);
+		cv::waitKey(1);
 	}
 	return true;
 		
@@ -345,48 +400,10 @@ void GoBoardDetector::testThrehold()
 	sd.setupDetection(undistortBoardImage, UnidistortBoardPoint);
 	sd.testThrehold();
 }
+
+
 void GoBoardDetector::readStone(char new_BoardStonesStates[361])
 {
-	
 	sd.setupDetection(undistortBoardImage, UnidistortBoardPoint);
 	sd.readStones(new_BoardStonesStates);
-	/*
-	
-	std::cout<<"old board"<<std::endl;
-	for(int i=18; i>=0;i--){
-		for(int j=0; j<19;j++)
-		{
-			if(BoardStonesStates[i*19+j]==2)
-				std::cout <<"o ";
-			else if(BoardStonesStates[i*19+j]==1)
-				std::cout <<"W ";
-			else if(BoardStonesStates[i*19+j]==0)
-				std::cout <<"B ";
-		}
-		std::cout<<std::endl;
-	}
-	*/
-	//see which move is new
-
-	/*
-	for(int i=0; i<19*19; i++)
-	{
-		if(BoardStonesStates[i] != new_BoardStonesStates[i])
-		{
-			newMove[0] = BoardStonesStates[i];
-			newMove[1] = i;
-			break;
-		}
-
-	}*/
-	/*
-	if(newMove[1] == -1)
-	{
-		std::cout<<"#didn't read the move, try again#"<<std::endl;
-		return false;
-	}
-	
-	BoardStonesStates = new_BoardStonesStates;
-	return true;
-	*/
 }

@@ -8,7 +8,7 @@
 #include <boost/foreach.hpp>
 //
 
-
+#include <vector>
 #include <iostream>
 #include <string>
 
@@ -46,9 +46,19 @@ public:
 	}board;
 
 	struct markerConfiguration{
-		int boardMarkerID[18];
+		std::vector<int> boardMarkerID;
+		int xMarkerNumber;
+		int yMarkerNumber;
+		int totalMarkerNumber;
+		bool showMarkers;
 		double markerLength;
 	}marker;
+
+	struct stoneConfiguration{
+		float a;
+		float b;
+		float c;
+	}stone;
 
 	struct JosekiConfiguration{
 		std::string dbFile;

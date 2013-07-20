@@ -26,32 +26,58 @@
 		"whiteThrehold": 190
 	},
 	//note this should all be in the same unit (mm..)
+	
 	"boardConfiguration":{
-		"boardHeight": 31.5,
-		"boardWidth": 279,
-		"boardLength": 306,
+		//"boardHeight": 31.5,
+		//"boardWidth": 279,
+		//"boardLength": 306,
+		//number of point (19*19) or (13*13)
+		//"numPoint": 19,
+		
+		//horizontal length and vertical length from board edge to closest grid line
+		//"widthGap": 9.2,
+		//"heightGap": 13,
+		
+		//gap from marker to corner of the board
+		//"gap": 15.7,
+		
+		//horizontal and vertical distance between grids
+		//"widthInterval": 14.55,
+		//"heightInterval": 15.7,
+		
+		//I think this is useless
+		//"blockLength": 9
+		
+		
+		//for the big board
+		"boardHeight": 17.5,
+		"boardWidth": 450.7,
+		"boardLength": 412.9,
 		//number of point (19*19) or (13*13)
 		"numPoint": 19,
 		
 		//horizontal length and vertical length from board edge to closest grid line
-		"widthGap": 9.2,
-		"heightGap": 13,
+		"widthGap": 12.3,
+		"heightGap": 12.2,
 		
 		//gap from marker to corner of the board
-		"gap": 15.7,
+		"gap": 19.7,
 		
 		//horizontal and vertical distance between grids
-		"widthInterval": 14.55,
-		"heightInterval": 15.7,
+		"widthInterval": 23.8,
+		"heightInterval": 21.6,
 		
-		//I think this is useless
-		"blockLength": 9
+		"blockLength": 12
 	},
 	
+	
 	"markerConfiguration":{
-		"markerLength": 81.8,
-		
-		//start from top left and going from left to right and top down
+		"markerLength": 98.7,
+		"xMarkerNumber": 6,
+		"yMarkerNumber": 6,
+		//0 shows marker, 1 doens't show marker
+		"showMarkers": 0,
+		//start from top left and going from left to right and top down (for example 5 x 6 will be like)
 		//	0	1	2	3	4
 		//	5				6
 		//	7				8
@@ -59,8 +85,14 @@
 		//	11				12
 		//	13	14	15	16	17
 		//
-		"markerID": [664,562,906,508,680,915,518,360,767,108,376,961,786,913,112,708,156,804]
-
+		//"markerLength": 81.8,
+		//"markerID": [664,562,906,508,680,915,518,360,767,108,376,961,786,913,112,708,156,804]
+		"markerID": [584,221,0,710,465, 1003
+					,298,47
+					,399,938
+					,933,180
+					,429,343
+					,29,372,461,91,421,642]
 	},
 
 
@@ -73,7 +105,16 @@
 	
 	"fuego":{
 		//500000000 = 500 mb
-		"memory_limit": 10000000
+		"memory_limit": 5000000
 	
+	},
+	//this is about stone size
+	"stoneConfiguration":{
+		//"a": 0.055,
+		//"b": 0.045,
+		//"c": 0.026
+		"a": 0.0715,
+		"b": 0.0585,
+		"c": 0.0338
 	}
 }

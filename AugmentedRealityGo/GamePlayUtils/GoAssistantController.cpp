@@ -86,6 +86,6 @@ void GoAssistantController::AssistantMainLoop()
 
 
 		//check every 150 milliseconds
-		boost::this_thread::sleep(boost::posix_time::milliseconds(150));
+		boost::this_thread::sleep(boost::posix_time::milliseconds(300));
 	}
 }

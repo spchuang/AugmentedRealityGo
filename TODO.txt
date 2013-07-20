@@ -3,6 +3,8 @@ MAIN TODO
 - Fuego best move support (useful when no more openmove are avaliable)
 - connect with ktp server
 
+7/20
+- added arbitual configuration to board size
 7/19
 - add memory limit for fuego
 - enlarged font size

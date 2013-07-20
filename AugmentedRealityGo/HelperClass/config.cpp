@@ -51,15 +51,26 @@ Config::Config(std::string config_file)
 	board.heightInterval = configTree.get<double>("boardConfiguration.heightInterval");
 	board.blockLength	= configTree.get<double>("boardConfiguration.blockLength");
 
+	//stone configuration
+	stone.a		= configTree.get<float>("stoneConfiguration.a");
+	stone.b		= configTree.get<float>("stoneConfiguration.b");
+	stone.c		= configTree.get<float>("stoneConfiguration.c");
+
 	//marker configuration
 	marker.markerLength = configTree.get<double>("markerConfiguration.markerLength");
 	i = configTree.get_child("markerConfiguration.markerID");
-	j=0;
-	BOOST_FOREACH(boost::property_tree::ptree::value_type& v,i){
-		marker.boardMarkerID[j] = boost::lexical_cast<float>(v.second.data());
-		j++;
-	}
 
+	BOOST_FOREACH(boost::property_tree::ptree::value_type& v,i){
+		marker.boardMarkerID.push_back(boost::lexical_cast<int>(v.second.data()));
+	}
+	marker.xMarkerNumber		= configTree.get<int>("markerConfiguration.xMarkerNumber");
+	marker.yMarkerNumber		= configTree.get<int>("markerConfiguration.yMarkerNumber");
+	marker.totalMarkerNumber = 2*marker.xMarkerNumber + 2*marker.yMarkerNumber -4;
+
+
+	int s =  configTree.get<int>("markerConfiguration.showMarkers");
+	if(s==0) marker.showMarkers = false;
+	else marker.showMarkers = true;
 	//stone detection configuration
 	board.whiteStoneThresh		= configTree.get<int>("stoneDetection.whiteThrehold");
 	board.blackStoneThresh		= configTree.get<int>("stoneDetection.blackThrehold");

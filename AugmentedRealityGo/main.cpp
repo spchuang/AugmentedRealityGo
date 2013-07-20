@@ -4,12 +4,9 @@
 #include <iomanip>  // for controlling float print precision
 #include <sstream>  // string to number conversion
 
-#include "GamePlayUtils/JosekiAssistant.h"
-
 //self library
 #include "ARGoController.h"
 #include "HelperClass\config.h"
-
 
 
 using namespace std;
