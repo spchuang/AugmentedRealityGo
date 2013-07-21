@@ -126,6 +126,27 @@ void ARGraphicController::calculateFPS()
  
         //  Reset frame count
         frameCount = 0;
+
+		//read move passively
+		if(genMove == true && !d->handsOnBoard && d->fullBoardInScene)
+		{
+			std::cout<<"read board state"<<std::endl;
+			char newRealBoardStones[361];
+			d->readStone(newRealBoardStones);
+			
+			//detect only when needing to generate move
+			if(board->checkNewBoardState(newRealBoardStones, board->getMoveTurnColor())){
+
+				if(!board->addRealStone(board->newMoveIndex, board->getMoveTurnColor())){
+					//not a valid move
+					fprintf(stderr, "ERROR: Invalid move\n");
+				}else{
+					genMove = false;
+				}
+			}
+
+		}
+		
     }
 
 
@@ -138,12 +159,12 @@ void ARGraphicController::calculateFPS()
 		loadingMsg = (loadingMsg+1)%4;
 	}
 
-	//fps = f/s
-
 
 	//calculate arrow animation
 	arrow_space_height_add -= 0.25/fps;
 	if(arrow_space_height_add <0) arrow_space_height_add = 0.25;
+
+	
 }
 
 void ARGraphicController::drawBackGround()
@@ -195,7 +216,7 @@ void ARGraphicController::drawBoard()
 		double post_m[16] =  {rotMat(0), rotMat(3), rotMat(6), 0.0f,
 							rotMat(1), rotMat(4), rotMat(7), 0.0f,
 							rotMat(2), rotMat(5), rotMat(8), 0.0f,
-							-Tvec(0) -0.054 , -Tvec(1) , -Tvec(2), 1.0f};
+							-Tvec(0) -0.045 , -Tvec(1) , -Tvec(2), 1.0f};
 		glLoadMatrixd(post_m);
 		float p[]={0,0,0};
 		drawGoStone(0.01f,0.01f,0.01f,2,2,p,0);

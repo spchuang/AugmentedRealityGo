@@ -105,7 +105,7 @@
 	
 	"fuego":{
 		//500000000 = 500 mb
-		"memory_limit": 5000000
+		"memory_limit": 1000000000
 	
 	},
 	//this is about stone size

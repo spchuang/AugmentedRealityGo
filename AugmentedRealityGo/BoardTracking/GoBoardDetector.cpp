@@ -71,6 +71,10 @@ GoBoardDetector::GoBoardDetector(Config* c)
 
 	camMatrix = cv::Mat(3, 3, CV_32FC1, &(c->cam.intrinsic_array));
 	distCoeff = cv::Mat(5, 1, CV_32FC1, &(c->cam.distCoeffs_array));
+	handsOnBoard = false;
+	fullBoardInScene = false;
+	frameWidth = c->cam.width;
+	frameHeight = c->cam.height;
 }
 
 void GoBoardDetector::setCameraIntrinsics(cv::Mat camM, cv::Mat camD)
@@ -91,12 +95,13 @@ bool GoBoardDetector::detectMove()
 {
 	
 	detectBoard = findBoard(srcFrame);
-	if(!detectBoard)
+	if(!detectBoard){
+		fullBoardInScene = false;
 		return false;
+	}
 	
 	undistortBoard();
-
-
+	detectHand();
 	return true;
 }
 
@@ -132,6 +137,8 @@ bool GoBoardDetector::findBoard(cv::Mat &srcImage)
 
 bool GoBoardDetector::calculateCameraIntrinsix()
 {
+	//cv::showAndSave("marker_board_pre", undistortImage);	
+
 	std::vector<cv::Point3f> m_markerCorners3d;
 	cv::Mat test;
 	undistortImage.copyTo(test);
@@ -143,6 +150,7 @@ bool GoBoardDetector::calculateCameraIntrinsix()
 	for(size_t i=0; i<m_detectedMarkers.size(); i++)
 	{
 		Marker& m = m_detectedMarkers[i];
+		m.draw(undistortImage,cv::Scalar(0,0,255),2);
 		for(size_t j=0; j<boardMarkerID.size(); j++)
 		{
 			//if the marker is one of the board marker ids
@@ -291,7 +299,7 @@ bool GoBoardDetector::calculateCameraIntrinsix()
 	//project 3d points on the image plane
 	//std::cout<<transform_r<<std::endl;
 	cv::projectPoints(Board3DPoint, transform_r, GoBoardTaux, camMatrix, distCoeff, BoardImagePoint);
-	
+	//cv::showAndSave("marker_board", undistortImage);
 	for(size_t c=0;c<BoardImagePoint.size() ; c++){
 		//MyFilledCircle(undistortImage, m_detectedMarkers[i].points[c],cv::Scalar(0,255,0));
 
@@ -300,6 +308,18 @@ bool GoBoardDetector::calculateCameraIntrinsix()
 		MyFilledCircle(undistortImage, BoardImagePoint[c], cv::Scalar(0,0,255));	
 	}
 
+	fullBoardInScene = true;
+	for(int i=0; i<4;i++){
+		if(BoardImagePoint[i].x<0 || BoardImagePoint[i].x >frameWidth ||
+		   BoardImagePoint[i].y<0 || BoardImagePoint[i].y >frameHeight)
+			fullBoardInScene = false;
+	
+	}
+
+	//boardImagePoint[0-3] are the four corners
+	//if(BoardImagePoint[0].x
+	
+	//cv::showAndSave("marker_board_with_board_pts", undistortImage);
 	if(showMarkers){
 		cv::imshow("markers",undistortImage);
 		cv::waitKey(1);
@@ -406,4 +426,43 @@ void GoBoardDetector::readStone(char new_BoardStonesStates[361])
 {
 	sd.setupDetection(undistortBoardImage, UnidistortBoardPoint);
 	sd.readStones(new_BoardStonesStates);
+}
+//with a finger wearing a red ring, count as a hand
+void GoBoardDetector::detectHand()
+{
+	
+	//convert to HSV image
+	cv::Mat test,imgThreshed, imgThreshed2 ;
+	cv::cvtColor(undistortBoardImage,test,CV_BGR2HSV);  
+	cv::Mat dst;
+
+	cv::inRange(test, cv::Scalar(105, 135, 135), cv::Scalar(135, 255, 255), imgThreshed);
+	//cv::inRange(test, cv::Scalar(0, 135, 135), cv::Scalar(15, 255, 255), imgThreshed);
+	//cv::inRange(test, cv::Scalar(159, 135, 135), cv::Scalar(15, 255, 255), imgThreshed2);
+	//cvOr(imgThreshed, imgThreshed2, dst);
+	
+
+	/// Find contours
+	std::vector<std::vector<cv::Point> > contours;
+	std::vector<cv::Vec4i> hierarchy;
+	cv::findContours( imgThreshed, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
+
+	handsOnBoard = (contours.size() >0);
+	/*
+	std::cout<<"countours: "<< contours.size()<<std::endl;
+	for( size_t i = 0; i < contours.size(); i++ )
+	{ 
+		std::vector<cv::Point> contour_poly;
+		cv::Point2f center;
+		float radius;
+		approxPolyDP( cv::Mat(contours[i]), contour_poly, 3, true );
+		cv::minEnclosingCircle( (cv::Mat)contour_poly, center, radius );
+		std::cout<<"radius: "<<radius<<std::endl;
+	}
+
+	cv::imshow("board",undistortBoardImage);
+	cv::waitKey(1);
+	cv::imshow("diff",imgThreshed);
+	cv::waitKey(1);
+	*/
 }

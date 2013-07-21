@@ -29,7 +29,8 @@ public:
 
 	//camera world position transformation 
 	cv::Mat GoBoardRaux,GoBoardTaux;
-	
+	bool handsOnBoard;
+	bool fullBoardInScene;
 	
 	void setCameraIntrinsics(cv::Mat camM, cv::Mat camD);
 
@@ -41,6 +42,7 @@ public:
 	void detectOcclusionObject();
 	void saveBackGroundBoard();
 	void testThrehold();
+	void detectHand(); //with red blob
 protected:
 	bool findBoard(cv::Mat& srcImage);
 	void undistortBoard();
@@ -75,6 +77,8 @@ private:
 	//we have two ways of finding camera position relative to the models
 	enum PoseEstimationMethods {SOLVEPNP,RPP};
 	PoseEstimationMethods m_PoseMethod;
+
+	int frameWidth, frameHeight;
 };
 
 #endif

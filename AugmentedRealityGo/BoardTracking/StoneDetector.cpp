@@ -84,7 +84,7 @@ void StoneDetector::setupDetection(cv::Mat b, std::vector<cv::Point2f> bp)
 {
 	boardImage =b;
 	StonePoints = bp;
-
+	cv::showAndSave("board", boardImage);
 	//setup borders to the image
 	cv::cvtColor(boardImage,greyBoardImage,CV_BGR2GRAY ); 
 	/*
@@ -191,7 +191,7 @@ void StoneDetector::findCandidateStones(bool findBlack,std::vector<cv::Point2f> 
 		// cv::imshow( "white ther", thre_output );
 	 //cv:: waitKey(1);
 	}
-	 
+	cv::showAndSave("black_thresh", thre_output);
 	/// Find contours
 	cv::findContours( thre_output, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
 	
