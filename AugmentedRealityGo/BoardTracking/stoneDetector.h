@@ -30,6 +30,7 @@ private:
 	cv::Mat greyBoardImage;
 	std::vector<cv::Point2f> StonePoints;
 
+	void drawGrid(cv::Mat input, cv::Mat& output, cv::Scalar color);
 	int white_thresh;
 	int black_thresh;
 	int min_radius;

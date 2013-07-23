@@ -52,6 +52,8 @@ private:
 	int xMarkerNumber, yMarkerNumber;
 	int topLeft, topRight, botLeft, botRight;
 	bool showMarkers;
+	int board_width ;
+	int board_height;
 	//points of board on original image
 	std::vector<cv::Point2f> BoardImagePoint;
 	//points of board in the unwraped image

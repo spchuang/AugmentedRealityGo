@@ -28,6 +28,8 @@ GoBoardDetector::GoBoardDetector(Config* c)
 	showMarkers = c->marker.showMarkers;
 	numPoint		= c->board.numPoint;
 
+	board_width = 300;
+	board_height = 300;
 	//board parameter
 	double markerLength		= c->marker.markerLength;
 	double widthGap			= c->board.widthGap/markerLength;
@@ -110,7 +112,7 @@ bool GoBoardDetector::findBoard(cv::Mat &srcImage)
 {
 	//detect marker using aruco library
 	//aruco::MarkerDetector MDetector;
-	cv::cvtColor(srcImage, m_grayscaleImage, CV_BGRA2GRAY);
+	cv::cvtColor(srcImage, m_grayscaleImage, CV_BGR2GRAY);
 	
 	bool returnVal = true;
 	//custom marker detection based on aruco library
@@ -342,8 +344,7 @@ void GoBoardDetector::changePostMethod()
 //perspective transform the board into a square image
 void GoBoardDetector::undistortBoard()
 {
-	int board_width = 306;
-	int board_height = 279;
+	
 	if(m_detectedMarkers.size()==0)
 		return;
 	

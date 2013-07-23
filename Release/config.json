@@ -22,8 +22,8 @@
 		
 	},
 	"stoneDetection":{
-		"blackThrehold": 60,
-		"whiteThrehold": 190
+		"blackThrehold": 57,
+		"whiteThrehold": 198
 	},
 	//note this should all be in the same unit (mm..)
 	
@@ -65,9 +65,9 @@
 		
 		//horizontal and vertical distance between grids
 		"widthInterval": 23.8,
-		"heightInterval": 21.6,
+		"heightInterval": 21.8,
 		
-		"blockLength": 12
+		"blockLength": 11
 	},
 	
 	

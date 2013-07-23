@@ -127,29 +127,14 @@ void ARGraphicController::calculateFPS()
         //  Reset frame count
         frameCount = 0;
 
-		//read move passively
-		if(genMove == true && !d->handsOnBoard && d->fullBoardInScene)
-		{
-			std::cout<<"read board state"<<std::endl;
-			char newRealBoardStones[361];
-			d->readStone(newRealBoardStones);
-			
-			//detect only when needing to generate move
-			if(board->checkNewBoardState(newRealBoardStones, board->getMoveTurnColor())){
-
-				if(!board->addRealStone(board->newMoveIndex, board->getMoveTurnColor())){
-					//not a valid move
-					fprintf(stderr, "ERROR: Invalid move\n");
-				}else{
-					genMove = false;
-				}
-			}
-
-		}
+		
 		
     }
 
-
+	if(timeInterval > 100)
+	{
+		
+	}
 	//also use this to calculate the loadign msg animation
 	//in terms of milliseconds
 	currentMsgTime = glutGet(GLUT_ELAPSED_TIME);
@@ -236,8 +221,17 @@ void ARGraphicController::drawBoard()
 			//display error showing there are wrong board state
 			if(board->warningMsg != NO_WRONG_MOVE && (int)board->wrongRealStones[i]!=NO_WRONG_MOVE)
 			{
-				float p[]={d->Board3DPoint[i+4].x ,d->Board3DPoint[i+4].y,d->Board3DPoint[i+4].z};
-				DrawSquare(p, 0.10f, HALF_TRAN_RED_COLOR);
+				float	p[]={d->Board3DPoint[i+4].x ,d->Board3DPoint[i+4].y,d->Board3DPoint[i+4].z};
+				if(board->wrongRealStones[i] == ERROR_OLD_REAL_STONE_MOVED){
+					if(board->realStones[i] == COLOR_BLACK){
+						DrawSquare(p, 0.10f, BLACK_COLOR);
+					}else if(board->realStones[i] == COLOR_WHITE){
+						DrawSquare(p, 0.10f, WHITE_COLOR);
+					}
+				}else{
+					
+					DrawSquare(p, 0.10f, HALF_TRAN_RED_COLOR);
+				}
 			}
 
 			//
@@ -555,7 +549,7 @@ void ARGraphicController::keyFunc(unsigned char key, int x, int y)
 		_exit (0);
         break;
 	case 'x':
-		tttt = 0;
+		d->testThrehold();
 		break;
     case 's': 
 		goAssistant->showBoard();

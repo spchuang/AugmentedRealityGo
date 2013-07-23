@@ -14,7 +14,7 @@ StoneDetector::StoneDetector(int w_thresh = 190, int b_thresh = 60)
 	//if it's dark, black_thresh shoudl be lower and vice versa for white
 	white_thresh = w_thresh;
 	black_thresh = b_thresh;
-	min_radius = 4;
+	min_radius = 3;
 	max_radius = 15;
 	border = 5; //border padding
 
@@ -84,7 +84,6 @@ void StoneDetector::setupDetection(cv::Mat b, std::vector<cv::Point2f> bp)
 {
 	boardImage =b;
 	StonePoints = bp;
-	cv::showAndSave("board", boardImage);
 	//setup borders to the image
 	cv::cvtColor(boardImage,greyBoardImage,CV_BGR2GRAY ); 
 	/*
@@ -171,27 +170,109 @@ void StoneDetector::readStones(char BoardStonesStates[361])
 	//displayStoneDetection(blackStones, whiteStones, BoardStonesStates);
 
 }
+void StoneDetector::drawGrid(cv::Mat input, cv::Mat& output, cv::Scalar color)
+{
+	cv::Point2f sw, se, nw,ne;
+	sw = cv::Point2f(StonePoints[4].x+border, StonePoints[4].y+border);
+	se = cv::Point2f(StonePoints[22].x+border, StonePoints[22].y+border);
+	nw = cv::Point2f(StonePoints[346].x+border, StonePoints[346].y+border);
+	ne = cv::Point2f(StonePoints[364].x+border, StonePoints[364].y+border);
+	output = input;
+
+	//cv::line(output, sw, nw, color);
+	//vertocal lines
+	float interval = (abs((se.y-sw.y)/18)+ abs((ne.y-nw.y)/18))/2;
+	for(int i=0; i<18; i++)
+	{
+		cv::line(output, cv::Point2f(0, sw.y+interval/2+interval*i),cv::Point2f(299,nw.y+interval/2+interval*i), color,3);
+	}
+
+	//horizontal
+	interval = (abs((nw.x-sw.x)/18)+ abs((ne.x-se.x)/18))/2;
+	for(int i=0; i<18; i++)
+	{
+		cv::line(output, cv::Point2f(sw.x+interval/2+interval*i, 0),cv::Point2f(se.x+interval/2+interval*i,299), color,3);
+	}
+
+	/*
+	cv::imshow( "test grid", output );
+	cv:: waitKey(1);*/
+}
 
 void StoneDetector::findCandidateStones(bool findBlack,std::vector<cv::Point2f> &potentialStoneCenters, char BoardStonesStates[361])
 {
+	
 
 	cv::Mat thre_output;
 	std::vector<std::vector<cv::Point> > contours;
 	std::vector<cv::Vec4i> hierarchy;
-	
+	cv::Mat kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3,3));
 
 	/// Detect edges using Threshold
 	if(findBlack){
 		cv::threshold( greyBoardImage, thre_output, black_thresh, 255, cv::THRESH_BINARY );
-		// cv::imshow( "black thre", thre_output );
-		// cv:: waitKey(1);
+		cv::bitwise_not(thre_output, thre_output);
+
+	
+		cv::morphologyEx( thre_output, thre_output, cv::MORPH_OPEN, kernel,cv::Point(-1,-1),3);
+	
+
+		//cv::imshow( "blackthresh", thre_output );
+		//cv:: waitKey(1);
+		drawGrid(thre_output, test, cv::Scalar(0));
+
+
+		cv::morphologyEx( test, test, cv::MORPH_OPEN, kernel,cv::Point(-1,-1),2);
+		
+		//cv::dilate(test,test,kernel);
+		//cv::imshow( "black grid", test );
+		cv:: waitKey(1);
+		/*
+		cv::cvtColor(test, t, CV_GRAY2BGR);
+		for(size_t i=4; i<StonePoints.size(); i++){
+
+			cv::Point2f realCenter = cv::Point2f(StonePoints[i].x+border, StonePoints[i].y+border);
+			MyFilledCircle(t, realCenter, cv::Scalar(255,0,0));	
+		}
+		*/
+		thre_output = test;
 	}
 	else{
+
 		cv::threshold( greyBoardImage, thre_output, white_thresh, 255, cv::THRESH_BINARY );	
-		// cv::imshow( "white ther", thre_output );
-	 //cv:: waitKey(1);
+		
+		cv::Mat test;
+		cv::morphologyEx( thre_output, thre_output, cv::MORPH_OPEN, kernel,cv::Point(-1,-1),3);
+		
+		//cv::imshow( "whitethresh", thre_output );
+		//cv:: waitKey(1);
+
+		drawGrid(thre_output, test, cv::Scalar(0));
+
+		
+		cv::morphologyEx( test, test, cv::MORPH_OPEN, kernel,cv::Point(-1,-1),2);
+
+		
+		cv::dilate(test,test,kernel);
+		//cv::imshow( "white grid", test );
+		//cv:: waitKey(1);
+
+		/*
+		cv::cvtColor(test, t, CV_GRAY2BGR);
+		for(size_t i=4; i<StonePoints.size(); i++){
+
+			cv::Point2f realCenter = cv::Point2f(StonePoints[i].x+border, StonePoints[i].y+border);
+			MyFilledCircle(t, realCenter, cv::Scalar(255,0,0));	
+		}
+		/*
+		cv::imshow( "test_dilate+white", t );
+		 cv:: waitKey(1);
+		*/
+		thre_output = test;
 	}
-	cv::showAndSave("black_thresh", thre_output);
+	
+	//cv::Mat a;
+	//cv::cvtColor(thre_output, a, CV_GRAY2BGR);
 	/// Find contours
 	cv::findContours( thre_output, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
 	
@@ -205,9 +286,11 @@ void StoneDetector::findCandidateStones(bool findBlack,std::vector<cv::Point2f> 
 		approxPolyDP( cv::Mat(contours[i]), contour_poly, 3, true );
 		cv::minEnclosingCircle( (cv::Mat)contour_poly, center, radius );
 
+
 		//select only those big enough
 		if(radius < max_radius && radius >min_radius)
 		{
+			//MyFilledCircle(a, center, cv::Scalar(0,0,255));	
 			bool tooNear = false;
 
 			//remove the ones that are too close to each other
@@ -254,11 +337,23 @@ void StoneDetector::findCandidateStones(bool findBlack,std::vector<cv::Point2f> 
 				
 		}
 	}
-	
-	
+	/*
+	for(size_t i=4; i<StonePoints.size(); i++){
 
+		cv::Point2f realCenter = cv::Point2f(StonePoints[i].x+border, StonePoints[i].y+border);
+		MyFilledCircle(a, realCenter, cv::Scalar(255,0,0));	
+	}
+	if(!findBlack){
+	 cv::imshow( "white", a );
+		 cv:: waitKey(1);
+
+		 
+	}else{
+		 cv::imshow( "black", a );
+		 cv:: waitKey(1);
+	}
 	
-	 
+	 */
 }
 
 
