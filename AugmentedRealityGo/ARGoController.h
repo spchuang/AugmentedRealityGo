@@ -20,6 +20,7 @@
 #include "GamePlayUtils/GoAssistantController.h"
 
 #include "HelperClass/config.h"
+#include "HelperClass/Helper.h"
 /**
 	Main Controller: control the game state, methods switch for ar graphics/vision and assistance
 */

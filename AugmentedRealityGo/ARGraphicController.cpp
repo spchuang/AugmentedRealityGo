@@ -116,7 +116,7 @@ void ARGraphicController::calculateFPS()
     //  Calculate time passed
     int timeInterval = currentTime - previousTime;
  
-    if(timeInterval > 1000)
+    if(timeInterval > 700)
     {
         //  calculate the number of frames per second
         fps = frameCount / (timeInterval / 1000.0f);
@@ -127,14 +127,39 @@ void ARGraphicController::calculateFPS()
         //  Reset frame count
         frameCount = 0;
 
+		if(genMove == true && !goAssistant->isProcessing && !d->handsOnBoard && d->fullBoardInScene &&
+			goAssistant->processedMove == PLAY_MODE::NONE)
+		{
+			char newRealBoardStones[361];
+			d->readStone(newRealBoardStones);
+      
+			//detect only when needing to generate move
+			if(board->checkNewBoardState(newRealBoardStones, board->getMoveTurnColor())){
+
+				/*
+				if(!board->addRealStone(board->newMoveIndex, board->getMoveTurnColor())){
+					 //not a valid move        
+					 fprintf(stderr, "ERROR: Invalid move\n");
+				 }else{
+					 genMove = false;
+				 }
+				 */
+
+				goAssistant->playRealMove(board->newMoveIndex, board->getMoveTurnColor());
+
+
+			 }
+		 } 
 		
-		
+		if(genMove == true && goAssistant->processedMove == PLAY_MODE::PROCESSED){
+			if(goAssistant->validMove){
+				genMove = false;
+				goAssistant->processedMove = PLAY_MODE::NONE;
+			}
+		}
     }
 
-	if(timeInterval > 100)
-	{
-		
-	}
+
 	//also use this to calculate the loadign msg animation
 	//in terms of milliseconds
 	currentMsgTime = glutGet(GLUT_ELAPSED_TIME);
@@ -398,28 +423,24 @@ void ARGraphicController::RenderSceneCB()
 		{
 			case ASSISTANT_MODE::NONE:
 				msg = "Assistant Mode: None";
-				draw_text(-0.97f,0.90f, BLUE_COLOR, msg);
 				break;
 			case ASSISTANT_MODE::FUEGO_BOOK:
 				if(goAssistant->isProcessing)
 					msg = "Assistant Mode: Opening book "+loadingString;
 				else 
 					msg = "Assistant Mode: Opening book";
-				draw_text(-0.97f,0.90f, BLUE_COLOR, msg);
 				break;
 			case ASSISTANT_MODE::JOSEKI:
 				if(goAssistant->isProcessing)
 					msg = "Assistant Mode: Joseki" + loadingString;
 				else 
 					msg = "Assistant Mode: Joseki";
-				draw_text(-0.97f,0.90f, BLUE_COLOR, msg);
 				break;
 			case ASSISTANT_MODE::FUEGO_MOVE:
 				if(goAssistant->isProcessing)
 					msg = "Assistant Mode: Fuego Move" + loadingString;
 				else 
 					msg = "Assistant Mode: Fuego Move";
-				draw_text(-0.97f,0.90f, BLUE_COLOR, msg);
 				break;
 					break;
 			case ASSISTANT_MODE::TERRITORY:
@@ -427,10 +448,10 @@ void ARGraphicController::RenderSceneCB()
 					msg = "Assistant Mode: Territory Estimation" + loadingString;
 				else 
 					msg = "Assistant Mode: Territory Estimation";
-				draw_text(-0.97f,0.90f, BLUE_COLOR, msg);
 				break;
 				
 		}
+		draw_text(-0.97f,0.90f, SOLID_RED_COLOR, msg);
 
 		//print player turns
 		if(board->getMoveTurnColor() == COLOR_BLACK){
@@ -497,7 +518,9 @@ void ARGraphicController::gl_idle_func()
 		
 		if(board->newMoveIsMade)
 		{
+			assistant_mode = ASSISTANT_MODE::NONE;
 			goAssistant->pushAssistantMode(assistant_mode);
+			//goAssistant->pushAssistantMode(assistant_mode);
 			board->newMoveIsMade = false;
 		}
 
@@ -587,14 +610,14 @@ void ARGraphicController::keyFunc(unsigned char key, int x, int y)
 			{
 
 				if(board->virtualStones[i*19+j]==0 || board->realStones[i*19+j]==COLOR_BLACK)
-					std::cout <<"B ";
+					std::cerr <<"B ";
 				else if(board->virtualStones[i*19+j]==1 || board->realStones[i*19+j]==COLOR_WHITE)
-					std::cout <<"W ";
+					std::cerr <<"W ";
 
 				else if(board->virtualStones[i*19+j]==2 && board->realStones[i*19+j]==COLOR_NONE)
-					std::cout <<"o ";
+					std::cerr <<"o ";
 			}
-			std::cout<<std::endl;
+			std::cerr<<std::endl;
 		}
 		break;
 	case 'a':

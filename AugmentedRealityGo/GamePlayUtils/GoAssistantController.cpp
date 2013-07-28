@@ -9,6 +9,9 @@ std::vector<cornerJoseki>* GoAssistantController::josekiMoves;
 volatile int GoAssistantController::currentMode;
 volatile bool GoAssistantController::isProcessing;
 
+volatile int GoAssistantController::processedMove;
+volatile bool GoAssistantController::validMove;
+
 GoAssistantController::GoAssistantController(GoBoard* b, Config* c)
 {
 	currentMode = -1;
@@ -37,13 +40,65 @@ void GoAssistantController::pushAssistantMode(int a)
 }
 void GoAssistantController::showBoard()
 {
-	fuego.showBoard();
+	std::vector<std::string> s;
+	s.push_back("show_board");
+	pushMutex_.lock();
+	immediate_queue.push(s);
+	pushMutex_.unlock();
+}
+
+void GoAssistantController::playVirtualMove(std::string move, std::string color)
+{
+	
+	std::vector<std::string> s;
+	s.push_back("playVirtual");
+	s.push_back(move);
+	s.push_back(color);
+	pushMutex_.lock();
+	processedMove = PLAY_MODE::SUBMITTED;
+	immediate_queue.push(s);
+	pushMutex_.unlock();
+
+
+}
+
+void GoAssistantController::playRealMove(int move, int color)
+{
+	std::vector<std::string> s;
+	s.push_back("playVirtual");
+	s.push_back(helper::convert_index_move(move));
+	s.push_back(helper::convert_int_color(color));
+	pushMutex_.lock();
+	processedMove = PLAY_MODE::SUBMITTED;
+	immediate_queue.push(s);
+	pushMutex_.unlock();
+
 }
 
 
 void GoAssistantController::AssistantMainLoop()
 {
 	while(1){
+		//queue with the highest prioirty (interaction with fuego)
+		while(!immediate_queue.empty()){
+			
+			std::vector<std::string> i= immediate_queue.front();
+			pushMutex_.lock();
+			immediate_queue.pop();
+			pushMutex_.unlock();
+
+			if(i[0] == "show_board"){
+				fuego.showBoard();
+			}else if(i[0] == "playVirtual"){
+				validMove = board->addVirtualStone(i[1], i[2]);
+				processedMove = PLAY_MODE::PROCESSED;
+			}else if(i[0] == "playReal"){
+				validMove = board->addRealStone(helper::convert_string_move(i[1]), helper::convert_string_color(i[2]));
+				processedMove = PLAY_MODE::PROCESSED;
+			}
+
+			
+		}
 		if(!assistant_queue.empty()){
 			//key: process the last item in queue only (in case we kept pressing and skipped a lot)
 			currentMode = assistant_queue.back();
@@ -79,6 +134,7 @@ void GoAssistantController::AssistantMainLoop()
 					fuego.estimateTerritory(board->getMoveTurnColor());
 					break;
 			}
+		
 			fprintf(stderr, "[GoAssistant]done processing\n");
 			isProcessing = false;
 		}

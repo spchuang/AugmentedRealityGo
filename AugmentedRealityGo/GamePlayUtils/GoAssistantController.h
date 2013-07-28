@@ -24,6 +24,8 @@ public:
 	GoAssistantController(GoBoard* b, Config* c);
 	void pushAssistantMode(int a);
 	void AssistantMainLoop();
+	void playVirtualMove(std::string move, std::string color);
+	void playRealMove(int move, int color);
 	void showBoard();
 	static std::vector<int>* FuegoBookMoves;
 	static std::vector<float>* FuegoEstimateScore;
@@ -33,10 +35,14 @@ public:
 	//the memory arrangement is only guaranteed in VC
 	static volatile int currentMode;
 	static volatile bool isProcessing;
-	
+
+	static volatile int processedMove;
+	static volatile bool validMove;
+
 private:
 	//use queue to store assistant request, and process in FIFO order
 	std::queue<int> assistant_queue;
+	std::queue<std::vector<std::string>> immediate_queue;
 	static int assistant_mode;
 	static FuegoAssistant fuego;
 	static JosekiAssistant joseki;

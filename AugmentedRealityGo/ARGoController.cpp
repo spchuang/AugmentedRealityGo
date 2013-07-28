@@ -95,9 +95,29 @@ void ARGoController::startAR()
 
 		}else if(command == "play"){
 			if(arguments.size() == 3){
+				
+				while(1){
+					if(assistant_controller.processedMove == PLAY_MODE::NONE){
+						assistant_controller.playVirtualMove(arguments[2], arguments[1]);
+						break;
+					}
+				}
+				//wait for the move to be played
+				while(1)
+				{
+					if(assistant_controller.processedMove == PLAY_MODE::PROCESSED)
+					{
+						response+= board.getNewMove();
+						assistant_controller.processedMove = PLAY_MODE::NONE;
+						break;
+					}
+				
+					boost::this_thread::sleep(boost::posix_time::milliseconds(300));
+				}
+				/*
 				if(!board.addVirtualStone(arguments[2], arguments[1])){
 					response = "? invalid play move";
-				}
+				}*/
 			}else{
 				response = "? invalid play move";
 			}

@@ -40,7 +40,18 @@ namespace ASSISTANT_MODE{
 
 }
 
+//move submissio nmode
+namespace PLAY_MODE{
+	typedef enum
+	{
+	   NONE,
+	   SUBMITTED,
+	   PROCESSED
+	} MODE_NUMBER;
 
+	const int NUMBER		=5;
+
+}
 
 #define M_PI 3.1415926
 

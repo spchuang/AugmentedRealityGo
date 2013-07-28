@@ -4,6 +4,7 @@
 ////////////////////////////////////////////////////////////////////
 #include <string>
 #include <sstream>
+#include <boost/thread/thread.hpp>
 #include <vector>
 #include <iostream> // for standard I/O
 #include <boost/iostreams/device/file_descriptor.hpp>
@@ -41,7 +42,7 @@ private:
 	static boost::process::child c;
 	bool setTerritoryParam;
 	bool bookLoaded;
-	
+	boost::mutex addStone_mutex;
 };
 	
 #endif

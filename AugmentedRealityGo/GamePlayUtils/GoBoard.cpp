@@ -123,7 +123,6 @@ bool GoBoard::addVirtualStone(std::string move, std::string color)
 	if(!fuego->addMove(move, helper::convert_string_color(color)))
 		return false;
 
-
 	int stone_index = helper::convert_string_move(move);
 	//std::cout<<"#add virtual stone at: "<<stone_index<<std::endl;
 	if(color == "black" || color =="b"){
@@ -144,6 +143,7 @@ bool GoBoard::addRealStone(int stone_index, int color){
 	//check if this is valid move first
 	if(!fuego->addMove(helper::convert_index_move(stone_index), color))
 		return false;
+
 	if(color == COLOR_BLACK){
 		bStones.push_back(stone_index);
 	}else if(color == COLOR_WHITE){
