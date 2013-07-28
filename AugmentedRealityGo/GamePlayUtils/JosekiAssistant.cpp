@@ -77,7 +77,7 @@ void JosekiAssistant::loadDB(string dbFile, string sgfFolder)
 }
 
 
-void JosekiAssistant::searchCornerJoseki(int corner, int sw, int width, int height, 
+bool JosekiAssistant::searchCornerJoseki(int corner, int sw, int width, int height, 
 	std::vector<int>& temp_bStones,std::vector<int>& temp_wStones)
 {
 	//during this process kinda assume no stones are being played...
@@ -112,8 +112,7 @@ void JosekiAssistant::searchCornerJoseki(int corner, int sw, int width, int heig
 	}
 	// ------------------- set up search pattern --------------------------------
 	Pattern p(corner,19,width,height, patternString.c_str());
-	//printf("Search pattern:\n");
-	//printf("%s\n", p.printPattern().c_str());
+	
 
 	// -------------------- do pattern search --------------------------------------
 	gl->reset();
@@ -121,27 +120,63 @@ void JosekiAssistant::searchCornerJoseki(int corner, int sw, int width, int heig
 
 	//printf("Continuations:\n");
 	//print joseki result
+	int numJosekiMoves = 0;
 	for(int y=0; y<p.sizeY; y++) {
 		for(int x=0; x<p.sizeX; x++) {
 			
-			//printf("%c", gl->lookupLabel(x,y));
+			//std::cerr<<gl->lookupLabel(x,y);
 
 			if(gl->lookupLabel(x,y) != '.'){
 				int id = sw+(height-y-1)*19+(x);
 				cornerJoseki j;
 				j.id = id;
 				j.corner = corner;
-				//printf("%c: (%d, %d) = %d\n",gl->lookupLabel(x,y), x, sizeY-y-1, id);
+				//printf("%c: (%d, %d) = %d\n",gl->lookupLabel(x,y), x, height-y-1, id);
 				josekiMoves.push_back(j);
+				numJosekiMoves++;
 			}
 		}
-		//cout<<endl;
+		//std::cerr<<endl;
 	}
+	if(numJosekiMoves == 0)
+		return true;
+
+	printf("Search pattern:\n");
+	printf("%s\n", p.printPattern().c_str());
+	for(int y=0; y<p.sizeY; y++) {
+		for(int x=0; x<p.sizeX; x++) {
+			
+			std::cerr<<gl->lookupLabel(x,y);
+		}
+		std::cerr<<endl;
+	}
+	/*
+	printf("\n");
+	printf("Statistics:\n"); 
+	printf("num hits: %d, num switched: %d, B wins: %d, W wins: %d\n", gl->num_hits, gl->num_switched, gl->Bwins, gl->Wwins);
+
+
+	printf("Continuation | Black      ( B wins / W wins ) | White      (B wins / W wins) |\n");
+	for(int y=0; y<p.sizeY; y++) {
+		for(int x=0; x<p.sizeX; x++) {
+			if (gl->lookupLabel(x,y) != '.') {
+			Continuation cont = gl->lookupContinuation(x,y);
+			printf("      %c      |   %3d[%3d] (    %3d /    %3d ) |   %3d[%3d] (   %3d /    %3d) | %1.1f /  %1.1f | %d | %d |  \n",
+				gl->lookupLabel(x,y), cont.B, cont.tB, cont.wB, cont.lB, cont.W, cont.tW, cont.wW, cont.lW, 
+				cont.wW*100.0/cont.W, cont.wB*100.0/cont.B,
+				cont.earliest_W(), cont.became_popular_W());
+			}
+		}
+	}
+
+	*/
+	return false;
 
 }
 
-void JosekiAssistant::getJoseki(std::vector<int> temp_bStones,std::vector<int> temp_wStones, int nextMove)
+void JosekiAssistant::getJoseki(std::vector<int> temp_bStones,std::vector<int> temp_wStones, int nextMoveColor)
 {
+
 	int sizeX = 10;
 	int sizeY = 10;
 
@@ -153,13 +188,56 @@ void JosekiAssistant::getJoseki(std::vector<int> temp_bStones,std::vector<int> t
 	// -------------------- set up search options ----------------------------------
 	so.fixedColor = 0;
 	so.algos = algos;
-	so.nextMove = nextMove;
+	so.moveLimit = 100;
+	so.nextMove = nextMoveColor;
 
 	// ------------------- set up search pattern for 4 corners of the board---------
-	searchCornerJoseki(CORNER_SW_PATTERN, 0, sizeX, sizeY, temp_bStones, temp_wStones);
-	searchCornerJoseki(CORNER_SE_PATTERN, 9, sizeX, sizeY, temp_bStones, temp_wStones);
-	searchCornerJoseki(CORNER_NW_PATTERN, 171, sizeX, sizeY, temp_bStones, temp_wStones);
-	searchCornerJoseki(CORNER_NE_PATTERN, 180, sizeX, sizeY, temp_bStones, temp_wStones);
+	bool noJosekiMoves = true;
+	//south west corner
+	int sw = 0;
+	sizeX =10;
+	sizeY =10;
+	do{
+		noJosekiMoves = searchCornerJoseki(CORNER_SW_PATTERN, sw, sizeX, sizeY, temp_bStones, temp_wStones);
+		sizeX--;
+		sizeY--;
+	}while(noJosekiMoves && sizeX>5);
+
+	//south east corner
+	sw = 9;
+	sizeX =10;
+	sizeY =10;
+	do{
+		noJosekiMoves = searchCornerJoseki(CORNER_SE_PATTERN, sw, sizeX, sizeY, temp_bStones, temp_wStones);
+		sizeX--;
+		sizeY--;
+		sw++;
+	}while(noJosekiMoves && sizeX>5);
+	
+	//north west corner
+	sw = 171;
+	sizeX =10;
+	sizeY =10;
+	do{
+		noJosekiMoves = searchCornerJoseki(CORNER_NW_PATTERN, sw, sizeX, sizeY, temp_bStones, temp_wStones);
+		sizeX--;
+		sizeY--;
+		sw+=19;
+	}while(noJosekiMoves && sizeX>5);
+
+	//north east corner
+	sw = 180;
+	sizeX =10;
+	sizeY =10;
+	do{
+		noJosekiMoves = searchCornerJoseki(CORNER_NE_PATTERN, 180, sizeX, sizeY, temp_bStones, temp_wStones);
+		sizeX--;
+		sizeY--;
+		sw+=20;
+	}while(noJosekiMoves && sizeX>5);
+
+	
+	
 
 
 	

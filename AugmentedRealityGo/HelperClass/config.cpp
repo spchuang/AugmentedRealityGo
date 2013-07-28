@@ -66,7 +66,8 @@ Config::Config(std::string config_file)
 	marker.xMarkerNumber		= configTree.get<int>("markerConfiguration.xMarkerNumber");
 	marker.yMarkerNumber		= configTree.get<int>("markerConfiguration.yMarkerNumber");
 	marker.totalMarkerNumber = 2*marker.xMarkerNumber + 2*marker.yMarkerNumber -4;
-
+	marker.controllerID		= configTree.get<int>("markerConfiguration.controllerMarkerID");
+	
 
 	int s =  configTree.get<int>("markerConfiguration.showMarkers");
 	if(s==0) marker.showMarkers = false;
@@ -74,6 +75,7 @@ Config::Config(std::string config_file)
 	//stone detection configuration
 	board.whiteStoneThresh		= configTree.get<int>("stoneDetection.whiteThrehold");
 	board.blackStoneThresh		= configTree.get<int>("stoneDetection.blackThrehold");
+	board.maxStoneDist			= configTree.get<int>("stoneDetection.minStone2PointDistance");
 
 	//joseki setting
 	joseki.dbFile = configTree.get<string>("joseki.databaseFileName");
@@ -81,4 +83,6 @@ Config::Config(std::string config_file)
 
 	//fuego setting
 	fuego.memoryLimit = configTree.get<int>("fuego.memory_limit");
+	fuego.num_threads = configTree.get<int>("fuego.search_number_threads");
+	fuego.lock_free = configTree.get<int>("fuego.search_lock_free");
 }

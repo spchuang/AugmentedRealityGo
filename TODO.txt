@@ -1,7 +1,11 @@
 MAIN TODO
 - show joseki corner suggestions (Juseki corner support)
-- Fuego best move support (useful when no more openmove are avaliable)
 - connect with ktp server
+
+7/28
+- fixed the bug when adding new moves during assistant thinking (sending a play command to fuego when fuego is calculating territory ..)
+- fixed the color of new move arrows and juseki assistant
+- fix the bug for removing captured stones
 
 7/20
 - added arbitual configuration to board size

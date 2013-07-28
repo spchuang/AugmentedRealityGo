@@ -48,19 +48,31 @@ int GoBoard::getMoveTurnColor()
 {
 	return currentMoveColor;
 }
-void GoBoard::changeTurn()
+void GoBoard::changeTurn(int new_move)
 {
-	
 	if(currentMoveColor == COLOR_WHITE)
 		currentMoveColor = COLOR_BLACK;
 	else if(currentMoveColor == COLOR_BLACK)
 		currentMoveColor = COLOR_WHITE;
+
+	newMoveIndex = new_move;
 	newMoveIsMade = true;
 
 	//get fuego board state
 	std::vector<int> bs, ws;
 	fuego->boardState(bs,ws);
 
+	/*
+	std::cerr<<"black stones: "<<std::endl;
+	for(int i=0; i<bs.size();i++){
+		std::cerr<<helper::convert_index_move(bs[i])<<" ";
+	}
+	std::cerr<<std::endl;
+	std::cerr<<"white stones: "<<std::endl;
+	for(int i=0; i<ws.size();i++){
+		std::cerr<<helper::convert_index_move(ws[i])<<" ";
+	}
+	*/
 	std::vector<int> removeStones;
 
 	if(bStones.size() > bs.size()){
@@ -121,6 +133,7 @@ bool GoBoard::addVirtualStone(std::string move, std::string color)
 {
 	//check if this is valid move first
 	if(!fuego->addMove(move, helper::convert_string_color(color)))
+		
 		return false;
 
 	int stone_index = helper::convert_string_move(move);
@@ -133,16 +146,19 @@ bool GoBoard::addVirtualStone(std::string move, std::string color)
 		wStones.push_back(stone_index);
 	}
 	
-	//set new move to the new virtual move
-	newMoveIndex = stone_index;
-	changeTurn();
+	changeTurn(stone_index);
 	return true;
 }
 
 bool GoBoard::addRealStone(int stone_index, int color){
 	//check if this is valid move first
-	if(!fuego->addMove(helper::convert_index_move(stone_index), color))
+	if(!fuego->addMove(helper::convert_index_move(stone_index), color)){
+		wrongRealStones[stone_index] = ERROR_ILLEGAL_MOVE;
+		if(warningMsg ==NO_WRONG_MOVE)
+			warningMsg = ERROR_ILLEGAL_MOVE;
 		return false;
+
+	}
 
 	if(color == COLOR_BLACK){
 		bStones.push_back(stone_index);
@@ -150,13 +166,31 @@ bool GoBoard::addRealStone(int stone_index, int color){
 		wStones.push_back(stone_index);
 	}
 	realStones[stone_index] = color;
-	changeTurn();
+	
+	changeTurn(stone_index);
 	return true;
 }
 
 
 bool GoBoard::checkNewBoardState(char newRealBoardStones[361], char newMoveColor)
 {
+	//before checking the new move for anything, make sure all the captuerd stones are removed from the board
+	
+	if(warningMsg == ERROR_REMOVE_THIS_STONE){
+		bool capturedStoneRemoved = true;
+		for(int i=0; i<19*19; i++)
+		{
+
+			if(wrongRealStones[i] == ERROR_REMOVE_THIS_STONE && newRealBoardStones[i]!=COLOR_NONE){
+				capturedStoneRemoved = false;
+			}else if(wrongRealStones[i] == ERROR_REMOVE_THIS_STONE && newRealBoardStones[i]==COLOR_NONE){
+				wrongRealStones[i] = NO_WRONG_MOVE;
+			}
+		}
+		if(!capturedStoneRemoved) return false;
+	}
+
+
 	//initialize a list of wrong moves
 	for(int i=0; i<19*19;i++)
 	{
@@ -172,7 +206,7 @@ bool GoBoard::checkNewBoardState(char newRealBoardStones[361], char newMoveColor
 	for(int i=0; i<19*19; i++)
 	{
 		//first check if real stone overlaps with virtual stone
-		if((virtualStones[i]==0 ||virtualStones[i]==1) && newRealBoardStones[i]!=2)
+		if((virtualStones[i]==COLOR_WHITE ||virtualStones[i]==COLOR_BLACK) && newRealBoardStones[i]!=COLOR_NONE)
 		{
 			std::cerr<<"ERROR: real stone overlaps with virtual\n";
 			wrongRealStones[i] = ERROR_REAL_OVERLAPS_VIRTUAL;
@@ -182,7 +216,7 @@ bool GoBoard::checkNewBoardState(char newRealBoardStones[361], char newMoveColor
 		}
 
 		//check if a real stone was placed, but the new board state shows it's changed
-		if( (realStones[i]==0 ||realStones[i]==1) && realStones[i] != newRealBoardStones[i])
+		if( (realStones[i]==COLOR_WHITE ||realStones[i]==COLOR_BLACK) && realStones[i] != newRealBoardStones[i])
 		{
 			std::cerr<<"ERROR: stone state is changed\n";
 			
@@ -200,7 +234,7 @@ bool GoBoard::checkNewBoardState(char newRealBoardStones[361], char newMoveColor
 				
 		for(int i=0; i<19*19; i++)
 		{
-			if( (virtualStones[i]==2 && realStones[i]==2) && (newRealBoardStones[i]==0 || newRealBoardStones[i]==1))
+			if( (virtualStones[i]==COLOR_NONE && realStones[i]==COLOR_NONE) && (newRealBoardStones[i]==COLOR_WHITE || newRealBoardStones[i]==COLOR_BLACK))
 			{
 				allNewMoveIndex.push_back(i);
 			}
@@ -226,7 +260,7 @@ bool GoBoard::checkNewBoardState(char newRealBoardStones[361], char newMoveColor
 			//only one new move, now check if it's the right color
 			if(newRealBoardStones[allNewMoveIndex[0]]==newMoveColor){
 
-				newMoveIndex = allNewMoveIndex[0];
+				newRealMoveIndex = allNewMoveIndex[0];
 				//addRealStone(allNewMoveIndex[0], newMoveColor);
 				return true;
 			}

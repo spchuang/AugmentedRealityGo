@@ -28,7 +28,7 @@ public:
 	void clear_board();
 
 	//add stones
-	void changeTurn();
+	void changeTurn(int new_move);
     bool addVirtualStone(std::string move, std::string color);
 	bool addRealStone(int stone_index, int color);
 
@@ -40,6 +40,7 @@ public:
 	volatile char realStones[361];
 	volatile char virtualStones[361];
 	volatile char wrongRealStones[361];
+	volatile int newRealMoveIndex;
 	volatile int newMoveIndex;
 	static bool newMoveIsMade;
 
@@ -49,7 +50,7 @@ public:
 	std::vector<int> wStones;
 	
 private:
-	int currentMoveColor;
+	volatile int currentMoveColor;
 	FuegoAssistant* fuego;
 	JosekiAssistant* joseki;
 	

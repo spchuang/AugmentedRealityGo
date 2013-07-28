@@ -23,11 +23,11 @@ namespace helper
 		//cout << x <<" , "<<y<<endl;
 		return (19*(y-1)+x);
 	}
-	//convert index(int) move to string format
+	//convert index(int) move to string format (lower case)
 	static std::string convert_index_move(const int move)
 	{
 	
-		char x = move%19 + 'A';
+		char x = move%19 + 'a';
 		if(move%19 > 8)
 			x++;
 		int y = (int)(move/19)+1;

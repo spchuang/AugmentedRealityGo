@@ -27,6 +27,8 @@ GoAssistantController::GoAssistantController(GoBoard* b, Config* c)
 	isProcessing = false;
 
 	fuego.set_memory_limit(c->fuego.memoryLimit);
+	fuego.set_thread_num(c->fuego.num_threads);
+	fuego.set_lock_free(c->fuego.lock_free);
 }
 
 void GoAssistantController::pushAssistantMode(int a)
@@ -65,7 +67,7 @@ void GoAssistantController::playVirtualMove(std::string move, std::string color)
 void GoAssistantController::playRealMove(int move, int color)
 {
 	std::vector<std::string> s;
-	s.push_back("playVirtual");
+	s.push_back("playReal");
 	s.push_back(helper::convert_index_move(move));
 	s.push_back(helper::convert_int_color(color));
 	pushMutex_.lock();

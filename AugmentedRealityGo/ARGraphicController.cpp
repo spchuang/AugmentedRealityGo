@@ -25,6 +25,7 @@ int winID;
 volatile bool ARGraphicController::genMove;
 volatile int ARGraphicController::newMoveColor;
 int ARGraphicController::assistant_mode;
+int ARGraphicController::change_assistant_mode;
 
 GoBoard* ARGraphicController::board;
 GoAssistantController* ARGraphicController::goAssistant;
@@ -39,6 +40,9 @@ int prevMsgTime =0 ;
 float arrow_space_height = 0.28;
 float arrow_space_height_add = 0.25;
 
+float changeModeBarWidth = 0.3;
+float changeModeBarChange = 0.2;
+float changeModeBar;
 
 bool showAllStones;
 cv::Mat frameImg;
@@ -66,7 +70,7 @@ ARGraphicController::ARGraphicController(Config* c, GoBoard* b, GoAssistantContr
 	showAllStones = false;
 
 	glGenTextures(1, &textureID);                  // Create The Texture
-
+	changeModeBar =0;
 		
 }
 
@@ -116,7 +120,7 @@ void ARGraphicController::calculateFPS()
     //  Calculate time passed
     int timeInterval = currentTime - previousTime;
  
-    if(timeInterval > 700)
+    if(timeInterval > 1000)
     {
         //  calculate the number of frames per second
         fps = frameCount / (timeInterval / 1000.0f);
@@ -144,22 +148,47 @@ void ARGraphicController::calculateFPS()
 					 genMove = false;
 				 }
 				 */
-
-				goAssistant->playRealMove(board->newMoveIndex, board->getMoveTurnColor());
+				goAssistant->playRealMove(board->newRealMoveIndex, board->getMoveTurnColor());
 
 
 			 }
 		 } 
 		
+		
+    }
+	if( (int)(timeInterval/60)>0){
+		//use controlling marker to change between modes
+		if(d->controllerMarkerMove()){
+
+			changeModeBar = changeModeBarWidth;
+			change_assistant_mode= (change_assistant_mode+1)%ASSISTANT_MODE::NUMBER;
+		}
+	}
+	//mode changing bar animation
+	if(changeModeBar >0) changeModeBar -= changeModeBarChange/fps;
+	
+	//if bar reaches 0, change the mode
+	if(changeModeBar <0){
+		if(assistant_mode != change_assistant_mode){
+			assistant_mode = change_assistant_mode;
+			//push the assistant request in queue
+			goAssistant->pushAssistantMode(assistant_mode);
+		}
+		
+	}
+
+	if((int)(timeInterval/400)>0)
+    {
 		if(genMove == true && goAssistant->processedMove == PLAY_MODE::PROCESSED){
 			if(goAssistant->validMove){
 				genMove = false;
-				goAssistant->processedMove = PLAY_MODE::NONE;
+				
+			}else{
+				fprintf(stderr, "ERROR: Invalid move\n");
 			}
+			goAssistant->processedMove = PLAY_MODE::NONE;
 		}
-    }
-
-
+	}
 	//also use this to calculate the loadign msg animation
 	//in terms of milliseconds
 	currentMsgTime = glutGet(GLUT_ELAPSED_TIME);
@@ -171,6 +200,7 @@ void ARGraphicController::calculateFPS()
 
 
 	//calculate arrow animation
+
 	arrow_space_height_add -= 0.25/fps;
 	if(arrow_space_height_add <0) arrow_space_height_add = 0.25;
 
@@ -249,8 +279,12 @@ void ARGraphicController::drawBoard()
 				float	p[]={d->Board3DPoint[i+4].x ,d->Board3DPoint[i+4].y,d->Board3DPoint[i+4].z};
 				if(board->wrongRealStones[i] == ERROR_OLD_REAL_STONE_MOVED){
 					if(board->realStones[i] == COLOR_BLACK){
+						DrawSquare(p, 0.15f, HALF_TRAN_RED_COLOR);
+						p[2]+=0.001;
 						DrawSquare(p, 0.10f, BLACK_COLOR);
 					}else if(board->realStones[i] == COLOR_WHITE){
+						DrawSquare(p, 0.15f, HALF_TRAN_RED_COLOR);
+						p[2]+=0.001;
 						DrawSquare(p, 0.10f, WHITE_COLOR);
 					}
 				}else{
@@ -265,7 +299,7 @@ void ARGraphicController::drawBoard()
 				p[0]*=-1;
 				p[1]*=-1;
 				p[2]*=-1;
-				DrawSquare(p, 0.05f, NEW_MOVE_COLOR);
+				DrawSquare(p, 0.05f, NEW_MOVE_COLOR_BLACK);
 			}
 			
 		}
@@ -275,8 +309,12 @@ void ARGraphicController::drawBoard()
 		int i = board->newMoveIndex;
 		if(i!=-1){
 			float p_m[]={-d->Board3DPoint[i+4].x ,-d->Board3DPoint[i+4].y,-d->Board3DPoint[i+4].z};
-			draw_arrow(p_m, 0.05, 0.2, arrow_space_height_add + arrow_space_height, NEW_MOVE_COLOR, false);
-		
+			if(board->getMoveTurnColor() == COLOR_BLACK){
+				draw_arrow(p_m, 0.05, 0.2, arrow_space_height_add + arrow_space_height, NEW_MOVE_COLOR_WHITE, false);
+			}else{
+				draw_arrow(p_m, 0.05, 0.2, arrow_space_height_add + arrow_space_height, NEW_MOVE_COLOR_BLACK, false);
+				
+			}
 		}
 
 		/*
@@ -318,7 +356,9 @@ void ARGraphicController::drawBoard()
 
 						float p[]={d->Board3DPoint[index+4].x ,d->Board3DPoint[index+4].y,d->Board3DPoint[index+4].z};
 
-						DrawSquare(p, 0.10f, CORNER_JOSEKI_COLOR[corner]);
+						//I originally had different colors for each corner, but it looks confusing to the users
+						//CORNER_JOSEKI_COLOR[corner]
+						DrawSquare(p, 0.10f, HALF_TRAN_GREEN_COLOR);
 
 
 					}
@@ -356,7 +396,7 @@ void ARGraphicController::drawBoard()
 			}
 
 		}
-		drawCoordinateAxis();
+		//drawCoordinateAxis();
 
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
@@ -418,8 +458,9 @@ void ARGraphicController::RenderSceneCB()
 			loadingString+=".";
 
 		
+		
 		//print assistant mode
-		switch(assistant_mode)
+		switch(change_assistant_mode)
 		{
 			case ASSISTANT_MODE::NONE:
 				msg = "Assistant Mode: None";
@@ -450,9 +491,15 @@ void ARGraphicController::RenderSceneCB()
 					msg = "Assistant Mode: Territory Estimation";
 				break;
 				
+		}  
+		if(change_assistant_mode == assistant_mode){
+			draw_text(-0.97f,0.90f, SOLID_RED_COLOR, msg);
+		}else{
+			draw_text(-0.97f,0.90f, HALF_TRAN_PINK_COLOR, msg);
 		}
-		draw_text(-0.97f,0.90f, SOLID_RED_COLOR, msg);
-
+		//print change turn mode bar
+		DrawBar(-0.985f, 0.89f, 0.8, 0.09, HALF_TRAN_BAR_COLOR);
+		DrawBar(-0.185f, 0.89f, changeModeBar, 0.09, HALF_TRAN_BAR_LOADING_COLOR);
 		//print player turns
 		if(board->getMoveTurnColor() == COLOR_BLACK){
 			msg = "Black's turn";
@@ -477,12 +524,15 @@ void ARGraphicController::RenderSceneCB()
 				msg = "Error: More than one new move";
 			} else if(board->warningMsg == ERROR_NEW_MOVE_WRONG_COLOR){
 				msg = "Error: New stone is the wrong color";
-			}     
-			draw_text(-0.90f,0.814f, RED_COLOR, msg);
-			draw_circle(-0.95f,0.84f,0.04f, RED_COLOR);
-
+			}else if(board->warningMsg == ERROR_ILLEGAL_MOVE){
+				msg = "ERROR: This move is illegal";
+			}
+			draw_text(-0.90f,0.794f, SOLID_RED_COLOR, msg);
+			draw_circle(-0.95f,0.82f,0.04f, RED_COLOR);
+			DrawBar(-0.985f, 0.78f, 1.3, 0.09, HALF_TRAN_BAR_COLOR);
 		}
 
+		
 	glPopMatrix();
 	glMatrixMode( GL_MODELVIEW );
 	glPopMatrix();
@@ -507,20 +557,26 @@ void ARGraphicController::gl_idle_func()
 		
 		
 		cv::Mat undistortImage;
-		undistortImage = d->getUndistortImage(frameImg);
+		d->putFrame(frameImg);
+		detectedBoard =d->detectMove();
+
+		undistortImage = d->getProcessedFrame();
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, textureID);           
 
 		glTexSubImage2D(GL_TEXTURE_2D, 0,0, 0,  undistortImage.cols, undistortImage.rows,GL_BGR_EXT, GL_UNSIGNED_BYTE, undistortImage.data);
 
 
-		detectedBoard =d->detectMove();
+		
 		
 		if(board->newMoveIsMade)
 		{
-			assistant_mode = ASSISTANT_MODE::NONE;
-			goAssistant->pushAssistantMode(assistant_mode);
-			//goAssistant->pushAssistantMode(assistant_mode);
+			if(assistant_mode == ASSISTANT_MODE::FUEGO_BOOK || assistant_mode==ASSISTANT_MODE::JOSEKI){
+				goAssistant->pushAssistantMode(assistant_mode);
+			}else{
+				assistant_mode = ASSISTANT_MODE::NONE;
+				goAssistant->pushAssistantMode(assistant_mode);
+			}
 			board->newMoveIsMade = false;
 		}
 
@@ -604,7 +660,7 @@ void ARGraphicController::keyFunc(unsigned char key, int x, int y)
 	case 'o':
 		//d.readStone(newMove);x
 		//d.testThrehold();
-		std::cout<<std::endl<<"current game state:"<<std::endl;
+		std::cerr<<std::endl<<"current game state:"<<std::endl;
 		for(int i=18; i>=0;i--){
 			for(int j=0; j<19;j++)
 			{
@@ -619,11 +675,18 @@ void ARGraphicController::keyFunc(unsigned char key, int x, int y)
 			}
 			std::cerr<<std::endl;
 		}
+		std::cerr<<std::endl<<"current wrong move state:"<<std::endl;
+		for(int i=18; i>=0;i--){
+			for(int j=0; j<19;j++)
+			{
+				std::cerr<< board->wrongRealStones[i*19+j]+'0'<<" ";
+			}
+			std::cerr<<std::endl;
+		}
 		break;
 	case 'a':
-		assistant_mode = (assistant_mode+1)%ASSISTANT_MODE::NUMBER;
-		//push the assistant request in queue
-		goAssistant->pushAssistantMode(assistant_mode);
+		changeModeBar = changeModeBarWidth;
+		change_assistant_mode = (change_assistant_mode+1)%ASSISTANT_MODE::NUMBER;
 		break;
 	case 'p':
 		d->changePostMethod();
@@ -632,23 +695,24 @@ void ARGraphicController::keyFunc(unsigned char key, int x, int y)
 		//d.GoBoardTaux.convertTo(Tvec ,CV_32F);
 		break;
 	case '2':
-		assistant_mode = ASSISTANT_MODE::FUEGO_BOOK;
+		assistant_mode =change_assistant_mode= ASSISTANT_MODE::FUEGO_BOOK;
 		goAssistant->pushAssistantMode(assistant_mode);
+
 		break;
 	case '3':
-		assistant_mode = ASSISTANT_MODE::JOSEKI;
+		assistant_mode =change_assistant_mode= ASSISTANT_MODE::JOSEKI;
 		goAssistant->pushAssistantMode(assistant_mode);
 		break;
 	case '4':
-		assistant_mode = ASSISTANT_MODE::FUEGO_MOVE;
+		assistant_mode =change_assistant_mode= ASSISTANT_MODE::FUEGO_MOVE;
 		goAssistant->pushAssistantMode(assistant_mode);
 		break;
 	case '5':
-		assistant_mode = ASSISTANT_MODE::TERRITORY;
+		assistant_mode =change_assistant_mode= ASSISTANT_MODE::TERRITORY;
 		goAssistant->pushAssistantMode(assistant_mode);
 		break;
 	case '1':
-		assistant_mode = ASSISTANT_MODE::NONE;
+		assistant_mode =change_assistant_mode= ASSISTANT_MODE::NONE;
 		goAssistant->pushAssistantMode(assistant_mode);
 		break;
 	}

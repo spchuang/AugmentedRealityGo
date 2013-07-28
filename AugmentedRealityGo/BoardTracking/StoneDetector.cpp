@@ -8,7 +8,7 @@
 #include "StoneDetector.h"
 
 
-StoneDetector::StoneDetector(int w_thresh = 190, int b_thresh = 60)
+StoneDetector::StoneDetector(int w_thresh = 190, int b_thresh = 60, int dist=6)
 {
 	//testing values
 	//if it's dark, black_thresh shoudl be lower and vice versa for white
@@ -17,7 +17,7 @@ StoneDetector::StoneDetector(int w_thresh = 190, int b_thresh = 60)
 	min_radius = 3;
 	max_radius = 15;
 	border = 5; //border padding
-
+	max_dist = dist;
 }
 
 int thresh = 100;
@@ -311,7 +311,7 @@ void StoneDetector::findCandidateStones(bool findBlack,std::vector<cv::Point2f> 
 					double distSquared = sqrt (SQ(realCenter.x-StonePoints[i].x)+SQ(realCenter.y-StonePoints[i].y));
 	
 					
-					if(distSquared <6){
+					if(distSquared <max_dist){
 						//push this to candidate list
 						potentialStoneCenters.push_back(realCenter);	
 

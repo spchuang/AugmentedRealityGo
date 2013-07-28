@@ -328,39 +328,37 @@ void MarkerDetector::recognizeMarkers(const cv::Mat& grayscale, std::vector<Mark
 }
 
 
-void MarkerDetector::estimatePosition(std::vector<Marker>& detectedMarkers)
+void MarkerDetector::estimatePosition(Marker& m)
 { 
 	
-	
-    for (size_t i=0; i<detectedMarkers.size(); i++)
-    {	
-        Marker& m = detectedMarkers[i];
+	std::vector<cv::Point3f> m_3d;
+	m_3d.push_back(cv::Point3f(0,0,0));
+	m_3d.push_back(cv::Point3f(0,1,0));
+	m_3d.push_back(cv::Point3f(1,1,0));
+	m_3d.push_back(cv::Point3f(1,0,0));
 
-		//calculate 9 points of the marker
-		std::vector<cv::Point2f> imgPoints(9,0);
-		imgPoints[0] = m.points[0];
-		imgPoints[1] = midPointOfTwoPoints(m.points[0],m.points[1]);
-		imgPoints[2] = m.points[1];
-		imgPoints[3] = midPointOfTwoPoints(m.points[0],m.points[3]);
-		imgPoints[5] = midPointOfTwoPoints(m.points[1],m.points[2]);
-		imgPoints[4] = midPointOfTwoPoints(imgPoints[3],imgPoints[5]);
-		imgPoints[6] = m.points[3];
-		imgPoints[7] = midPointOfTwoPoints(m.points[2],m.points[3]);
-		imgPoints[8] = m.points[2];
+	//calculate 9 points of the marker
+	std::vector<cv::Point2f> imgPoints(4,0);
+	imgPoints[0] = m.points[0];
+	imgPoints[1] = m.points[1];
+	imgPoints[2] = m.points[3];
+	imgPoints[3] = m.points[2];
 		
 	
-        cv::Mat Rvec;
-        cv::Mat_<float> Tvec;
-        cv::Mat raux,taux;
-		 cv::Mat_<float> rotMat(3,3); 
-        cv::solvePnP(m_markerCorners3d, imgPoints, camMatrix, distCoeff,raux,taux);
-        raux.convertTo(Rvec,CV_32F);
-        taux.convertTo(Tvec ,CV_32F);
+    cv::Mat Rvec;
+    cv::Mat_<float> Tvec;
+    cv::Mat raux,taux;
+		cv::Mat_<float> rotMat(3,3); 
+    cv::solvePnP(m_3d, imgPoints, camMatrix, distCoeff,raux,taux);
+    raux.convertTo(Rvec,CV_32F);
+    taux.convertTo(Tvec ,CV_32F);
 
-		
+	std::cerr<<"NEW ROUND!"<<std::endl;
+		std::cerr<<"raux: "<<std::endl<<raux<<std::endl;
+		std::cerr<<"taux: "<<std::endl<<taux<<std::endl<<std::endl;
 
-		m.Tvec = Tvec;
-		m.Rvec = Rvec;
-    }
+	m.Tvec = Tvec;
+	m.Rvec = Rvec;
+ 
 }
 

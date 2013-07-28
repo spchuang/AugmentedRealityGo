@@ -210,6 +210,19 @@ void DrawSquare(float* origin, float size, const float* color)
 
 }
 
+void DrawBar(float x, float y, float width, float height, const float* color)
+{
+	//draw squaure
+	glBegin(GL_POLYGON);
+		glColor4f(color[0], color[1], color[2], color[3]);
+		glVertex2f( (x), (y));
+		glVertex2f((x),(y+height));
+		glVertex2f((x+width), (y+height));
+		glVertex2f((x+width), (y));
+	glEnd();
+	glColor4f(1.f, 1.f, 1.f, 1.f);
+}
+
 void draw_text(float x, float y, const float* color, std::string msg)
 {
 	glColor4f(color[0], color[1], color[2], color[3]);

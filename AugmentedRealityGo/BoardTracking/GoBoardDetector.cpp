@@ -15,7 +15,7 @@
 #include "CVHelper.h"
 #include "RPP/RPP.h"
 GoBoardDetector::GoBoardDetector(Config* c)
-	:sd(c->board.whiteStoneThresh, c->board.blackStoneThresh)
+	:sd(c->board.whiteStoneThresh, c->board.blackStoneThresh, c->board.maxStoneDist)
 {
 
 	boardMarkerID = c->marker.boardMarkerID;
@@ -28,6 +28,7 @@ GoBoardDetector::GoBoardDetector(Config* c)
 	showMarkers = c->marker.showMarkers;
 	numPoint		= c->board.numPoint;
 
+	controllerMarkerID = c->marker.controllerID;
 	board_width = 300;
 	board_height = 300;
 	//board parameter
@@ -77,6 +78,7 @@ GoBoardDetector::GoBoardDetector(Config* c)
 	fullBoardInScene = false;
 	frameWidth = c->cam.width;
 	frameHeight = c->cam.height;
+	markerPrevAngle = 0;
 }
 
 void GoBoardDetector::setCameraIntrinsics(cv::Mat camM, cv::Mat camD)
@@ -85,13 +87,22 @@ void GoBoardDetector::setCameraIntrinsics(cv::Mat camM, cv::Mat camD)
 	distCoeff = camD;
 
 }
+void GoBoardDetector::putFrame(cv::Mat& srcImage)
+{
+	srcFrame = srcImage;
+	cv::undistort(srcImage, undistortImage, camMatrix, distCoeff);
+
+}
 cv::Mat GoBoardDetector::getUndistortImage(cv::Mat& srcImage)
 {
 	srcFrame = srcImage;
 	cv::undistort(srcImage, undistortImage, camMatrix, distCoeff);
 	return undistortImage;
 }
-
+cv::Mat GoBoardDetector::getProcessedFrame()
+{
+	return undistortImage;
+}
 
 bool GoBoardDetector::detectMove()
 {
@@ -106,7 +117,50 @@ bool GoBoardDetector::detectMove()
 	detectHand();
 	return true;
 }
+bool GoBoardDetector::controllerMarkerMove()
+{
+	
+	//calculate the rotation of the controller marker
+	for(size_t i=0; i<m_detectedMarkers.size(); i++){
+		Marker& m = m_detectedMarkers[i];
+		if(m.id == controllerMarkerID){
+			
+			 
+			 float angle = atan2(m.points[2].y-m.points[0].y, m.points[2].x-m.points[0].x)* 180.0 / CV_PI +180.0; 
 
+			 float diffAngle = angle-markerPrevAngle;
+			 if( diffAngle>0.5){
+				  controlMarkerAngle.push_back(diffAngle);
+
+			 }else if(diffAngle < -4){
+				  controlMarkerAngle.clear();
+			 }
+			
+			 markerPrevAngle = angle;
+		}
+	}
+	
+	if(controlMarkerAngle.size()<7){
+		return false;
+	}
+	//calculate average rotational speed
+	
+	float totalA = 0;
+
+	for(int i=0; i<controlMarkerAngle.size();i++){
+		totalA +=controlMarkerAngle[i];
+	}
+	totalA/=7;
+
+	//change in angle has to be great enough
+	if(totalA<3.5)
+		return false;
+	std::cerr<<"change in angle: "<<totalA<<std::endl;
+	
+	controlMarkerAngle.clear();
+	return true;
+
+}
 
 bool GoBoardDetector::findBoard(cv::Mat &srcImage)
 {
@@ -123,16 +177,28 @@ bool GoBoardDetector::findBoard(cv::Mat &srcImage)
 	if(m_detectedMarkers.size()==0)
 		return false;
 	
-	//undistort image based on calibration parameters
-	
+	//calculate the rotation of the controller marker
+	for(size_t i=0; i<m_detectedMarkers.size(); i++){
+		if(m_detectedMarkers[i].id == controllerMarkerID){
+			Marker& m = m_detectedMarkers[i];
+			cv::line( undistortImage,m.points[0],m.points[2],cv::Scalar(255,0,0),2,CV_AA);
+			cv::line( undistortImage,m.points[1],m.points[3],cv::Scalar(255,0,0),2,CV_AA);
+			m.drawTextOnMarker(undistortImage,cv::Scalar(0,0,255),2, "Control Marker");
+			
+		}
+	}
+	/*
+	cv::imshow("result", undistortImage);
+	cv::waitKey(1);
+
+	*/
 	//calculate board points based on perspective projection transform
 	cv::Mat Rvec;
     cv::Mat Tvec;
 	if(!calculateCameraIntrinsix())
 		returnVal= false;
 
-	//cv::imshow("result", undistortImage);
-	//cv::waitKey(1);
+	
 	
 	return returnVal;
 }
@@ -152,7 +218,7 @@ bool GoBoardDetector::calculateCameraIntrinsix()
 	for(size_t i=0; i<m_detectedMarkers.size(); i++)
 	{
 		Marker& m = m_detectedMarkers[i];
-		m.draw(undistortImage,cv::Scalar(0,0,255),2);
+		//m.draw(undistortImage,cv::Scalar(0,0,255),2);
 		for(size_t j=0; j<boardMarkerID.size(); j++)
 		{
 			//if the marker is one of the board marker ids
@@ -238,6 +304,7 @@ bool GoBoardDetector::calculateCameraIntrinsix()
 				
 				if(CorrectMarker){
 					if(showMarkers){
+				
 						m.draw(undistortImage,cv::Scalar(0,0,255),2);
 					}
 				}
@@ -248,7 +315,7 @@ bool GoBoardDetector::calculateCameraIntrinsix()
 
 
 	if(hasBoardMarkers == false){
-		m_detectedMarkers.clear();
+		
 		GoBoardRaux = cv::Mat();
 		GoBoardTaux = cv::Mat();
 		return false;
@@ -302,14 +369,15 @@ bool GoBoardDetector::calculateCameraIntrinsix()
 	//std::cout<<transform_r<<std::endl;
 	cv::projectPoints(Board3DPoint, transform_r, GoBoardTaux, camMatrix, distCoeff, BoardImagePoint);
 	//cv::showAndSave("marker_board", undistortImage);
-	for(size_t c=0;c<BoardImagePoint.size() ; c++){
-		//MyFilledCircle(undistortImage, m_detectedMarkers[i].points[c],cv::Scalar(0,255,0));
+	if(showMarkers){
+		for(size_t c=0;c<BoardImagePoint.size() ; c++){
+			//MyFilledCircle(undistortImage, m_detectedMarkers[i].points[c],cv::Scalar(0,255,0));
 
-		//if(c<4)
-		//	cv::line(undistortImage,  BoardImagePoint[c],  BoardImagePoint[(c+1)%4],  cv::Scalar(255,0,0), 2, CV_AA);
-		MyFilledCircle(undistortImage, BoardImagePoint[c], cv::Scalar(0,0,255));	
+			//if(c<4)
+			//	cv::line(undistortImage,  BoardImagePoint[c],  BoardImagePoint[(c+1)%4],  cv::Scalar(255,0,0), 2, CV_AA);
+			MyFilledCircle(undistortImage, BoardImagePoint[c], cv::Scalar(0,0,255));	
+		}
 	}
-
 	fullBoardInScene = true;
 	for(int i=0; i<4;i++){
 		if(BoardImagePoint[i].x<0 || BoardImagePoint[i].x >frameWidth ||

@@ -28,6 +28,8 @@ public:
 	//! Main marker detection routine
 	bool findMarkers(const cv::Mat& grayscale, std::vector<Marker>& detectedMarkers);
   
+	//! Calculates marker poses in 3D
+	void estimatePosition(Marker& m);
 protected:
 	
 	
@@ -49,8 +51,7 @@ protected:
 	//! Tries to recognize markers by detecting marker code
 	void recognizeMarkers(const cv::Mat& grayscale, std::vector<Marker>& detectedMarkers);
 
-	//! Calculates marker poses in 3D
-	void estimatePosition(std::vector<Marker>& detectedMarkers);
+	
 
 private:
 	float m_minContourLengthAllowed;

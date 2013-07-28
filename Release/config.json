@@ -23,7 +23,8 @@
 	},
 	"stoneDetection":{
 		"blackThrehold": 57,
-		"whiteThrehold": 198
+		"whiteThrehold": 198,
+		"minStone2PointDistance": 7
 	},
 	//note this should all be in the same unit (mm..)
 	
@@ -61,18 +62,18 @@
 		"heightGap": 12.2,
 		
 		//gap from marker to corner of the board
-		"gap": 19.7,
+		"gap": 19.5,
 		
 		//horizontal and vertical distance between grids
-		"widthInterval": 23.8,
-		"heightInterval": 21.8,
+		"widthInterval": 23.6,
+		"heightInterval": 21.65,
 		
 		"blockLength": 11
 	},
 	
 	
 	"markerConfiguration":{
-		"markerLength": 98.7,
+		"markerLength": 98.5,
 		"xMarkerNumber": 6,
 		"yMarkerNumber": 6,
 		//0 shows marker, 1 doens't show marker
@@ -92,7 +93,9 @@
 					,399,938
 					,933,180
 					,429,343
-					,29,372,461,91,421,642]
+					,29,372,461,91,421,642],
+	
+		"controllerMarkerID": 250
 	},
 
 
@@ -105,7 +108,9 @@
 	
 	"fuego":{
 		//500000000 = 500 mb
-		"memory_limit": 1000000000
+		"memory_limit": 1000000000,
+		"search_number_threads": 2,
+		"search_lock_free": 1
 	
 	},
 	//this is about stone size

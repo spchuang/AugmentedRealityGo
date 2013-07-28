@@ -59,6 +59,7 @@ private:
 	static int loadingMsg;
 	static volatile int newMoveColor;
 	static int assistant_mode;
+	static int change_assistant_mode;
 
 	
 	

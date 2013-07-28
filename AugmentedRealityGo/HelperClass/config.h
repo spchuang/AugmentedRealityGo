@@ -43,6 +43,7 @@ public:
 		double blockLength;
 		int whiteStoneThresh;
 		int blackStoneThresh;
+		int maxStoneDist;
 	}board;
 
 	struct markerConfiguration{
@@ -52,6 +53,7 @@ public:
 		int totalMarkerNumber;
 		bool showMarkers;
 		double markerLength;
+		int controllerID;
 	}marker;
 
 	struct stoneConfiguration{
@@ -67,6 +69,8 @@ public:
 
 	struct fuegoConfiguration{
 		int memoryLimit;
+		int num_threads;
+		int lock_free;
 	}fuego;
 
 private:

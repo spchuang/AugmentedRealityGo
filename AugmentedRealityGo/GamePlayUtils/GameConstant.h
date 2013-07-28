@@ -17,6 +17,7 @@
 #define ERROR_MORE_THAN_ONE_NEW_MOVES	3
 #define ERROR_NEW_MOVE_WRONG_COLOR		4
 #define ERROR_REMOVE_THIS_STONE			5
+#define ERROR_ILLEGAL_MOVE				6
 
 
 static const float CORNER_JOSEKI_COLOR[4][4]	= {{0.7f, 0.7f, 0.0f, 0.5f},

@@ -38,6 +38,33 @@ void Marker::draw(cv::Mat &in, cv::Scalar color, int lineWidth)
     
 }
 
+void Marker::drawTextOnMarker(cv::Mat &in, cv::Scalar color, int lineWidth, std::string text)
+{
+    
+    cv::line( in,points[0],points[1],color,lineWidth,CV_AA);
+    cv::line( in,points[1],points[2],color,lineWidth,CV_AA);
+    cv::line( in,points[2],points[3],color,lineWidth,CV_AA);
+    cv::line( in,points[3],points[0],color,lineWidth,CV_AA);
+    cv::rectangle( in,points[0]-cv::Point2f(2,2),points[0]+cv::Point2f(2,2),cv::Scalar(0,0,255,255),lineWidth,CV_AA);
+    cv::rectangle( in,points[1]-cv::Point2f(2,2),points[1]+cv::Point2f(2,2),cv::Scalar(0,255,0,255),lineWidth,CV_AA);
+    cv::rectangle( in,points[2]-cv::Point2f(2,2),points[2]+cv::Point2f(2,2),cv::Scalar(255,0,0,255),lineWidth,CV_AA);
+    
+
+        char cad[100];
+        sprintf(cad,text.c_str());
+        //determine the centroid
+        cv::Point cent(-0.2,-0.2);
+        for (int i=0;i<4;i++)
+        {
+            cent.x+=points[i].x;
+            cent.y+=points[i].y;
+        }
+        cent.x/=4.;
+        cent.y/=4.;
+        cv::putText(in,cad, cent,cv::FONT_HERSHEY_SIMPLEX, 0.5,  cv::Scalar(255-color[0],255-color[1],255-color[2],255),2);
+    
+}
+
 
 cv::Mat Marker::rotate(cv::Mat in)
 {
@@ -190,8 +217,6 @@ int Marker::getMarkerId(cv::Mat &markerImage,int &nRotations)
   
   return -1;
 }
-
-
 
 void Marker::drawContour(cv::Mat& image, cv::Scalar color) const
 {

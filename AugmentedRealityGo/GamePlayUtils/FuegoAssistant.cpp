@@ -42,9 +42,6 @@ FuegoAssistant::FuegoAssistant()
 	}
 	bookLoaded = true;
 
-	
-	
-
 }
 
 
@@ -62,6 +59,16 @@ void FuegoAssistant::set_memory_limit(int m)
 	string readLine;
 
 	sendCommandWithEmptyResponse(helper::add_var_to_string("uct_max_memory ",m), readLine);
+}
+void  FuegoAssistant::set_thread_num(int n)
+{
+	string readLine;
+	sendCommandWithEmptyResponse(helper::add_var_to_string(" uct_param_search number_threads ",n), readLine);
+}
+void  FuegoAssistant::set_lock_free(int n)
+{
+	string readLine;
+	sendCommandWithEmptyResponse(helper::add_var_to_string(" uct_param_search lock_free ",n), readLine);
 }
 
 void FuegoAssistant::clear_board()
@@ -124,7 +131,7 @@ bool FuegoAssistant::estimateTerritory(int color)
 	//the problem here is that i need to generate a move from fuego first before i can see the territory stats
 	//first, disable tree search (node threhold normally = 3)
 	//uct_param_search expand_threshold 10000000   
-	sendCommandWithEmptyResponse("uct_param_search expand_threshold 10000000", readLine);
+	sendCommandWithEmptyResponse("uct_param_search expand_threshold 100000000", readLine);
 
 	//disable forced player move
 	sendCommandWithEmptyResponse("uct_param_player forced_opening_moves 0", readLine);
@@ -294,7 +301,7 @@ void FuegoAssistant::boardState(vector<int>& bStones, vector<int>& wStones)
 		//first word
 		firstWord = readLine.substr( 0, readLine.find( ' ' ) + 1 );
 	}while(firstWord!="AllBlack ");
-	std::cerr<<"[FuegoAssistant]ALLBLACK: "<<readLine<<std::endl;
+	//std::cerr<<"[FuegoAssistant]ALLBLACK: "<<readLine<<std::endl;
 	transform(readLine.begin(), readLine.end(), readLine.begin(), ::tolower);
 	vector<string> l;
 	helper::split(readLine, l, ' ');
@@ -317,21 +324,20 @@ void FuegoAssistant::boardState(vector<int>& bStones, vector<int>& wStones)
 		getline(readFromFuego, readLine);
 		firstWord = readLine.substr( 0, readLine.find( ' ' ) + 1 );
 		if(firstWord == "AllWhite ") break;
-		std::cerr<<"[FuegoAssistant] "<<readLine<<std::endl;
+		//std::cerr<<"[FuegoAssistant] "<<readLine<<std::endl;
 		transform(readLine.begin(), readLine.end(), readLine.begin(), ::tolower);
 		helper::split(readLine, l, ' ');
-		int n=0;
+
 
 		//for black stones afterthe first line
 		for(int i=0; i<l.size(); i++)
 		{
 			//discard space and carriage returns
 			if(l[i][0] != ' ' && l[i][0]!=(char)13){
-				if(n>0){
-					l[i] = helper::trim(l[i]);
-					bStones.push_back(helper::convert_string_move( l[i]));
-				}
-				n++;
+				//std::cerr<<"new line move: "<<l[i]<<std::endl;
+
+				l[i] = helper::trim(l[i]);
+				bStones.push_back(helper::convert_string_move( l[i]));
 			}
 		}
 	}
@@ -345,7 +351,7 @@ void FuegoAssistant::boardState(vector<int>& bStones, vector<int>& wStones)
 		firstWord = readLine.substr( 0, readLine.find( ' ' ) + 1 );
 	}while(firstWord!="AllWhite ");*/
 	//getline(readFromFuego, readLine);
-	std::cerr<<"[FuegoAssistant]ALLWHITE: "<<readLine<<std::endl;
+	//std::cerr<<"[FuegoAssistant]ALLWHITE: "<<readLine<<std::endl;
 	transform(readLine.begin(), readLine.end(), readLine.begin(), ::tolower);
 	helper::split(readLine, l, ' ');
 	n=0;
@@ -365,21 +371,20 @@ void FuegoAssistant::boardState(vector<int>& bStones, vector<int>& wStones)
 		getline(readFromFuego, readLine);
 		firstWord = readLine.substr( 0, readLine.find( ' ' ) + 1 );
 		if(firstWord == "AllEmpty ") break;
-		std::cerr<<"[FuegoAssistant] "<<readLine<<std::endl;
+		//std::cerr<<"[FuegoAssistant] "<<readLine<<std::endl;
 		transform(readLine.begin(), readLine.end(), readLine.begin(), ::tolower);
 		helper::split(readLine, l, ' ');
-		int n=0;
+
 
 		//for white stones after the first line
 		for(int i=0; i<l.size(); i++)
 		{
 			//discard space and carriage returns
 			if(l[i][0] != ' ' && l[i][0]!=(char)13){
-				if(n>0){
-					l[i] = helper::trim(l[i]);
-					wStones.push_back(helper::convert_string_move( l[i]));
-				}
-				n++;
+
+				l[i] = helper::trim(l[i]);
+				wStones.push_back(helper::convert_string_move( l[i]));
+
 			}
 		}
 	}

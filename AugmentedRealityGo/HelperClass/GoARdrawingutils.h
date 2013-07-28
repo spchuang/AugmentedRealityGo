@@ -35,14 +35,19 @@ std::string intToString (int number){
 
       }
 	  */
-static const float NEW_MOVE_COLOR[]		= {0.1f, 0.9f, 0.4f, 0.9f};
-
+static const float NEW_MOVE_COLOR_BLACK[]		= {0.1f, 0.9f, 0.4f, 0.9f};
+static const float NEW_MOVE_COLOR_WHITE[]		= {0.2f, 0.2f, 0.9f, 0.9f};
 
 static const float HALF_TRAN_RED_COLOR[]		= {1.0f, 0.0f, 0.0f, 0.8f};
 static const float HALF_TRAN_GREEN_COLOR[]	= {0.0f, 1.0f, 0.0f, 0.5f};
 static const float HALF_TRAN_BLUE_COLOR[]		= {0.0f, 0.0f, 1.0f, 0.5f};
 static const float HALF_TRAN_BLACK_COLOR[]		= {0.0f, 0.0f, 0.0f, 0.5f};
 static const float HALF_TRAN_WHITE_COLOR[]		= {1.0f, 1.0f, 1.0f, 0.5f};
+
+
+static const float HALF_TRAN_PINK_COLOR[]		= {1.0f, 0.5f, 0.0f, 1.0f};
+static const float HALF_TRAN_BAR_COLOR[]		= {0.0f, 0.2f, 1.0f, 0.75f};
+static const float HALF_TRAN_BAR_LOADING_COLOR[]	= {0.0f, 1.0f, 0.3f, 0.75f};
 
 static const float RED_COLOR[]		= {1.0f, 0.0f, 0.0f, 0.75f};
 static const float SOLID_RED_COLOR[]		= {1.0f, 0.0f, 0.0f, 1.0f};
@@ -60,7 +65,7 @@ void drawCoordinateAxis();
 void buildProjectionMatrix(float* m, float intrinsic_array[][3], int screen_width, int screen_height);
 //  printf prints to file. printw prints to window
 void printw (float x, float y, float z, char* format, ...);
-
+void DrawBar(float x, float y, float width, float height, const float* color);
 void draw_circle(float x, float y, float radius, const float* color);
 void draw_text(float x, float y, const float* color, std::string msg);
 

@@ -35,6 +35,8 @@ public:
 	void setCameraIntrinsics(cv::Mat camM, cv::Mat camD);
 
 	cv::Mat getUndistortImage(cv::Mat& srcImage);
+	cv::Mat getProcessedFrame();
+	void putFrame(cv::Mat& srcImage);
 	bool detectMove();
 	bool calculateCameraIntrinsix();
 	void changePostMethod();
@@ -43,12 +45,15 @@ public:
 	void saveBackGroundBoard();
 	void testThrehold();
 	void detectHand(); //with red blob
+
+	bool controllerMarkerMove();
 protected:
 	bool findBoard(cv::Mat& srcImage);
 	void undistortBoard();
 private:
 	std::vector<Marker> m_detectedMarkers;
 	std::vector<int> boardMarkerID;
+	
 	int xMarkerNumber, yMarkerNumber;
 	int topLeft, topRight, botLeft, botRight;
 	bool showMarkers;
@@ -65,6 +70,7 @@ private:
 	cv::Mat m_grayscaleImage;
 	cv::Mat undistortBoardImage;
 	cv::Mat undistortImage;
+
 	cv::Mat srcFrame;
 	
 	double gap;
@@ -81,6 +87,11 @@ private:
 	PoseEstimationMethods m_PoseMethod;
 
 	int frameWidth, frameHeight;
+
+	//controller marker
+	int controllerMarkerID;
+	float markerPrevAngle;
+	std::vector<float> controlMarkerAngle;
 };
 
 #endif

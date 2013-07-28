@@ -29,12 +29,12 @@ public:
 	JosekiAssistant();
 
 	void loadDB(string dbFile, string sgfFolder);
-	void getJoseki(std::vector<int> temp_bStones,std::vector<int> temp_wStones, int nextMove);
+	void getJoseki(std::vector<int> temp_bStones,std::vector<int> temp_wStones, int nextMoveColor);
 	~JosekiAssistant();
 	
 	static std::vector<cornerJoseki> josekiMoves;
 private:
-	void searchCornerJoseki(int corner, int sw, int width, int height, std::vector<int>& temp_bStones,std::vector<int>& temp_wStones);
+	bool searchCornerJoseki(int corner, int sw, int width, int height, std::vector<int>& temp_bStones,std::vector<int>& temp_wStones);
 	GameList* gl;
 	int algos;
 	SearchOptions so;

@@ -25,6 +25,7 @@ public:
         return (id < other.id);
     }
 	void draw(cv::Mat &in, cv::Scalar color, int lineWidth);
+	void drawTextOnMarker(cv::Mat &in, cv::Scalar color, int lineWidth, std::string text);
    cv::Mat Tvec;
    cv::Mat Rvec;
   
@@ -35,6 +36,8 @@ public:
   static int hammDistMarker(cv::Mat bits);
   static int mat2id(const cv::Mat &bits);
   static int getMarkerId(cv::Mat &in,int &nRotations);
+
+  
 
   // Marker transformation with regards to the camera
   //Transformation transformation;

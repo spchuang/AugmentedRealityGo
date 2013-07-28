@@ -112,7 +112,7 @@ void ARGoController::startAR()
 						break;
 					}
 				
-					boost::this_thread::sleep(boost::posix_time::milliseconds(300));
+					boost::this_thread::sleep(boost::posix_time::milliseconds(200));
 				}
 				/*
 				if(!board.addVirtualStone(arguments[2], arguments[1])){
@@ -140,7 +140,7 @@ void ARGoController::startAR()
 					break;
 				}
 				
-				boost::this_thread::sleep(boost::posix_time::milliseconds(300));
+				boost::this_thread::sleep(boost::posix_time::milliseconds(200));
 			}
 
 		}else if(command == "gogui-analyze_commands"){

@@ -27,6 +27,8 @@ public:
 	bool estimateTerritory(int color);
 	void getFuegoMove(int color);
 	void set_memory_limit(int m);
+	void set_thread_num(int n);
+	void set_lock_free(int n);
 	void clear_board();
 	void genMove(std::string color);
 	void boardState(std::vector<int>& bStones, std::vector<int>& wStones);
