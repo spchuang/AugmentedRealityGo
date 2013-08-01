@@ -1,7 +1,6 @@
 #include "ARGoController.h"
 
 using namespace std;
-//FuegoAssistant ARGoController::fuego = FuegoAssistant();
 GoBoard ARGoController::board = GoBoard();
 Config* ARGoController::config;
 
@@ -12,14 +11,15 @@ ARGoController::ARGoController(Config* c)
 	config = c;
 	
 }
+
 ARGoController::~ARGoController()
 {
 	delete graphic_handler;
 	delete assistant_handler;
 	fprintf(stderr, "ARGoController destructed\n");
-
-	
 }
+
+//parse a line of command and return a vector of arguments
 vector<string> parse_command(string command)
 {
 	//trim input
@@ -40,7 +40,7 @@ vector<string> parse_command(string command)
 }
 
 
-
+//main function
 void ARGoController::startAR()
 {
 	//spawn thread for graphic controller
@@ -52,9 +52,6 @@ void ARGoController::startAR()
 	//spawn thread for assistant controller
 	assistant_handler = new boost::thread(boost::bind(&GoAssistantController::AssistantMainLoop, &assistant_controller));
 
-	//boost::thread workerThread(workerFunc); 
-	//graphic_controller.start(argc,argv)
-	//graphic_controller.global_data = 0;
 	//read from cin
 	string command_line;
 
@@ -62,6 +59,7 @@ void ARGoController::startAR()
 	while(1)
 	{
 		getline(cin, command_line);
+
 		//convert to lowercase
 		transform(command_line.begin(), command_line.end(), command_line.begin(), ::tolower);
 		//simple way to test output
@@ -83,7 +81,7 @@ void ARGoController::startAR()
 		}else if(command == "known_commands"){
 
 		}else if(command == "list_commands"){
-			response+= "protocol_version\nname\nversion\nknown_command\nlist_commands\nquit\nboardsize\nclear_board\nkomi\nplay\ngenmove\ngogui-analyze_commands\nfb-info";
+			response+= "protocol_version\nname\nversion\nknown_command\nlist_commands\nquit\nboardsize\nclear_board\nkomi\nplay\nfinal_status_list\ngenmove\ngogui-analyze_commands\nfb-info";
 
 		}else if(command == "quit"){
 
@@ -93,20 +91,26 @@ void ARGoController::startAR()
 			board.clear_board();
 		}else if(command == "komi"){
 
+		}else if(command == "final_status_list"){
+			
 		}else if(command == "play"){
 			if(arguments.size() == 3){
 				
 				while(1){
+					//check if the assistant controller is waiting to process moves 
+					//maybe we can use locks instead
 					if(assistant_controller.processedMove == PLAY_MODE::NONE){
 						assistant_controller.playVirtualMove(arguments[2], arguments[1]);
 						break;
 					}
+					boost::this_thread::sleep(boost::posix_time::milliseconds(200));
 				}
 				//wait for the move to be played
 				while(1)
 				{
 					if(assistant_controller.processedMove == PLAY_MODE::PROCESSED)
 					{
+						//TODO: change this return mesage
 						response+= board.getNewMove();
 						assistant_controller.processedMove = PLAY_MODE::NONE;
 						break;
@@ -114,10 +118,8 @@ void ARGoController::startAR()
 				
 					boost::this_thread::sleep(boost::posix_time::milliseconds(200));
 				}
-				/*
-				if(!board.addVirtualStone(arguments[2], arguments[1])){
-					response = "? invalid play move";
-				}*/
+
+
 			}else{
 				response = "? invalid play move";
 			}

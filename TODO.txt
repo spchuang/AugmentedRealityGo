@@ -1,11 +1,12 @@
 MAIN TODO
-- show joseki corner suggestions (Juseki corner support)
-- connect with ktp server
+
 
 7/28
 - fixed the bug when adding new moves during assistant thinking (sending a play command to fuego when fuego is calculating territory ..)
 - fixed the color of new move arrows and juseki assistant
 - fix the bug for removing captured stones
+- added AR controller
+- tested with ktp server
 
 7/20
 - added arbitual configuration to board size
@@ -68,3 +69,6 @@ openGL
 
 gogui-twogrp:
 "C:\Program Files\GoGui\gogui-twogtp.exe" -black "C:\Program Files\gnugo-3.8\gnugo.exe --mode gtp" -white "C:\Users\Sam\Documents\Visual Studio 2010\Projects\AugmentedRealityGo\Release\AugmentedRealityGo.exe"
+
+play against kgs:
+http://www.michna.com/kgsbot.htm

@@ -1,0 +1,1 @@
+java -jar kgsGtp.jar ARGoTrainer_KGS.ini

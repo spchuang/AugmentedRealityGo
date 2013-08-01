@@ -22,9 +22,9 @@
 		
 	},
 	"stoneDetection":{
-		"blackThrehold": 57,
-		"whiteThrehold": 198,
-		"minStone2PointDistance": 7
+		"blackThrehold": 56,
+		"whiteThrehold": 199,
+		"minStone2PointDistance": 8
 	},
 	//note this should all be in the same unit (mm..)
 	

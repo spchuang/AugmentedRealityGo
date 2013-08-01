@@ -45,7 +45,7 @@ static const float HALF_TRAN_BLACK_COLOR[]		= {0.0f, 0.0f, 0.0f, 0.5f};
 static const float HALF_TRAN_WHITE_COLOR[]		= {1.0f, 1.0f, 1.0f, 0.5f};
 
 
-static const float HALF_TRAN_PINK_COLOR[]		= {1.0f, 0.5f, 0.0f, 1.0f};
+static const float HALF_TRAN_ORANGE_COLOR[]		= {1.0f, 0.6f, 0.0f, 1.0f};
 static const float HALF_TRAN_BAR_COLOR[]		= {0.0f, 0.2f, 1.0f, 0.75f};
 static const float HALF_TRAN_BAR_LOADING_COLOR[]	= {0.0f, 1.0f, 0.3f, 0.75f};
 

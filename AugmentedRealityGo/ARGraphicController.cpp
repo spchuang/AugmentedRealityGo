@@ -41,7 +41,7 @@ float arrow_space_height = 0.28;
 float arrow_space_height_add = 0.25;
 
 float changeModeBarWidth = 0.3;
-float changeModeBarChange = 0.2;
+float changeModeBarChange = 0.17;
 float changeModeBar;
 
 bool showAllStones;
@@ -156,7 +156,7 @@ void ARGraphicController::calculateFPS()
 		
 		
     }
-	if( (int)(timeInterval/60)>0){
+	if( (int)(timeInterval/50)>0){
 		//use controlling marker to change between modes
 		if(d->controllerMarkerMove()){
 
@@ -495,7 +495,7 @@ void ARGraphicController::RenderSceneCB()
 		if(change_assistant_mode == assistant_mode){
 			draw_text(-0.97f,0.90f, SOLID_RED_COLOR, msg);
 		}else{
-			draw_text(-0.97f,0.90f, HALF_TRAN_PINK_COLOR, msg);
+			draw_text(-0.97f,0.90f, HALF_TRAN_ORANGE_COLOR, msg);
 		}
 		//print change turn mode bar
 		DrawBar(-0.985f, 0.89f, 0.8, 0.09, HALF_TRAN_BAR_COLOR);
@@ -547,10 +547,10 @@ void ARGraphicController::changeGen(int c)
 	newMoveColor = c;
 	
 }
-int tttt=0;
+
+
 void ARGraphicController::gl_idle_func()
 {
-	
 	frameImg = cvQueryFrame(cap);
 	
 	if (!frameImg.empty()){
@@ -574,7 +574,7 @@ void ARGraphicController::gl_idle_func()
 			if(assistant_mode == ASSISTANT_MODE::FUEGO_BOOK || assistant_mode==ASSISTANT_MODE::JOSEKI){
 				goAssistant->pushAssistantMode(assistant_mode);
 			}else{
-				assistant_mode = ASSISTANT_MODE::NONE;
+				assistant_mode = change_assistant_mode = ASSISTANT_MODE::NONE;
 				goAssistant->pushAssistantMode(assistant_mode);
 			}
 			board->newMoveIsMade = false;

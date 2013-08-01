@@ -1,8 +1,6 @@
 ﻿// Video Image PSNR and SSIM
 #include <iostream> // for standard I/O
 #include <string>   // for strings
-#include <iomanip>  // for controlling float print precision
-#include <sstream>  // string to number conversion
 
 //self library
 #include "ARGoController.h"
@@ -12,8 +10,13 @@
 using namespace std;
 
 
+
+
+
 int main(int argc, char *argv[])
 {
+	
+	//this code is for integrating FusekiLibrary(in C#) in the code. An easier solution is probably to just use FusekiBot
 	/*
 	PatternMatcher pm("Patterns.db", 19);
 	pm.Load();
@@ -29,27 +32,6 @@ int main(int argc, char *argv[])
 
 	std::cout<<"load okay"<<std::endl;
 	*/
-	/*
-	PROCESS_INFORMATION ProcessInfo; //This is what we get as an [out] parameter
-	STARTUPINFO StartupInfo; //This is an [in] parameter
-	ZeroMemory(&StartupInfo, sizeof(StartupInfo));
-	StartupInfo.cb = sizeof StartupInfo ; //Only compulsory field
-	if(CreateProcess("C:\\WINDOWS\\System32\\notepad.exe", NULL, 
-		NULL,NULL,FALSE,0,NULL,
-		NULL,&StartupInfo,&ProcessInfo))
-	{ 
-		WaitForSingleObject(ProcessInfo.hProcess,INFINITE);
-		CloseHandle(ProcessInfo.hThread);
-		CloseHandle(ProcessInfo.hProcess);
-	}  
-	else
-	{
-		//MessageBox("The process could not be started...");
-	} */
-
-
-
-	JosekiAssistant j;
 
 	Config config("config.json");
     ARGoController controller(&config);

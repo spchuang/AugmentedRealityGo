@@ -140,7 +140,7 @@ bool JosekiAssistant::searchCornerJoseki(int corner, int sw, int width, int heig
 	}
 	if(numJosekiMoves == 0)
 		return true;
-
+	/*
 	printf("Search pattern:\n");
 	printf("%s\n", p.printPattern().c_str());
 	for(int y=0; y<p.sizeY; y++) {
@@ -149,7 +149,7 @@ bool JosekiAssistant::searchCornerJoseki(int corner, int sw, int width, int heig
 			std::cerr<<gl->lookupLabel(x,y);
 		}
 		std::cerr<<endl;
-	}
+	}*/
 	/*
 	printf("\n");
 	printf("Statistics:\n"); 

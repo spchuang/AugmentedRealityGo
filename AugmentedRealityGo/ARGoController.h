@@ -22,7 +22,7 @@
 #include "HelperClass/config.h"
 #include "HelperClass/Helper.h"
 /**
-	Main Controller: control the game state, methods switch for ar graphics/vision and assistance
+	Main Controller: control the game state, methods switch for ar graphics/vision and assistance. Talk with external programs
 */
 
 class ARGoController
